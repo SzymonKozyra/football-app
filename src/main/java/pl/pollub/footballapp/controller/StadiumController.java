@@ -94,6 +94,8 @@ public class StadiumController {
                 stadium.setCity(city);  // Associate the city with the stadium
 
                 stadiumRepository.save(stadium);  // Save the stadium to the database
+
+                System.out.println("TEST");
             }
 
             Map<String, Object> response = new HashMap<>();
