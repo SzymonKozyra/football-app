@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Espanyol Stadium",
+    "cityName": "Barcelona",
+    "countryName": "Spain",
+    "capacity": 76000
+  },
+  {
+    "name": "Santiago Bernabeu",
+    "cityName": "Madrid",
+    "countryName": "Spain",
+    "capacity": 76000
+  }
+]

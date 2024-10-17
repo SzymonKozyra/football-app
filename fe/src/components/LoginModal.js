@@ -1,0 +1,84 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './Modal.css';
+
+const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
+                email,
+                password
+            });
+
+            // Log the full response to see what is returned
+            console.log(response.data);
+
+            // Destructure the token and email from the backend response
+            const { token, email: responseEmail } = response.data;
+
+            // Store the token and email in localStorage
+            localStorage.setItem('jwtToken', token);
+            localStorage.setItem('email', responseEmail); // Use email from the backend response
+
+            // If role is not yet part of the response, use a default role like 'USER'
+            const role = response.data.role || 'USER';
+            localStorage.setItem('role', role);
+
+            setMessage('Login successful');
+            setIsLoggedIn(true);
+            setLoginData({ email: responseEmail, role });
+
+            // Close the modal
+            onClose();
+        } catch (error) {
+            setMessage('Login failed');
+        }
+    };
+
+
+
+    useEffect(() => {
+        setEmail('');
+        setPassword('');
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal">
+                <h2>Logowanie</h2>
+                <form onSubmit={handleLogin}>
+                    <div>
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Hasło:</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button type="submit">Zaloguj się</button>
+                </form>
+                {message && <p>{message}</p>}
+                <button onClick={onClose}>Zamknij</button>
+            </div>
+        </div>
+    );
+};
+
+export default LoginModal;
