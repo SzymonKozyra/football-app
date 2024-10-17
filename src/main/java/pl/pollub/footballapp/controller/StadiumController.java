@@ -95,7 +95,7 @@ public class StadiumController {
 
                 stadiumRepository.save(stadium);  // Save the stadium to the database
 
-                System.out.println("TEST");
+                System.out.println("TESTaaa");
             }
 
             Map<String, Object> response = new HashMap<>();
