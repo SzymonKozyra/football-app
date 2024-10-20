@@ -32,6 +32,7 @@ public class CoachesTransferController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<CoachesTransfer> addCoachesTransfer(@RequestBody CoachesTransferRequest request) {
         CoachesTransfer transfer = coachesTransferService.addTransfer(request);
         return ResponseEntity.ok(transfer);
