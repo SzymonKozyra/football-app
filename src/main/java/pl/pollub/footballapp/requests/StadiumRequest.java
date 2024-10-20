@@ -35,9 +35,16 @@ public class StadiumRequest {
         return capacity;
     }
 
+//    public void setCapacity(int capacity) {
+//        this.capacity = capacity;
+//    }
     public void setCapacity(int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be greater than 0");
+        }
         this.capacity = capacity;
     }
+
 
     public Long getCityId() {
         return cityId;

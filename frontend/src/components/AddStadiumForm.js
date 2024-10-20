@@ -38,6 +38,11 @@ const AddStadiumForm = () => {
             return;
         }
 
+        if (manualEntry && stadiumCapacity <= 0) {
+            alert('Stadium capacity must be greater than 0');
+            return;
+        }
+
         if (manualEntry) {
             // Manual entry submission logic
             const stadiumData = {
