@@ -10,7 +10,7 @@ import { useLocation, Link, Route, Routes } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddStadiumForm from './components/AddStadiumForm';
 import AddLeagueForm from './components/AddLeagueForm';
-//import AddLCoachesTransfer from './components/AddLCoachesTransfer';
+import AddCoachesTransferForm from './components/AddCoachesTransferForm';
 import AddCoachForm from './components/AddCoachForm';
 import Navbar from './components/Navbar';
 import './components/Navbar.css';

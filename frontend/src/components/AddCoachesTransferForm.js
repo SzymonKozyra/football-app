@@ -123,4 +123,4 @@ const AddCoachesTransferForm = () => {
     );
 };
 
-export default AddTransferForm;
+export default AddCoachesTransferForm;
