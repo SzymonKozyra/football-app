@@ -149,6 +149,7 @@ const AddStadiumForm = () => {
                             value={stadiumCapacity}
                             onChange={(e) => setStadiumCapacity(e.target.value)}
                             required
+                            min="1"
                         />
                     </div>
                 </>
