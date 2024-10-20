@@ -40,15 +40,26 @@ public class StadiumController {
     @Autowired
     private ImporterFactory importerFactory;
 
-    @PreAuthorize("hasRole('MODERATOR')")
+
+
     @PostMapping("/add")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addStadium(@RequestBody StadiumRequest stadiumRequest) {
+        // Znajdź kraj na podstawie nazwy
         Country country = countryRepository.findByName(stadiumRequest.getCountryName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
 
+        // Znajdź miasto na podstawie nazwy i kraju
         City city = cityRepository.findByNameAndCountryName(stadiumRequest.getCityName(), stadiumRequest.getCountryName())
                 .orElseThrow(() -> new RuntimeException("City not found"));
 
+        // Sprawdź, czy stadion już istnieje
+        boolean stadiumExists = stadiumRepository.existsByNameAndCity(stadiumRequest.getName(), city);
+        if (stadiumExists) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stadium already exists.");
+        }
+
+        // Stwórz nowy stadion
         Stadium stadium = new Stadium();
         stadium.setName(stadiumRequest.getName());
 
@@ -58,9 +69,9 @@ public class StadiumController {
             throw new IllegalArgumentException("Capacity must be greater than 0");
         }
 
-        stadium.setCity(city);
+        stadium.setCity(city);  // Przypisz miasto do stadionu
 
-        stadiumRepository.save(stadium);
+        stadiumRepository.save(stadium);  // Zapisz stadion w bazie danych
         return ResponseEntity.ok("Stadium added successfully");
     }
 

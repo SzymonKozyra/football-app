@@ -7,5 +7,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface DataImporter {
-    List<StadiumRequest> importData(InputStream inputStream) throws IOException;
+    <T> List<T> importData(InputStream inputStream) throws IOException;
 }

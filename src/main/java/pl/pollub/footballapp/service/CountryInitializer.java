@@ -214,7 +214,11 @@ public class CountryInitializer {
                     new String[]{"Vietnam", "vn"},
                     new String[]{"Yemen", "ye"},
                     new String[]{"Zambia", "zm"},
-                    new String[]{"Zimbabwe", "zw"}
+                    new String[]{"Zimbabwe", "zw"},
+                    new String[]{"England", "en"},
+                    new String[]{"Northern Ireland", "ni"},
+                    new String[]{"Wales", "wl"},
+                    new String[]{"Scotland", "sf"}
             );
 
             for (String[] country : countries) {

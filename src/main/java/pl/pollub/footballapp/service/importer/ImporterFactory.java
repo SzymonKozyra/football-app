@@ -16,11 +16,26 @@ public class ImporterFactory {
     @Autowired
     private CsvStadiumImporter csvStadiumImporter;
 
+    @Autowired
+    private CsvLeagueImporter csvLeagueImporter;
+
+    @Autowired
+    private JsonLeagueImporter jsonLeagueImporter;
+
     public DataImporter getImporter(String fileType) {
         if ("json".equalsIgnoreCase(fileType)) {
             return jsonStadiumImporter;
         } else if ("csv".equalsIgnoreCase(fileType)) {
             return csvStadiumImporter;
+        } else {
+            throw new IllegalArgumentException("Unsupported file type: " + fileType);
+        }
+    }
+    public DataImporter getImporterLeague(String fileType) {
+        if ("json".equalsIgnoreCase(fileType)) {
+            return jsonLeagueImporter;
+        } else if ("csv".equalsIgnoreCase(fileType)) {
+            return csvLeagueImporter;
         } else {
             throw new IllegalArgumentException("Unsupported file type: " + fileType);
         }

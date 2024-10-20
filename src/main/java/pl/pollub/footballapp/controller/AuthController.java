@@ -41,6 +41,8 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -109,6 +111,26 @@ public class AuthController {
         SecurityContextHolder.clearContext();
 
         return ResponseEntity.ok("Account deleted successfully");
+    }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody User user) {
+        // Sprawdź, czy istnieje już użytkownik z rolą ADMIN
+        if (userRepository.existsByRole(User.Role.ROLE_ADMIN)) {
+            return ResponseEntity.badRequest().body("Admin account already exists.");
+        }
+
+        // Tworzenie konta admina
+        user.setRole(User.Role.ROLE_ADMIN);
+        userService.registerUser(user);  // Zakłada, że w UserService jest metoda hashująca hasło i zapisująca użytkownika
+        return ResponseEntity.ok("Admin account created successfully.");
+    }
+
+    @GetMapping("/check-admin")
+    public ResponseEntity<Boolean> checkIfAdminExists() {
+        // Sprawdzamy, czy istnieje użytkownik z rolą ADMIN
+        boolean adminExists = userRepository.existsByRole(User.Role.ROLE_ADMIN);
+        return ResponseEntity.ok(adminExists);
     }
 
 

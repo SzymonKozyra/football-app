@@ -1,28 +1,42 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
 import AddModeratorForm from './components/AddModeratorForm';
-import DeleteAccountButton from './components/DeleteAccountButton'; // Zostawiamy import
+import DeleteAccountButton from './components/DeleteAccountButton';
 import { useLocation, Link, Route, Routes } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddStadiumForm from './components/AddStadiumForm';
+import AddLeagueForm from './components/AddLeagueForm';
 import Navbar from './components/Navbar';
 import './components/Navbar.css';
-import axios from 'axios';
+import RegisterAdminForm from './components/RegisterAdminForm'; // Import RegisterAdminForm
+import CountryList from './components/CountryList'; // Import RegisterAdminForm
 
 function App() {
-    const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [modals, setModals] = useState({
+        isRegistrationOpen: false,
+        isLoginOpen: false,
+        isPasswordResetOpen: false,
+        isNewPasswordOpen: false,
+        isAddModeratorOpen: false,
+    });
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loginData, setLoginData] = useState({ email: '', role: '' });
-    const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false);
-    const [isNewPasswordOpen, setIsNewPasswordOpen] = useState(false);
-    const [isAddModeratorOpen, setIsAddModeratorOpen] = useState(false);
     const [token, setToken] = useState('');
     const [message, setMessage] = useState('');
+    const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
+
+    // Check if an admin account exists
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/auth/check-admin')  // Corrected the URL here
+            .then(response => setAdminExists(response.data)) // true if admin exists
+            .catch(error => console.error("Error checking if admin exists:", error));
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -39,27 +53,33 @@ function App() {
         const resetToken = searchParams.get('token');
         if (resetToken) {
             setToken(resetToken);
-            setIsNewPasswordOpen(true);
+            setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
         }
     }, [location.search]);
 
-    const openRegistrationModal = () => setIsRegistrationOpen(true);
-    const closeRegistrationModal = () => setIsRegistrationOpen(false);
-    const openLoginModal = () => setIsLoginOpen(true);
-    const closeLoginModal = () => setIsLoginOpen(false);
-    const openPasswordResetModal = () => setIsPasswordResetOpen(true);
-    const closePasswordResetModal = () => setIsPasswordResetOpen(false);
-    const openAddModeratorModal = () => setIsAddModeratorOpen(true);
-    const closeAddModeratorModal = () => setIsAddModeratorOpen(false);
-    const closeNewPasswordModal = () => setIsNewPasswordOpen(false);
+    const toggleModal = (modalName) => {
+        setModals((prevModals) => ({
+            ...prevModals,
+            [modalName]: !prevModals[modalName],
+        }));
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
-        setLoginData({ email: '', password: '', role: '' });
-        setMessage('Wylogowano');
+        setLoginData({ email: '', role: '' });
+        setMessage('Usunięto pomyślnie');
         setTimeout(() => setMessage(''), 3000);
     };
+
+    if (!adminExists) {
+        return (
+            <div className="App">
+                <h1>Register Admin</h1>
+                <RegisterAdminForm />
+            </div>
+        );
+    }
 
     return (
         <div className="App">
@@ -67,48 +87,52 @@ function App() {
                 isLoggedIn={isLoggedIn}
                 loginData={loginData}
                 onLogout={handleLogout}
-                onOpenLogin={openLoginModal}
-                onOpenRegistration={openRegistrationModal}
-                onOpenPasswordReset={openPasswordResetModal}
-                openAddModeratorModal={openAddModeratorModal}
+                onOpenLogin={() => toggleModal('isLoginOpen')}
+                onOpenRegistration={() => toggleModal('isRegistrationOpen')}
+                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
+                openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
             />
             {message && <div className="alert-message">{message}</div>}
 
             <div className="main-content">
                 <RegistrationModal
-                    isOpen={isRegistrationOpen}
-                    onClose={closeRegistrationModal}
-                    onOpenLogin={openLoginModal}
+                    isOpen={modals.isRegistrationOpen}
+                    onClose={() => toggleModal('isRegistrationOpen')}
+                    onOpenLogin={() => toggleModal('isLoginOpen')}
                 />
                 <LoginModal
-                    isOpen={isLoginOpen}
-                    onClose={closeLoginModal}
+                    isOpen={modals.isLoginOpen}
+                    onClose={() => toggleModal('isLoginOpen')}
                     setIsLoggedIn={setIsLoggedIn}
                     setLoginData={setLoginData}
                 />
                 <PasswordResetModal
-                    isOpen={isPasswordResetOpen}
-                    onClose={closePasswordResetModal}
+                    isOpen={modals.isPasswordResetOpen}
+                    onClose={() => toggleModal('isPasswordResetOpen')}
                 />
                 <NewPasswordModal
-                    isOpen={isNewPasswordOpen}
-                    onClose={closeNewPasswordModal}
+                    isOpen={modals.isNewPasswordOpen}
+                    onClose={() => toggleModal('isNewPasswordOpen')}
                     token={token}
                 />
                 <AddModeratorForm
-                    isOpen={isAddModeratorOpen}
-                    onClose={closeAddModeratorModal}
+                    isOpen={modals.isAddModeratorOpen}
+                    onClose={() => toggleModal('isAddModeratorOpen')}
                 />
 
                 <Routes>
                     <Route path="/admin-panel" element={<AdminPanel />} />
                 </Routes>
+                {/*<CountryList />*/}
 
-                <h1>Add Stadium</h1>
-                <AddStadiumForm />
+                {/*<h1>Add Stadium</h1>*/}
+                {/*<AddStadiumForm />*/}
+                <h1>Add League</h1>
+                <AddLeagueForm />
             </div>
         </div>
     );
 }
 
 export default App;
+

@@ -34,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/countries").permitAll()
                         .requestMatchers("/api/auth/reset-password").permitAll()
                         .requestMatchers("/api/auth/reset-password-confirm").permitAll()
+                        .requestMatchers("/api/auth/register-admin").permitAll()
+                        .requestMatchers("/api/auth/check-admin").permitAll()
                         .anyRequest().authenticated()  // Secure all other endpoints
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session for JWT

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AddStadiumForm = () => {
+const AddLeagueForm = () => {
     const [countries, setCountries] = useState([]);
-    const [cities, setCities] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState('');
-    const [selectedCity, setSelectedCity] = useState('');
-    const [stadiumName, setStadiumName] = useState('');
-    const [stadiumCapacity, setStadiumCapacity] = useState('');
+    const [leagueName, setLeagueName] = useState('');
     const [fileType, setFileType] = useState('');
     const [file, setFile] = useState(null);
     const [manualEntry, setManualEntry] = useState(true); // Default to manual entry
@@ -19,16 +16,6 @@ const AddStadiumForm = () => {
             .catch(error => console.error("Error fetching countries:", error));
     }, []);
 
-    const handleCountryChange = (e) => {
-        const countryId = e.target.value;
-        setSelectedCountry(countryId);
-
-        // Fetch cities based on selected country
-        axios.get(`http://localhost:8080/api/cities/by-country/${countryId}`)
-            .then(response => setCities(response.data))
-            .catch(error => console.error("Error fetching cities:", error));
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -38,34 +25,25 @@ const AddStadiumForm = () => {
             return;
         }
 
-        if (manualEntry && stadiumCapacity <= 0) {
-            alert('Stadium capacity must be greater than 0');
-            return;
-        }
-
         if (manualEntry) {
             // Manual entry submission logic
-            const stadiumData = {
-                name: stadiumName,
-                capacity: stadiumCapacity,
-                cityName: selectedCity,  // Powinno być cityName zamiast cityId
-                countryName: selectedCountry  // Powinno być countryName zamiast cityId
+            const leagueData = {
+                name: leagueName,
+                countryName: selectedCountry
             };
 
-            axios.post('http://localhost:8080/api/stadiums/add', stadiumData, {
+            axios.post('http://localhost:8080/api/leagues/add', leagueData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
-                    alert('Stadium added successfully');
+                    alert('League added successfully');
                     // Reset form fields
-                    setStadiumName('');
-                    setStadiumCapacity('');
+                    setLeagueName('');
                     setSelectedCountry('');
-                    setSelectedCity('');
                 })
                 .catch(error => {
-                    console.error('Error adding stadium:', error);
-                    alert('Failed to add stadium');
+                    console.error('Error adding league:', error);
+                    alert('Failed to add league');
                 });
         } else {
             // File import logic
@@ -73,17 +51,17 @@ const AddStadiumForm = () => {
             formData.append('file', file);
             formData.append('type', fileType);
 
-            axios.post('http://localhost:8080/api/stadiums/import', formData, {
+            axios.post('http://localhost:8080/api/leagues/import', formData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Stadiums imported successfully');
+                    alert('Leagues imported successfully');
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
-                    console.error('Error importing stadiums:', error);
-                    alert('Failed to import stadiums');
+                    console.error('Error importing leagues:', error);
+                    alert('Failed to import leagues');
                 });
         }
     };
@@ -100,7 +78,7 @@ const AddStadiumForm = () => {
                     />
                     Manual Entry
                 </label>
-                <label>`
+                <label>
                     <input
                         type="radio"
                         value="import"
@@ -124,33 +102,12 @@ const AddStadiumForm = () => {
                     </div>
 
                     <div>
-                        <label>City Name</label>
+                        <label>League Name</label>
                         <input
                             type="text"
-                            value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
+                            value={leagueName}
+                            onChange={(e) => setLeagueName(e.target.value)}
                             required
-                        />
-                    </div>
-
-                    <div>
-                        <label>Stadium Name</label>
-                        <input
-                            type="text"
-                            value={stadiumName}
-                            onChange={(e) => setStadiumName(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label>Stadium Capacity</label>
-                        <input
-                            type="number"
-                            value={stadiumCapacity}
-                            onChange={(e) => setStadiumCapacity(e.target.value)}
-                            required
-                            min="1"
                         />
                     </div>
                 </>
@@ -166,7 +123,7 @@ const AddStadiumForm = () => {
                     </div>
 
                     <div>
-                        <label>Import Stadiums (CSV or JSON)</label>
+                        <label>Import Leagues (CSV or JSON)</label>
                         <input
                             type="file"
                             accept=".csv,.json"
@@ -177,9 +134,9 @@ const AddStadiumForm = () => {
                 </>
             )}
 
-            <button type="submit">Add Stadium</button>
+            <button type="submit">Add League</button>
         </form>
     );
 };
 
-export default AddStadiumForm;
+export default AddLeagueForm;
