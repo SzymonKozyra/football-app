@@ -51,7 +51,13 @@ public class StadiumController {
 
         Stadium stadium = new Stadium();
         stadium.setName(stadiumRequest.getName());
-        stadium.setCapacity(stadiumRequest.getCapacity());
+
+        if (stadiumRequest.getCapacity() > 0) {
+            stadium.setCapacity(stadiumRequest.getCapacity());
+        } else {
+            throw new IllegalArgumentException("Capacity must be greater than 0");
+        }
+
         stadium.setCity(city);
 
         stadiumRepository.save(stadium);
@@ -90,7 +96,12 @@ public class StadiumController {
 
                 Stadium stadium = new Stadium();
                 stadium.setName(stadiumRequest.getName());
-                stadium.setCapacity(stadiumRequest.getCapacity());
+                if (stadiumRequest.getCapacity() > 0) {
+                    stadium.setCapacity(stadiumRequest.getCapacity());
+                } else {
+                    throw new IllegalArgumentException("Capacity must be greater than 0");
+                }
+
                 stadium.setCity(city);  // Associate the city with the stadium
 
                 stadiumRepository.save(stadium);  // Save the stadium to the database
