@@ -1,0 +1,23 @@
+[
+  {
+    "firstName": "JAcek",
+    "lastName": "Doe",
+    "dateOfBirth": "1980-05-15",
+    "nickname": "Johndany",
+    "countryName": "Poland"
+  },
+  {
+    "firstName": "Jodadahn",
+    "lastName": "dadaDoe",
+    "dateOfBirth": "1980-05-15",
+    "nickname": "Johdanny",
+    "countryName": "Poland"
+  },
+  {
+    "firstName": "Jodahn",
+    "lastName": "Dodae",
+    "dateOfBirth": "1980-05-15",
+    "nickname": "Johdanny",
+    "countryName": "Poland"
+  }
+]
