@@ -10,6 +10,7 @@ import { useLocation, Link, Route, Routes } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddStadiumForm from './components/AddStadiumForm';
 import AddLeagueForm from './components/AddLeagueForm';
+//import AddLCoachesTransfer from './components/AddLCoachesTransfer';
 import AddCoachForm from './components/AddCoachForm';
 import Navbar from './components/Navbar';
 import './components/Navbar.css';
@@ -133,6 +134,9 @@ function App() {
 
                 <h1>Add Coach</h1>
                 <AddCoachForm />
+
+                <h1>Add CoachesTransfer</h1>
+                <AddCoachesTransferForm />
             </div>
         </div>
     );

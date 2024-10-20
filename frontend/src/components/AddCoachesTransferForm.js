@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AddTransferForm = () => {
+const AddCoachesTransferForm = () => {
     const [coaches, setCoaches] = useState([]);
     const [coachId, setCoachId] = useState('');
     const [previousClub, setPreviousClub] = useState('');
@@ -16,7 +16,7 @@ const AddTransferForm = () => {
             .catch(error => console.error("Error fetching coaches:", error));
     }, []);
 
-    /*
+
     const resetForm = () => {
         setCoachId('');
         setPreviousClub('');
@@ -24,7 +24,7 @@ const AddTransferForm = () => {
         setTransferDate('');
         setTransferValue('');
     };
-    */
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -47,8 +47,7 @@ const AddTransferForm = () => {
         axios.post('http://localhost:8080/api/coaches-transfers/add', transferData)
             .then(response => {
                 alert('Transfer added successfully');
-                // Reset form
-                resetForm();
+                resetForm(); //funkcja wyzej
                 /*
                 setCoachId('');
                 setPreviousClub('');
@@ -70,7 +69,10 @@ const AddTransferForm = () => {
                 <select value={coachId} onChange={(e) => setCoachId(e.target.value)} required>
                     <option value="">Select Coach</option>
                     {coaches.map(coach => (
-                        <option key={coach.id} value={coach.id}>{coach.name}</option>
+//                        <option key={coach.id} value={coach.id}>{coach.name}</option>
+                        <option key={coach.id} value={coach.id}>
+                            {coach.firstName} {coach.lastName}
+                        </option>
                     ))}
                 </select>
             </div>
