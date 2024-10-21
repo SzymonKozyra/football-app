@@ -19,6 +19,7 @@ import CountryList from './components/CountryList';
 import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
 import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
 import StadiumSearchAndEditForm from "./components/StadiumSearchAndEditForm";
+import AddCityForm from "./components/AddCityForm";
 
 function App() {
     const [modals, setModals] = useState({
@@ -150,6 +151,9 @@ function App() {
 
                 <h1>Add CoachesTransfer</h1>
                 <AddCoachesTransferForm />
+
+                <h1>Add City</h1>
+                <AddCityForm />
             </div>
         </div>
     );
