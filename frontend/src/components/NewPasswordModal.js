@@ -6,6 +6,7 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handlePasswordReset = async (e) => {
         e.preventDefault();
@@ -21,8 +22,10 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
                 password
             });
             setMessage('Hasło zostało zmienione.');
+            setMessageType('success');
         } catch (error) {
             setMessage('Błąd podczas zmiany hasła. Spróbuj ponownie.');
+            setMessageType('error');
         }
     };
 
@@ -53,7 +56,7 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
                     </div>
                     <button type="submit">Zmień hasło</button>
                 </form>
-                {message && <p>{message}</p>}
+                {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Zamknij</button>
             </div>
         </div>

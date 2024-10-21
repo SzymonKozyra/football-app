@@ -8,18 +8,20 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // Walidacja hasła
         if (password.length < 1) {
             setMessage('Hasło musi zawierać co najmniej 8 znaków.');
+            setMessageType('error');
             return;
         }
 
         if (password !== confirmPassword) {
             setMessage('Hasła muszą być identyczne.');
+            setMessageType('error');
             return;
         }
 
@@ -30,20 +32,23 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                 password
             });
             setMessage(response.data);
+            setMessageType('success');
         } catch (error) {
             setMessage('Błąd podczas rejestracji. Użytkownik już istnieje lub inne błędy.');
+            setMessageType('error');
         }
     };
 
     useEffect(() => {
-            if (isOpen) {
-                setUsername('');
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-                setMessage('');
-            }
-        }, [isOpen]);
+        if (isOpen) {
+            setUsername('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+            setMessage('');
+            setMessageType('');
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -90,14 +95,14 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                     </div>
                     <button type="submit">Zarejestruj się</button>
                 </form>
-                {message && <p>{message}</p>}
+                {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Zamknij</button>
-                <p>
+                <p className="blue-text">
                     Masz już konto?{' '}
                     <a href="#" onClick={() => {
-                        onClose(); // Zamknij modal rejestracji
-                        onOpenLogin(); // Otwórz modal logowania
-                    }}>
+                        onClose();
+                        onOpenLogin();
+                    }} className="login-link">
                         Zaloguj się
                     </a>
                 </p>

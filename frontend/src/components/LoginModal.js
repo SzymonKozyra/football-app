@@ -6,6 +6,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -30,6 +31,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
             localStorage.setItem('role', role);
 
             setMessage('Zalogowano');
+            setMessageType('success');
             setIsLoggedIn(true);
             setLoginData({ email: responseEmail, role });
 
@@ -37,6 +39,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
             onClose();
         } catch (error) {
             setMessage('Nie udało się zalogować');
+            setMessageType('error');
         }
     };
 
@@ -46,6 +49,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
         setEmail('');
         setPassword('');
         setMessage('');
+        setMessageType('');
     }, [isOpen]);
 
     if (!isOpen) return null;
@@ -75,7 +79,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
                     </div>
                     <button type="submit">Zaloguj się</button>
                 </form>
-                {message && <p>{message}</p>}
+                {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Zamknij</button>
             </div>
         </div>

@@ -69,7 +69,6 @@
 }
 
 .modal p {
-    color: red;
     margin-top: 1rem;
 }
 
@@ -81,4 +80,26 @@
 
 .modal button:last-of-type:hover {
     background-color: #bbb;
+}
+
+.message.success {
+    color: green;
+}
+
+.message.error {
+    color: red;
+}
+
+.blue-text {
+    color: black;
+}
+
+.login-link {
+    color: #0072c9;
+    text-decoration: underline;
+}
+
+.login-link:hover {
+    color: #49007d;
+    cursor: pointer;
 }

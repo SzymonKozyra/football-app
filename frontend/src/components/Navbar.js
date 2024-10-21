@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import DeleteAccountButton from './DeleteAccountButton';
 
-const Navbar = ({ isLoggedIn, loginData, onLogout, onDeleteAccount, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal }) => {
+const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, setIsLoggedIn, setMessage }) => {
     return (
         <nav className="navbar">
             <div className="navbar-left">
@@ -31,10 +31,8 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onDeleteAccount, onOpenLogin,
                         )}
                         <button onClick={onLogout} className="navbar-btn">Wyloguj się</button>
                         <DeleteAccountButton
-                            onAccountDeleted={onLogout}
-                            navbutton={(handleDeleteAccount) => (
-                                <button onClick={handleDeleteAccount} className="navbar-btn">Usuń konto</button>
-                            )}
+                            setIsLoggedIn={setIsLoggedIn}
+                            setMessage={setMessage}
                         />
                     </>
                 )}

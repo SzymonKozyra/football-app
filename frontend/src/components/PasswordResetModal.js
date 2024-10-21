@@ -5,6 +5,7 @@ import './Modal.css';
 const PasswordResetModal = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handlePasswordReset = async (e) => {
         e.preventDefault();
@@ -13,8 +14,10 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                 email
             });
             setMessage('Link do resetowania hasła został wysłany.');
+            setMessageType('success');
         } catch (error) {
             setMessage('Nie udało się wysłać linku. Sprawdź czy email jest poprawny.');
+            setMessageType('error');
         }
     };
 
@@ -22,6 +25,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             if (isOpen) {
                 setEmail('');
                 setMessage('');
+                setMessageType('');
             }
         }, [isOpen]);
 
@@ -43,7 +47,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                     </div>
                     <button type="submit">Wyślij link do resetu</button>
                 </form>
-                {message && <p>{message}</p>}
+                {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Zamknij</button>
             </div>
         </div>

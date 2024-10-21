@@ -83,11 +83,11 @@
     padding: 1rem;
     background-color: #4caf50;
     color: white;
-    margin: 80px 0 1rem 0; /* Margines od góry, aby komunikat nie był zasłaniany przez pasek */
+    margin: 80px 0 1rem 0;
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
     position: relative;
-    z-index: 999; /* Zabezpieczenie przed nakładaniem */
+    z-index: 999;
 }
 

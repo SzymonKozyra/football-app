@@ -1,40 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 
-const DeleteAccountButton = ({ onAccountDeleted, navbutton }) => {
-    const [message, setMessage] = useState('');
+const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
 
     const handleDeleteAccount = async () => {
         if (window.confirm('Czy na pewno chcesz usunąć swoje konto?')) {
             try {
-                // Retrieve the JWT token from localStorage
                 const token = localStorage.getItem('jwtToken');
-
-                // Send DELETE request to delete the account with Authorization header
-                const response = await axios.delete('http://localhost:8080/api/auth/delete-account', {
+                await axios.delete('http://localhost:8080/api/auth/delete-account', {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+                        Authorization: `Bearer ${token}`,
                     },
                 });
-
+                localStorage.removeItem('jwtToken');
+                setIsLoggedIn(false);
                 setMessage('Konto zostało usunięte.');
-
-                // Call the function passed through props to handle logout after account deletion
-                onAccountDeleted();
+                setTimeout(() => setMessage(''), 3000);
             } catch (error) {
                 setMessage('Wystąpił problem z usunięciem konta.');
             }
         }
     };
 
-    if (navbutton) {
-        return navbutton(handleDeleteAccount);
-    }
-
     return (
         <div>
-            <button onClick={handleDeleteAccount}>Usuń konto</button>
-            {message && <p>{message}</p>}
+            <button onClick={handleDeleteAccount} className="navbar-btn">Usuń konto</button>
         </div>
     );
 };

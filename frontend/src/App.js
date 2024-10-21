@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
 import AddModeratorForm from './components/AddModeratorForm';
-import DeleteAccountButton from './components/DeleteAccountButton';
-import { useLocation, Link, Route, Routes } from 'react-router-dom';
+import { useLocation, Route, Routes } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
-import AddStadiumForm from './components/AddStadiumForm';
 import AddLeagueForm from './components/AddLeagueForm';
 import AddCoachesTransferForm from './components/AddCoachesTransferForm';
 import AddCoachForm from './components/AddCoachForm';
-import Navbar from './components/Navbar';
+import RegisterAdminForm from './components/RegisterAdminForm';
 import './components/Navbar.css';
 import RegisterAdminForm from './components/RegisterAdminForm'; // Import RegisterAdminForm
 import CountryList from './components/CountryList';
@@ -37,10 +36,9 @@ function App() {
     const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
 
-    // Check if an admin account exists
     useEffect(() => {
-        axios.get('http://localhost:8080/api/auth/check-admin')  // Corrected the URL here
-            .then(response => setAdminExists(response.data)) // true if admin exists
+        axios.get('http://localhost:8080/api/auth/check-admin')
+            .then(response => setAdminExists(response.data))
             .catch(error => console.error("Error checking if admin exists:", error));
     }, []);
 
@@ -74,7 +72,7 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-        setMessage('Usunięto pomyślnie');
+        setMessage('Wylogowano');
         setTimeout(() => setMessage(''), 3000);
     };
 
@@ -93,6 +91,8 @@ function App() {
                 isLoggedIn={isLoggedIn}
                 loginData={loginData}
                 onLogout={handleLogout}
+                setIsLoggedIn={setIsLoggedIn}
+                setMessage={setMessage}
                 onOpenLogin={() => toggleModal('isLoginOpen')}
                 onOpenRegistration={() => toggleModal('isRegistrationOpen')}
                 onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
@@ -129,6 +129,7 @@ function App() {
                 <Routes>
                     <Route path="/admin-panel" element={<AdminPanel />} />
                 </Routes>
+
                 {/*<CountryList />*/}
 
                 <h1>Add Stadium</h1>
@@ -160,4 +161,3 @@ function App() {
 }
 
 export default App;
-
