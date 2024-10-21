@@ -89,4 +89,29 @@ public class LeagueController {
             return ResponseEntity.status(500).body("Error importing leagues: " + e.getMessage());
         }
     }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<List<League>> searchLeagues(@RequestParam("query") String query) {
+        List<League> leagues = leagueRepository.findByNameContaining(query);
+        return ResponseEntity.ok(leagues);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> updateLeague(@PathVariable Long id, @RequestBody LeagueRequest updatedLeagueRequest) {
+        League league = leagueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("League not found"));
+
+        Country country = countryRepository.findByName(updatedLeagueRequest.getCountryName())
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+
+        league.setName(updatedLeagueRequest.getName());
+        league.setCountry(country);
+
+        leagueRepository.save(league);
+        return ResponseEntity.ok("League updated successfully");
+    }
+
+
 }

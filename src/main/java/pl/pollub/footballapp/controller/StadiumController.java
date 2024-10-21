@@ -138,4 +138,28 @@ public class StadiumController {
         }
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<List<Stadium>> searchStadiums(@RequestParam("query") String query) {
+        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query);
+        return ResponseEntity.ok(stadiums);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> updateStadium(@PathVariable Long id, @RequestBody StadiumRequest updatedStadiumRequest) {
+        Stadium stadium = stadiumRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Stadium not found"));
+
+        City city = cityRepository.findByNameAndCountryName(updatedStadiumRequest.getCityName(), updatedStadiumRequest.getCountryName())
+                .orElseThrow(() -> new RuntimeException("City not found"));
+
+        stadium.setName(updatedStadiumRequest.getName());
+        stadium.setCapacity(updatedStadiumRequest.getCapacity());
+        stadium.setCity(city);
+
+        stadiumRepository.save(stadium);
+        return ResponseEntity.ok("Stadium updated successfully");
+    }
+
 }

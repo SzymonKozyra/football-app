@@ -82,4 +82,32 @@ public class CoachController {
             return ResponseEntity.status(500).body("Error importing coaches: " + e.getMessage());
         }
     }
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<List<Coach>> searchCoaches(@RequestParam("query") String query) {
+        List<Coach> coaches = coachRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+        return ResponseEntity.ok(coaches);
+    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> updateCoach(@PathVariable Long id, @RequestBody CoachRequest coachRequest) {
+        // Znajdź trenera
+        Coach coach = coachRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+
+        // Znajdź kraj na podstawie nazwy kraju (countryName)
+        Country country = countryRepository.findByName(coachRequest.getCountryName())
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+
+        // Aktualizacja danych trenera
+        coach.setFirstName(coachRequest.getFirstName());
+        coach.setLastName(coachRequest.getLastName());
+        coach.setDateOfBirth(LocalDate.parse(coachRequest.getDateOfBirth()));
+        coach.setNickname(coachRequest.getNickname());
+        coach.setCountry(country); // Przypisz kraj do trenera
+
+        coachRepository.save(coach); // Zapisz trenera
+
+        return ResponseEntity.ok("Coach updated successfully");
+    }
 }

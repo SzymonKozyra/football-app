@@ -15,7 +15,10 @@ import AddCoachForm from './components/AddCoachForm';
 import Navbar from './components/Navbar';
 import './components/Navbar.css';
 import RegisterAdminForm from './components/RegisterAdminForm'; // Import RegisterAdminForm
-import CountryList from './components/CountryList'; // Import RegisterAdminForm
+import CountryList from './components/CountryList';
+import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
+import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
+import StadiumSearchAndEditForm from "./components/StadiumSearchAndEditForm";
 
 function App() {
     const [modals, setModals] = useState({
@@ -127,13 +130,23 @@ function App() {
                 </Routes>
                 {/*<CountryList />*/}
 
-                {/*<h1>Add Stadium</h1>*/}
-                {/*<AddStadiumForm />*/}
+                <h1>Add Stadium</h1>
+                <AddStadiumForm />
+
                 <h1>Add League</h1>
                 <AddLeagueForm />
 
                 <h1>Add Coach</h1>
                 <AddCoachForm />
+
+                <h1>Edit Coach</h1>
+                <CoachSearchAndEditForm />
+
+                <h1>Edit League</h1>
+                <LeagueSearchAndEditForm />
+
+                <h1>Edit Stadium</h1>
+                <StadiumSearchAndEditForm />
 
                 <h1>Add CoachesTransfer</h1>
                 <AddCoachesTransferForm />
