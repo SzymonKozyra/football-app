@@ -12,7 +12,7 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setMessage('Hasła się nie zgadzają!');
+            setMessage('Passwords are not the same!');
             return;
         }
 
@@ -21,10 +21,10 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
                 token,
                 password
             });
-            setMessage('Hasło zostało zmienione.');
+            setMessage('The password has been changed.');
             setMessageType('success');
         } catch (error) {
-            setMessage('Błąd podczas zmiany hasła. Spróbuj ponownie.');
+            setMessage('Error when changing password. Please try again.');
             setMessageType('error');
         }
     };
@@ -34,10 +34,10 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Ustaw nowe hasło</h2>
+                <h2>Set new password</h2>
                 <form onSubmit={handlePasswordReset}>
                     <div>
-                        <label>Nowe hasło:</label>
+                        <label>New password:</label>
                         <input
                             type="password"
                             value={password}
@@ -46,7 +46,7 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
                         />
                     </div>
                     <div>
-                        <label>Potwierdź hasło:</label>
+                        <label>Confirm password:</label>
                         <input
                             type="password"
                             value={confirmPassword}
@@ -54,10 +54,10 @@ const NewPasswordModal = ({ isOpen, onClose, token }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Zmień hasło</button>
+                    <button type="submit">Change password</button>
                 </form>
                 {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Zamknij</button>
+                <button onClick={onClose}>Close</button>
             </div>
         </div>
     );

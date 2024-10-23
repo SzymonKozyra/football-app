@@ -13,10 +13,10 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
                 email
             });
-            setMessage('Link do resetowania hasła został wysłany.');
+            setMessage('The password reset link has been sent.');
             setMessageType('success');
         } catch (error) {
-            setMessage('Nie udało się wysłać linku. Sprawdź czy email jest poprawny.');
+            setMessage('The link could not be sent. Check if the email is correct.');
             setMessageType('error');
         }
     };
@@ -34,7 +34,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Resetowanie Hasła</h2>
+                <h2>Password reset</h2>
                 <form onSubmit={handlePasswordReset}>
                     <div>
                         <label>Email:</label>
@@ -45,10 +45,10 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Wyślij link do resetu</button>
+                    <button type="submit">Send reset link</button>
                 </form>
                 {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Zamknij</button>
+                <button onClick={onClose}>Close</button>
             </div>
         </div>
     );

@@ -13,12 +13,12 @@ import AddCoachesTransferForm from './components/AddCoachesTransferForm';
 import AddCoachForm from './components/AddCoachForm';
 import RegisterAdminForm from './components/RegisterAdminForm';
 import './components/Navbar.css';
-import RegisterAdminForm from './components/RegisterAdminForm'; // Import RegisterAdminForm
 import CountryList from './components/CountryList';
 import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
 import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
 import StadiumSearchAndEditForm from "./components/StadiumSearchAndEditForm";
 import AddCityForm from "./components/AddCityForm";
+import AddStadiumForm from "./components/AddStadiumForm";
 
 function App() {
     const [modals, setModals] = useState({
@@ -72,7 +72,7 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-        setMessage('Wylogowano');
+        setMessage('Successfully logged out');
         setTimeout(() => setMessage(''), 3000);
     };
 

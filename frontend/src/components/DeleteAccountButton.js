@@ -4,7 +4,7 @@ import axios from 'axios';
 const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
 
     const handleDeleteAccount = async () => {
-        if (window.confirm('Czy na pewno chcesz usunąć swoje konto?')) {
+        if (window.confirm('Do you really want to delete your account?')) {
             try {
                 const token = localStorage.getItem('jwtToken');
                 await axios.delete('http://localhost:8080/api/auth/delete-account', {
@@ -14,17 +14,17 @@ const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
                 });
                 localStorage.removeItem('jwtToken');
                 setIsLoggedIn(false);
-                setMessage('Konto zostało usunięte.');
+                setMessage('The account has been deleted.');
                 setTimeout(() => setMessage(''), 3000);
             } catch (error) {
-                setMessage('Wystąpił problem z usunięciem konta.');
+                setMessage('There was a problem deleting the account.');
             }
         }
     };
 
     return (
         <div>
-            <button onClick={handleDeleteAccount} className="navbar-btn">Usuń konto</button>
+            <button onClick={handleDeleteAccount} className="navbar-btn">Delete account</button>
         </div>
     );
 };

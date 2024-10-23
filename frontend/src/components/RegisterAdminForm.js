@@ -5,6 +5,8 @@ const RegisterAdminForm = () => {
     const [adminExists, setAdminExists] = useState(false);
     const [adminData, setAdminData] = useState({ email: '', username: '', password: '' });
     const [errorMessage, setErrorMessage] = useState('');
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     useEffect(() => {
         // Sprawdź, czy konto admina już istnieje
@@ -17,15 +19,17 @@ const RegisterAdminForm = () => {
         e.preventDefault();
         axios.post('http://localhost:8080/api/auth/register-admin', adminData)
             .then(() => {
-                alert('Admin account created successfully.');
-                window.location.href = "/login";  // Przekierowanie na stronę logowania
+                setMessage('Admin account created successfully.');
+                setMessageType('success')
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 3000);
             })
             .catch(error => {
                 setErrorMessage(error.response.data);
             });
     };
 
-    // Jeśli konto admina istnieje, przekieruj na stronę logowania
     if (adminExists) {
         return <div>Admin account already exists. Please log in.</div>;
     }
@@ -64,6 +68,7 @@ const RegisterAdminForm = () => {
                 <button type="submit">Create Admin</button>
             </form>
             {errorMessage && <p>{errorMessage}</p>}
+            {message && <p className={`message ${messageType}`}>{message}</p>}
         </div>
     );
 };

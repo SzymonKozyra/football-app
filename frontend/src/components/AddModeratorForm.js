@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Modal.css';
 
 const AddModeratorForm = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState(''); // New state for username
+    const [username, setUsername] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handleAddModerator = async (e) => {
         e.preventDefault();
@@ -17,10 +19,12 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
         try {
             const response = await axios.post(
                 'http://localhost:8080/api/admin/add-moderator',
-                { email, password, username },  // Include username in the request body
+                { email, password, username },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setMessage('Moderator added successfully');
+            setMessageType('success');
+
         } catch (error) {
             // Log the actual error from the backend
             console.error('Error adding moderator:', error.response?.data || error.message);
@@ -33,7 +37,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Dodaj Moderator</h2>
+                <h2>Add Moderator</h2>
                 <form onSubmit={handleAddModerator}>
                     <div>
                         <label>Email:</label>
@@ -54,7 +58,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                         />
                     </div>
                     <div>
-                        <label>Hasło:</label>
+                        <label>Password:</label>
                         <input
                             type="password"
                             value={password}
@@ -62,10 +66,10 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Dodaj Moderator</button>
+                    <button type="submit">Add Moderator</button>
                 </form>
-                {message && <p>{message}</p>}
-                <button onClick={onClose}>Zamknij</button>
+                {message && <p className={`message ${messageType}`}>{message}</p>}
+                <button onClick={onClose}>Close</button>
             </div>
         </div>
     );

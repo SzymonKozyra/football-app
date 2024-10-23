@@ -57,7 +57,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Logowanie</h2>
+                <h2>Login</h2>
                 <form onSubmit={handleLogin}>
                     <div>
                         <label>Email:</label>
@@ -69,7 +69,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
                         />
                     </div>
                     <div>
-                        <label>Hasło:</label>
+                        <label>Password:</label>
                         <input
                             type="password"
                             value={password}
@@ -77,10 +77,10 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Zaloguj się</button>
+                    <button type="submit">Login</button>
                 </form>
                 {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Zamknij</button>
+                <button onClick={onClose}>Close</button>
             </div>
         </div>
     );

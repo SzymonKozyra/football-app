@@ -14,13 +14,13 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
         e.preventDefault();
 
         if (password.length < 1) {
-            setMessage('Hasło musi zawierać co najmniej 8 znaków.');
+            setMessage('The password must contain at least 8 characters.');
             setMessageType('error');
             return;
         }
 
         if (password !== confirmPassword) {
-            setMessage('Hasła muszą być identyczne.');
+            setMessage('Passwords must be identical.');
             setMessageType('error');
             return;
         }
@@ -34,7 +34,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
             setMessage(response.data);
             setMessageType('success');
         } catch (error) {
-            setMessage('Błąd podczas rejestracji. Użytkownik już istnieje lub inne błędy.');
+            setMessage('Registration error. User already exists or other errors.');
             setMessageType('error');
         }
     };
@@ -55,10 +55,10 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Rejestracja</h2>
+                <h2>Registration</h2>
                 <form onSubmit={handleRegister}>
                     <div>
-                        <label>Nazwa użytkownika:</label>
+                        <label>Username:</label>
                         <input
                             type="text"
                             value={username}
@@ -76,7 +76,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                         />
                     </div>
                     <div>
-                        <label>Hasło:</label>
+                        <label>Password:</label>
                         <input
                             type="password"
                             value={password}
@@ -85,7 +85,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                         />
                     </div>
                     <div>
-                        <label>Powtórz hasło:</label>
+                        <label>Confirm password:</label>
                         <input
                             type="password"
                             value={confirmPassword}
@@ -93,17 +93,17 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Zarejestruj się</button>
+                    <button type="submit">Register</button>
                 </form>
                 {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Zamknij</button>
+                <button onClick={onClose}>Close</button>
                 <p className="blue-text">
-                    Masz już konto?{' '}
+                    Already have an account?{' '}
                     <a href="#" onClick={() => {
                         onClose();
                         onOpenLogin();
                     }} className="login-link">
-                        Zaloguj się
+                        Log in
                     </a>
                 </p>
             </div>

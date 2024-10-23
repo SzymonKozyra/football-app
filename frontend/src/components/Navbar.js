@@ -14,22 +14,22 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
             <div className="navbar-menu">
                 {!isLoggedIn ? (
                     <>
-                        <button onClick={onOpenLogin} className="navbar-btn">Zaloguj się</button>
-                        <button onClick={onOpenRegistration} className="navbar-btn">Zarejestruj się</button>
-                        <button onClick={onOpenPasswordReset} className="navbar-btn">Odzyskiwanie hasła</button>
+                        <button onClick={onOpenLogin} className="navbar-btn">Login</button>
+                        <button onClick={onOpenRegistration} className="navbar-btn">Register</button>
+                        <button onClick={onOpenPasswordReset} className="navbar-btn">Password reset</button>
                     </>
                 ) : (
                     <>
                         <span className="navbar-email">{loginData.email}</span>
                         {loginData.role === 'ROLE_ADMIN' && (
                             <>
-                                <button onClick={openAddModeratorModal} className="navbar-btn">Dodaj moderatora</button>
+                                <button onClick={openAddModeratorModal} className="navbar-btn">Add moderator</button>
                                 <Link to="/admin-panel">
-                                    <button className="navbar-btn">Panel administracyjny</button>
+                                    <button className="navbar-btn">Administration panel</button>
                                 </Link>
                             </>
                         )}
-                        <button onClick={onLogout} className="navbar-btn">Wyloguj się</button>
+                        <button onClick={onLogout} className="navbar-btn">Log out</button>
                         <DeleteAccountButton
                             setIsLoggedIn={setIsLoggedIn}
                             setMessage={setMessage}
