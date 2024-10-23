@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const AddCoachForm = () => {
+    const [countries, setCountries] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
     const [coachData, setCoachData] = useState({
         firstName: '',
@@ -53,13 +55,55 @@ const AddCoachForm = () => {
             </div>
 
             {manualEntry ? (
-                <div>
-                    <input type="text" placeholder="First Name" value={coachData.firstName} onChange={e => setCoachData({ ...coachData, firstName: e.target.value })} required />
-                    <input type="text" placeholder="Last Name" value={coachData.lastName} onChange={e => setCoachData({ ...coachData, lastName: e.target.value })} required />
-                    <input type="date" placeholder="Date of Birth" value={coachData.dateOfBirth} onChange={e => setCoachData({ ...coachData, dateOfBirth: e.target.value })} required />
-                    <input type="text" placeholder="Nickname" value={coachData.nickname} onChange={e => setCoachData({ ...coachData, nickname: e.target.value })} />
-                    <input type="text" placeholder="Country Name" value={coachData.countryName} onChange={e => setCoachData({ ...coachData, countryName: e.target.value })} required />
-                </div>
+                <>
+                    <div>
+                        <label>First Name</label>
+                        <input
+                            type="text"
+                            value={coachData.firstName}
+                            onChange={e => setCoachData({ ...coachData, firstName: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Last Name</label>
+                        <input
+                            type="text"
+                            value={coachData.lastName}
+                            onChange={e => setCoachData({ ...coachData, lastName: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Date of Birth</label>
+                        <input
+                            type="date"
+                            value={coachData.dateOfBirth}
+                            onChange={e => setCoachData({ ...coachData, dateOfBirth: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Nickname</label>
+                        <input
+                            type="text"
+                            value={coachData.nickname}
+                            onChange={e => setCoachData({ ...coachData, nickname: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label>Country</label>
+                        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)} required>
+                            <option value="">Select a country</option>
+                            {countries.map(country => (
+                                <option key={country.id} value={country.name}>
+                                    {country.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </>
             ) : (
                 <div>
                     <select value={fileType} onChange={e => setFileType(e.target.value)} required>

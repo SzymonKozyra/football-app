@@ -92,13 +92,15 @@ const AddLeagueForm = () => {
             {manualEntry ? (
                 <>
                     <div>
-                        <label>Country Name</label>
-                        <input
-                            type="text"
-                            value={selectedCountry}
-                            onChange={(e) => setSelectedCountry(e.target.value)}
-                            required
-                        />
+                        <label>Country</label>
+                        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)} required>
+                            <option value="">Select a country</option>
+                            {countries.map(country => (
+                                <option key={country.id} value={country.name}>
+                                    {country.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div>
