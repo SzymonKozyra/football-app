@@ -10,7 +10,6 @@ const AddCityForm = () => {
     const [manualEntry, setManualEntry] = useState(true);
 
     useEffect(() => {
-        // Fetch list of countries
         axios.get('http://localhost:8080/api/countries')
             .then(response => setCountries(response.data))
             .catch(error => console.error("Error fetching countries:", error));
@@ -26,7 +25,6 @@ const AddCityForm = () => {
         }
 
         if (manualEntry) {
-            // Manual entry logic
             const cityData = {
                 name: cityName,
                 country: { name: selectedCountry }
@@ -135,7 +133,7 @@ const AddCityForm = () => {
                 </>
             )}
 
-            <button type="submit">Submit</button>
+            <button type="submit">Add City</button>
         </form>
     );
 };

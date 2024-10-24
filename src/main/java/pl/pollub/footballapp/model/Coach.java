@@ -43,8 +43,8 @@ public class Coach {
         this.lastName = lastName;
     }
 
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
+    public String getDateOfBirth() {
+        return String.valueOf(dateOfBirth);
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {

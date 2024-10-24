@@ -35,20 +35,25 @@ public class CoachController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<?> addCoach(@RequestBody CoachRequest coachRequest) {
-        Country country = countryRepository.findByName(coachRequest.getCountryName())
-                .orElseThrow(() -> new RuntimeException("Country not found"));
+    //public ResponseEntity<?> addCoach(@RequestBody CoachRequest coachRequest) {
+    public ResponseEntity<?> addCoach(@RequestBody Coach coachRequest) {
+        Optional<Country> country = countryRepository.findByName(coachRequest.getCountry().getName());
 
-        if (coachRepository.existsByFirstNameAndLastNameAndCountry(coachRequest.getFirstName(), coachRequest.getLastName(), country)) {
+        if (country.isEmpty()) {
+            return ResponseEntity.badRequest().body("Country not found");
+        }
+
+        if (coachRepository.existsByFirstNameAndLastNameAndCountry(coachRequest.getFirstName(), coachRequest.getLastName(), country.get())) {
             return ResponseEntity.badRequest().body("Coach already exists");
         }
 
         Coach coach = new Coach();
         coach.setFirstName(coachRequest.getFirstName());
         coach.setLastName(coachRequest.getLastName());
+        //coach.setDateOfBirth(LocalDate.parse(coachRequest.getDateOfBirth()));
         coach.setDateOfBirth(LocalDate.parse(coachRequest.getDateOfBirth()));
         coach.setNickname(coachRequest.getNickname());
-        coach.setCountry(country);
+        coach.setCountry(country.get());
 
         coachRepository.save(coach);
         return ResponseEntity.ok("Coach added successfully");
@@ -63,7 +68,8 @@ public class CoachController {
 
             for (CoachRequest coachRequest : coachRequests) {
                 Country country = countryRepository.findByName(coachRequest.getCountryName())
-                        .orElseThrow(() -> new IllegalArgumentException("Country not found: " + coachRequest.getCountryName()));
+                        //.orElseThrow(() -> new IllegalArgumentException("Country not found: " + coachRequest.getCountryName()));
+                        .orElseThrow(() -> new RuntimeException("Country not found: " + coachRequest.getCountryName()));
 
                 if (!coachRepository.existsByFirstNameAndLastNameAndCountry(coachRequest.getFirstName(), coachRequest.getLastName(), country)) {
                     Coach coach = new Coach();
@@ -77,11 +83,13 @@ public class CoachController {
             }
 
             return ResponseEntity.ok("Coaches imported successfully");
+            //return ResponseEntity.ok(coachRepository.findByNameContaining(query));
 
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Error importing coaches: " + e.getMessage());
         }
     }
+
     @GetMapping("/search")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Coach>> searchCoaches(@RequestParam("query") String query) {

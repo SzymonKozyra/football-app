@@ -33,14 +33,12 @@ public class CityController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addCity(@RequestBody City cityRequest) {
-        // Wyszukiwanie kraju po nazwie
         Optional<Country> country = countryRepository.findByName(cityRequest.getCountry().getName());
 
         if (country.isEmpty()) {
             return ResponseEntity.badRequest().body("Country not found");
         }
 
-        // Sprawdzenie czy miasto już istnieje
         if (cityRepository.existsByNameAndCountry(cityRequest.getName(), country.get())) {
             return ResponseEntity.badRequest().body("City already exists in this country");
         }

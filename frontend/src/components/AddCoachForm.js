@@ -1,34 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AddCoachForm = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [nickname, setNickname] = useState('');
     const [countries, setCountries] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState('');
-    const [manualEntry, setManualEntry] = useState(true);
-    const [coachData, setCoachData] = useState({
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        nickname: '',
-        countryName: ''
-    });
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState('');
+    const [manualEntry, setManualEntry] = useState(true);
+
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/countries')
+            .then(response => setCountries(response.data))
+            .catch(error => console.error("Error fetching countries:", error));
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         const token = localStorage.getItem('jwtToken');
         if (!token) {
             console.error('Authorization token is missing');
             return;
         }
+
         if (manualEntry) {
+            const coachData = {
+                firstName: firstName,
+                lastName: lastName,
+                dateOfBirth: dateOfBirth,
+                nickname: nickname,
+                country: { name: selectedCountry }
+            };
+
             axios.post('http://localhost:8080/api/coaches/add', coachData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-                .then(response => alert('Coach added successfully'))
-                .catch(error => console.error('Error adding coach:', error));
+                .then(response => {
+                    alert('Coach added successfully');
+                    setFirstName('');
+                    setLastName('');
+                    setDateOfBirth('');
+                    setNickname('');
+                    setSelectedCountry('');
+                })
+                .catch(error => {
+                    console.error('Error adding coach:', error);
+                    alert('Failed to add coach');
+                });
         } else {
+            // File import logic
             const formData = new FormData();
             formData.append('file', file);
             formData.append('type', fileType);
@@ -36,8 +60,15 @@ const AddCoachForm = () => {
             axios.post('http://localhost:8080/api/coaches/import', formData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
-                .then(response => alert('Coaches imported successfully'))
-                .catch(error => console.error('Error importing coaches:', error));
+                .then(response => {
+                    alert('Coaches imported successfully');
+                    setFile(null);
+                    setFileType('');
+                })
+                .catch(error => {
+                    console.error('Error importing coaches:', error);
+                    alert('Failed to import coaches');
+                });
         }
     };
 
@@ -45,11 +76,21 @@ const AddCoachForm = () => {
         <form onSubmit={handleSubmit}>
             <div>
                 <label>
-                    <input type="radio" value="manual" checked={manualEntry} onChange={() => setManualEntry(true)} />
+                    <input
+                        type="radio"
+                        value="manual"
+                        checked={manualEntry}
+                        onChange={() => setManualEntry(true)}
+                    />
                     Manual Entry
                 </label>
                 <label>
-                    <input type="radio" value="import" checked={!manualEntry} onChange={() => setManualEntry(false)} />
+                    <input
+                        type="radio"
+                        value="import"
+                        checked={!manualEntry}
+                        onChange={() => setManualEntry(false)}
+                    />
                     Import from File
                 </label>
             </div>
@@ -60,8 +101,8 @@ const AddCoachForm = () => {
                         <label>First Name</label>
                         <input
                             type="text"
-                            value={coachData.firstName}
-                            onChange={e => setCoachData({ ...coachData, firstName: e.target.value })}
+                            value={firstName}
+                            onChange={e => setFirstName(e.target.value)}
                             required
                         />
                     </div>
@@ -69,8 +110,8 @@ const AddCoachForm = () => {
                         <label>Last Name</label>
                         <input
                             type="text"
-                            value={coachData.lastName}
-                            onChange={e => setCoachData({ ...coachData, lastName: e.target.value })}
+                            value={lastName}
+                            onChange={e => setLastName(e.target.value)}
                             required
                         />
                     </div>
@@ -78,8 +119,8 @@ const AddCoachForm = () => {
                         <label>Date of Birth</label>
                         <input
                             type="date"
-                            value={coachData.dateOfBirth}
-                            onChange={e => setCoachData({ ...coachData, dateOfBirth: e.target.value })}
+                            value={dateOfBirth}
+                            onChange={e => setDateOfBirth(e.target.value)}
                             required
                         />
                     </div>
@@ -87,8 +128,8 @@ const AddCoachForm = () => {
                         <label>Nickname</label>
                         <input
                             type="text"
-                            value={coachData.nickname}
-                            onChange={e => setCoachData({ ...coachData, nickname: e.target.value })}
+                            value={nickname}
+                            onChange={e => setNickname(e.target.value)}
                         />
                     </div>
 
@@ -105,17 +146,29 @@ const AddCoachForm = () => {
                     </div>
                 </>
             ) : (
-                <div>
-                    <select value={fileType} onChange={e => setFileType(e.target.value)} required>
-                        <option value="">Select File Type</option>
-                        <option value="csv">CSV</option>
-                        <option value="json">JSON</option>
-                    </select>
-                    <input type="file" onChange={e => setFile(e.target.files[0])} required />
-                </div>
+                <>
+                    <div>
+                        <label>File Type</label>
+                        <select value={fileType} onChange={e => setFileType(e.target.value)} required>
+                            <option value="">Select File Type</option>
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Import Coaches (CSV or JSON)</label>
+                        <input
+                            type="file"
+                            accept=".csv,.json"
+                            onChange={e => setFile(e.target.files[0])}
+                            required
+                        />
+                    </div>
+                </>
             )}
 
-            <button type="submit">Submit</button>
+            <button type="submit">Add Coach</button>
         </form>
     );
 };
