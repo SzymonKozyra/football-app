@@ -47,5 +47,4 @@ public class CoachRequest {
     public void setCountryName(String countryName) {
         this.countryName = countryName;
     }
-// Getters and Setters
 }

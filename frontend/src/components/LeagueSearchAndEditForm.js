@@ -13,7 +13,9 @@ const LeagueSearchAndEditForm = () => {
 
     useEffect(() => {
         // Pobierz dostępne kraje z backendu
-        axios.get('http://localhost:8080/api/countries')
+        axios.get('http://localhost:8080/api/countries', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
+        })
             .then(response => {
                 setCountries(response.data);
             })
@@ -90,7 +92,9 @@ const LeagueSearchAndEditForm = () => {
                     <ul>
                         {leagues.map(league => (
                             <li key={league.id}>
-                                {league.name} ({league.country.name})
+                                <strong>ID:</strong> {league.id}<br />
+                                <strong>Name:</strong> {league.name}<br />
+                                <strong>Country:</strong> {league.country.name}<br />
                                 <button onClick={() => handleEditClick(league)}>Edit</button>
                             </li>
                         ))}

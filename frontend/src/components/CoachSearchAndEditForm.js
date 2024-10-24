@@ -4,14 +4,14 @@ import axios from 'axios';
 const CoachSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [coaches, setCoaches] = useState([]);
-    const [countries, setCountries] = useState([]); // To store the list of countries
+    const [countries, setCountries] = useState([]); // List of countries
     const [selectedCoach, setSelectedCoach] = useState(null);
     const [editData, setEditData] = useState({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         nickname: '',
-        countryName: '' // We use countryName instead of countryId
+        countryName: '' // Using countryName instead of countryId
     });
 
     useEffect(() => {
@@ -29,6 +29,7 @@ const CoachSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
+        // Fetch coaches based on the search query
         axios.get(`http://localhost:8080/api/coaches/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }  // Add JWT token for authorization
         })
@@ -55,18 +56,18 @@ const CoachSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        // Backend sam znajdzie ID na podstawie countryName, więc wysyłamy countryName
+        // Send updated coach data to the backend
         const updatedData = {
             ...editData,
-            countryName: editData.countryName // Przekazujemy countryName, a nie countryId
+            countryName: editData.countryName // Backend will find ID based on countryName
         };
 
         axios.put(`http://localhost:8080/api/coaches/${selectedCoach.id}`, updatedData, {
-            headers: { Authorization: `Bearer ${token}` }  // Dodajemy token JWT dla autoryzacji
+            headers: { Authorization: `Bearer ${token}` }  // JWT token for authorization
         })
             .then(response => {
                 alert('Coach updated successfully');
-                setSelectedCoach(null); // Resetowanie wybranego trenera po edycji
+                setSelectedCoach(null); // Clear selected coach after update
             })
             .catch(error => {
                 console.error('Error updating coach:', error);
@@ -93,7 +94,8 @@ const CoachSearchAndEditForm = () => {
                     <ul>
                         {coaches.map(coach => (
                             <li key={coach.id}>
-                                {coach.firstName} {coach.lastName} ({coach.nickname})
+                                {/* Displaying all relevant coach information */}
+                                {coach.id}: {coach.firstName} {coach.lastName} ({coach.nickname}), Country: {coach.country.name}
                                 <button onClick={() => handleEditClick(coach)}>Edit</button>
                             </li>
                         ))}

@@ -1,0 +1,3 @@
+name,picture,isClub,coachId,leagueId
+Team1,team1.png,true,1,2
+Team2,team2.png,false,4,3

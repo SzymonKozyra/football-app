@@ -18,6 +18,8 @@ import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
 import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
 import StadiumSearchAndEditForm from "./components/StadiumSearchAndEditForm";
 import AddCityForm from "./components/AddCityForm";
+import AddTeamForm from "./components/AddTeamForm";
+import TeamSearchAndEditForm from "./components/TeamSearchAndEditForm";
 import AddStadiumForm from "./components/AddStadiumForm";
 
 function App() {
@@ -155,6 +157,14 @@ function App() {
 
                 <h1>Add City</h1>
                 <AddCityForm />
+
+                <h1>Add Team</h1>
+                <AddTeamForm />
+
+                <h1>Edit Team</h1>
+                <TeamSearchAndEditForm />
+
+
             </div>
         </div>
     );

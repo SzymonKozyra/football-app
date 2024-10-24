@@ -66,4 +66,14 @@ public class ImporterFactory {
             throw new IllegalArgumentException("Unsupported file type: " + fileType);
         }
     }
+
+    public DataImporter getImporterTeam(String fileType) {
+        if (fileType.equalsIgnoreCase("csv")) {
+            return new CsvTeamImporter();
+        } else if (fileType.equalsIgnoreCase("json")) {
+            return new JsonTeamImporter();
+        } else {
+            throw new IllegalArgumentException("Unsupported file type: " + fileType);
+        }
+    }
 }

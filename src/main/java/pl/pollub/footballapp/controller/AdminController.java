@@ -42,6 +42,22 @@ public class AdminController {
         userRepository.save(moderator);
         return ResponseEntity.ok("Moderator added successfully");
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/add-admin")
+    public ResponseEntity<?> addAdmin(@RequestBody User adminRequest) {
+        if (userRepository.existsByEmail(adminRequest.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already in use");
+        }
+
+        User admin = new User();
+        admin.setEmail(adminRequest.getEmail());
+        admin.setPassword(userService.encodePassword(adminRequest.getPassword()));
+        admin.setUsername(adminRequest.getUsername());  // Add the username
+        admin.setRole(User.Role.ROLE_ADMIN);
+
+        userRepository.save(admin);
+        return ResponseEntity.ok("Moderator added successfully");
+    }
 
 
     @Transactional

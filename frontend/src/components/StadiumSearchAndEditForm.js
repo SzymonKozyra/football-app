@@ -94,7 +94,11 @@ const StadiumSearchAndEditForm = () => {
                     <ul>
                         {stadiums.map(stadium => (
                             <li key={stadium.id}>
-                                {stadium.name} ({stadium.city.name}, {stadium.city.country.name})
+                                <strong>ID:</strong> {stadium.id}<br />
+                                <strong>Name:</strong> {stadium.name}<br />
+                                <strong>Capacity:</strong> {stadium.capacity}<br />
+                                <strong>City:</strong> {stadium.city.name}<br />
+                                <strong>Country:</strong> {stadium.city.country.name}<br />
                                 <button onClick={() => handleEditClick(stadium)}>Edit</button>
                             </li>
                         ))}
