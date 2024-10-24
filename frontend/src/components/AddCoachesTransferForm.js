@@ -10,7 +10,6 @@ const AddCoachesTransferForm = () => {
     const [transferValue, setTransferValue] = useState('');
 
     useEffect(() => {
-        // Fetch coaches from backend
         axios.get('http://localhost:8080/api/coaches')
             .then(response => setCoaches(response.data))
             .catch(error => console.error("Error fetching coaches:", error));
@@ -47,14 +46,7 @@ const AddCoachesTransferForm = () => {
         axios.post('http://localhost:8080/api/coaches-transfers/add', transferData)
             .then(response => {
                 alert('Transfer added successfully');
-                resetForm(); //funkcja wyzej
-                /*
-                setCoachId('');
-                setPreviousClub('');
-                setDestinationClub('');
-                setTransferDate('');
-                setTransferValue('');
-                */
+                resetForm();
             })
             .catch(error => {
                 console.error('Error adding transfer:', error);
@@ -69,7 +61,6 @@ const AddCoachesTransferForm = () => {
                 <select value={coachId} onChange={(e) => setCoachId(e.target.value)} required>
                     <option value="">Select Coach</option>
                     {coaches.map(coach => (
-//                        <option key={coach.id} value={coach.id}>{coach.name}</option>
                         <option key={coach.id} value={coach.id}>
                             {coach.firstName} {coach.lastName}
                         </option>
