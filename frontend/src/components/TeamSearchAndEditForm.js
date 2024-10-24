@@ -48,7 +48,7 @@ const TeamSearchAndEditForm = () => {
         })
             .then(response => {
                 alert('Team updated successfully');
-                setSelectedTeam(null); // Clear selected team after update
+                setSelectedTeam(null);
             })
             .catch(error => {
                 console.error('Error updating team:', error);
