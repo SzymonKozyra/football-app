@@ -43,7 +43,7 @@ const TeamSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        axios.put(`http://localhost:8080/api/teams/${selectedTeam.id}`, editData, {
+        axios.put('http://localhost:8080/api/teams/${selectedTeam.id}', editData, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
