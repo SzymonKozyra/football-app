@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const CoachSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -76,14 +77,15 @@ const CoachSearchAndEditForm = () => {
     };
 
     return (
-        <div>
-            <h2>Search Coach</h2>
-            <form onSubmit={handleSearch}>
+        <div className="form-container">
+            <h1>Search Coach</h1>
+            <form onSubmit={handleSearch} className="form-container">
                 <input
                     type="text"
                     placeholder="Enter first or last name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
                 />
                 <button type="submit">Search</button>
             </form>
@@ -91,7 +93,7 @@ const CoachSearchAndEditForm = () => {
             {coaches.length > 0 && (
                 <div>
                     <h3>Coaches found:</h3>
-                    <ul>
+                    <ul className="coach-list">
                         {coaches.map(coach => (
                             <li key={coach.id}>
                                 {/* Displaying all relevant coach information */}
@@ -104,7 +106,7 @@ const CoachSearchAndEditForm = () => {
             )}
 
             {selectedCoach && (
-                <div>
+                <div className="form-container">
                     <h3>Edit Coach: {selectedCoach.firstName} {selectedCoach.lastName}</h3>
                     <form onSubmit={handleEditSubmit}>
                         <div>
@@ -113,6 +115,7 @@ const CoachSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.firstName}
                                 onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -121,6 +124,7 @@ const CoachSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.lastName}
                                 onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -129,6 +133,7 @@ const CoachSearchAndEditForm = () => {
                                 type="date"
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({ ...editData, dateOfBirth: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -137,6 +142,7 @@ const CoachSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.nickname}
                                 onChange={(e) => setEditData({ ...editData, nickname: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -144,6 +150,7 @@ const CoachSearchAndEditForm = () => {
                             <select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (

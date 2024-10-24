@@ -37,13 +37,12 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
 
             // Close the modal
             onClose();
+            window.location.reload();
         } catch (error) {
             setMessage('Nie udało się zalogować');
             setMessageType('error');
         }
     };
-
-
 
     useEffect(() => {
         setEmail('');

@@ -14,8 +14,8 @@ const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
                 });
                 localStorage.removeItem('jwtToken');
                 setIsLoggedIn(false);
-                setMessage('The account has been deleted.');
-                setTimeout(() => setMessage(''), 3000);
+                localStorage.setItem('logoutOrDeleteAccMessage', 'The account has been deleted.');
+                window.location.reload();
             } catch (error) {
                 setMessage('There was a problem deleting the account.');
             }

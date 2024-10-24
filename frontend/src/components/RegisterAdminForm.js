@@ -4,7 +4,6 @@ import axios from 'axios';
 const RegisterAdminForm = () => {
     const [adminExists, setAdminExists] = useState(false);
     const [adminData, setAdminData] = useState({ email: '', username: '', password: '' });
-    const [errorMessage, setErrorMessage] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
 
@@ -26,7 +25,8 @@ const RegisterAdminForm = () => {
                 }, 3000);
             })
             .catch(error => {
-                setErrorMessage(error.response.data);
+                setMessage(error.response.data);
+                setMessageType('error');
             });
     };
 
@@ -67,7 +67,6 @@ const RegisterAdminForm = () => {
                 </div>
                 <button type="submit">Create Admin</button>
             </form>
-            {errorMessage && <p>{errorMessage}</p>}
             {message && <p className={`message ${messageType}`}>{message}</p>}
         </div>
     );

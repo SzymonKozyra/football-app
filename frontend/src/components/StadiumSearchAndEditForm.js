@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const StadiumSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -76,14 +77,15 @@ const StadiumSearchAndEditForm = () => {
     };
 
     return (
-        <div>
-            <h2>Search Stadium</h2>
-            <form onSubmit={handleSearch}>
+        <div className="form-container">
+            <h1>Search Stadium</h1>
+            <form onSubmit={handleSearch} className="form-container">
                 <input
                     type="text"
                     placeholder="Enter stadium name or city"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
                 />
                 <button type="submit">Search</button>
             </form>
@@ -91,7 +93,7 @@ const StadiumSearchAndEditForm = () => {
             {stadiums.length > 0 && (
                 <div>
                     <h3>Stadiums found:</h3>
-                    <ul>
+                    <ul className="stadium-list">
                         {stadiums.map(stadium => (
                             <li key={stadium.id}>
                                 <strong>ID:</strong> {stadium.id}<br />
@@ -107,7 +109,7 @@ const StadiumSearchAndEditForm = () => {
             )}
 
             {selectedStadium && (
-                <div>
+                <div className="form-container">
                     <h3>Edit Stadium: {selectedStadium.name}</h3>
                     <form onSubmit={handleEditSubmit}>
                         <div>
@@ -116,6 +118,7 @@ const StadiumSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.name}
                                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -124,6 +127,7 @@ const StadiumSearchAndEditForm = () => {
                                 type="number"
                                 value={editData.capacity}
                                 onChange={(e) => setEditData({ ...editData, capacity: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -132,6 +136,7 @@ const StadiumSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.cityName}
                                 onChange={(e) => setEditData({ ...editData, cityName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -139,6 +144,7 @@ const StadiumSearchAndEditForm = () => {
                             <select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (

@@ -74,9 +74,20 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-        setMessage('Successfully logged out');
-        setTimeout(() => setMessage(''), 3000);
+        localStorage.setItem('logoutOrDeleteAccMessage', 'Successfully logged out');
+        window.location.reload();
     };
+
+    useEffect(() => {
+        const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
+        if (logoutOrDeleteAccMessage) {
+            setMessage(logoutOrDeleteAccMessage);
+            localStorage.removeItem('logoutOrDeleteAccMessage');
+            setTimeout(() => {
+                setMessage('');
+            }, 2000);
+        }
+    }, []);
 
     if (!adminExists) {
         return (
@@ -134,28 +145,20 @@ function App() {
 
                 {/*<CountryList />*/}
 
-                <h1>Add Stadium</h1>
                 <AddStadiumForm />
 
-                <h1>Add League</h1>
-                <AddLeagueForm />
-
-                <h1>Add Coach</h1>
-                <AddCoachForm />
-
-                <h1>Edit Coach</h1>
-                <CoachSearchAndEditForm />
-
-                <h1>Edit League</h1>
-                <LeagueSearchAndEditForm />
-
-                <h1>Edit Stadium</h1>
                 <StadiumSearchAndEditForm />
 
-                <h1>Add CoachesTransfer</h1>
+                <AddLeagueForm />
+
+                <LeagueSearchAndEditForm />
+
+                <AddCoachForm />
+
+                <CoachSearchAndEditForm />
+
                 <AddCoachesTransferForm />
 
-                <h1>Add City</h1>
                 <AddCityForm />
 
                 <h1>Add Team</h1>

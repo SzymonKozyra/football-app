@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const LeagueSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -74,14 +75,15 @@ const LeagueSearchAndEditForm = () => {
     };
 
     return (
-        <div>
-            <h2>Search League</h2>
-            <form onSubmit={handleSearch}>
+        <div className="form-container">
+            <h1>Search League</h1>
+            <form onSubmit={handleSearch} className="form-container">
                 <input
                     type="text"
                     placeholder="Enter league name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
                 />
                 <button type="submit">Search</button>
             </form>
@@ -89,7 +91,7 @@ const LeagueSearchAndEditForm = () => {
             {leagues.length > 0 && (
                 <div>
                     <h3>Leagues found:</h3>
-                    <ul>
+                    <ul className="league-list">
                         {leagues.map(league => (
                             <li key={league.id}>
                                 <strong>ID:</strong> {league.id}<br />
@@ -103,7 +105,7 @@ const LeagueSearchAndEditForm = () => {
             )}
 
             {selectedLeague && (
-                <div>
+                <div className="form-container">
                     <h3>Edit League: {selectedLeague.name}</h3>
                     <form onSubmit={handleEditSubmit}>
                         <div>
@@ -112,6 +114,7 @@ const LeagueSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.name}
                                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -119,6 +122,7 @@ const LeagueSearchAndEditForm = () => {
                             <select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (

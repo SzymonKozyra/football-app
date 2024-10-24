@@ -29,7 +29,7 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
                                 </Link>
                             </>
                         )}
-                        <button onClick={onLogout} className="navbar-btn">Log out</button>
+                        <button onClick={onLogout} className="navbar-btn">Logout</button>
                         <DeleteAccountButton
                             setIsLoggedIn={setIsLoggedIn}
                             setMessage={setMessage}

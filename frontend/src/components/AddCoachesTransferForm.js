@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const AddCoachesTransferForm = () => {
     const [coaches, setCoaches] = useState([]);
@@ -55,7 +56,9 @@ const AddCoachesTransferForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-container">
+            <h1>Add CoachesTransfer</h1>
+
             <div>
                 <label>Coach</label>
                 <select value={coachId} onChange={(e) => setCoachId(e.target.value)} required>

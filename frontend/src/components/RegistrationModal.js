@@ -103,7 +103,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                         onClose();
                         onOpenLogin();
                     }} className="login-link">
-                        Log in
+                        Login
                     </a>
                 </p>
             </div>

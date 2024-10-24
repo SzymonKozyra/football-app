@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './AdminPanel.css';
 
 const AdminPanel = () => {
     const [users, setUsers] = useState([]);
@@ -43,27 +44,28 @@ const AdminPanel = () => {
     };
 
     return (
-        <div>
-            <h2>Admin Panel - User Management</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Change Password</th>
-                    <th>Delete User</th>
-                </tr>
-                </thead>
+        <div className="admin-panel-container">
+            <h1 className="admin-panel-title">Admin Panel - User Management</h1>
+            <table className="admin-panel-table">
                 <tbody>
                 {users.map((user) => (
                     <tr key={user.email}>
                         <td>{user.email}</td>
                         <td>
-                            <Link to="#" onClick={() => handleChangePassword(user.email, prompt('Enter new password'))}>
+                            <button
+                                className="action-btn"
+                                onClick={() => handleChangePassword(user.email)}
+                            >
                                 Change Password
-                            </Link>
+                            </button>
                         </td>
                         <td>
-                            <Link to="#" onClick={() => handleDelete(user.email)}>Delete User</Link>
+                            <button
+                                className="action-btn delete-btn"
+                                onClick={() => handleDelete(user.email)}
+                            >
+                                Delete User
+                            </button>
                         </td>
                     </tr>
                 ))}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const AddLeagueForm = () => {
     const [countries, setCountries] = useState([]);
@@ -67,8 +68,9 @@ const AddLeagueForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
+        <form onSubmit={handleSubmit} className="form-container">
+            <h1>Add League</h1>
+            <div className="radio-group">
                 <label>
                     <input
                         type="radio"
