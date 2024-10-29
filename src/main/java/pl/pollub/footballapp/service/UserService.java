@@ -16,6 +16,12 @@ public class UserService  implements UserDetailsService {
     private UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    public void registerUser(User user) {
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
+
+        userRepository.save(user);
+    }
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -49,12 +55,6 @@ public class UserService  implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void registerUser(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-
-        userRepository.save(user);
-    }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);

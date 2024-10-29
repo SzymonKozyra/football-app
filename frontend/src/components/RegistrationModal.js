@@ -13,7 +13,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        if (password.length < 1) {
+        if (password.length < 12) {
             setMessage('The password must contain at least 8 characters.');
             setMessageType('error');
             return;

@@ -1,16 +1,18 @@
 package pl.pollub.footballapp.service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.model.Country;
+import pl.pollub.footballapp.model.Position;
 import pl.pollub.footballapp.repository.CountryRepository;
+import pl.pollub.footballapp.repository.PositionRepository;
 
-import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class CountryInitializer {
+public class DataInitializer {
 
     @Autowired
     private CountryRepository countryRepository;
@@ -227,6 +229,32 @@ public class CountryInitializer {
             System.out.println("Countries table initialized with default data.");
         } else {
             System.out.println("Countries table already populated.");
+        }
+    }
+
+    @Autowired
+    private PositionRepository positionRepository;
+
+    @PostConstruct
+    public void initPositions() {
+        if (positionRepository.count() == 0) {
+            List<Position> positions = Arrays.asList(
+                    new Position("Goalkeeper", "GK"),
+                    new Position("Center Back", "CB"),
+                    new Position("Left Back", "LB"),
+                    new Position("Right Back", "RB"),
+                    new Position("Left Wing Back", "LWB"),
+                    new Position("Right Wing Back", "RWB"),
+                    new Position("Defensive Midfielder", "CDM"),
+                    new Position("Central Midfielder", "CM"),
+                    new Position("Left Midfielder", "LM"),
+                    new Position("Right Midfielder", "RM"),
+                    new Position("Attacking Midfielder", "CAM"),
+                    new Position("Left Winger", "LW"),
+                    new Position("Right Winger", "RW"),
+                    new Position("Center Forward", "CF")
+            );
+            positionRepository.saveAll(positions);
         }
     }
 }

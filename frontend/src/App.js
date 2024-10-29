@@ -21,6 +21,10 @@ import AddCityForm from "./components/AddCityForm";
 import AddTeamForm from "./components/AddTeamForm";
 import TeamSearchAndEditForm from "./components/TeamSearchAndEditForm";
 import AddStadiumForm from "./components/AddStadiumForm";
+import AddRefereeForm from "./components/AddRefereeForm";
+import RefereeSearchAndEditForm from "./components/RefereeSearchAndEditForm";
+import AddPlayerForm from "./components/AddPlayerForm";
+import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 
 function App() {
     const [modals, setModals] = useState({
@@ -167,6 +171,16 @@ function App() {
                 <h1>Edit Team</h1>
                 <TeamSearchAndEditForm />
 
+                <h1>Add referee</h1>
+                <AddRefereeForm />
+                <h1>Edit referee</h1>
+                <RefereeSearchAndEditForm />
+
+
+                <h1>Add player</h1>
+                <AddPlayerForm />
+                <h1>Edit player</h1>
+                <PlayerSearchAndEditForm />
 
             </div>
         </div>

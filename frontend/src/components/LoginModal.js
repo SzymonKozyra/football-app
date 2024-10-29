@@ -15,31 +15,18 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
                 email,
                 password
             });
-
-            // Log the full response to see what is returned
             console.log(response.data);
-
-            // Destructure the token and email from the backend response
             const { token, email: responseEmail } = response.data;
-
-            // Store the token and email in localStorage
             localStorage.setItem('jwtToken', token);
-            localStorage.setItem('email', responseEmail); // Use email from the backend response
-
-            // If role is not yet part of the response, use a default role like 'USER'
             const role = response.data.role || 'USER';
-            localStorage.setItem('role', role);
-
-            setMessage('Zalogowano');
+            setMessage('Logged in');
             setMessageType('success');
             setIsLoggedIn(true);
             setLoginData({ email: responseEmail, role });
-
-            // Close the modal
             onClose();
             window.location.reload();
         } catch (error) {
-            setMessage('Nie udało się zalogować');
+            setMessage('Error while logging in');
             setMessageType('error');
         }
     };

@@ -69,14 +69,13 @@ public class JwtUtil {
 
         return createToken(claims, userDetails.getUsername());
     }
-
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims)  // Add claims to the token
-                .setSubject(subject)  // Set the username (or email) as the subject
-                .setIssuedAt(new Date(System.currentTimeMillis()))  // Set issued date
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Token expiration (10 hours)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)  // Sign the token with the secret key
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 

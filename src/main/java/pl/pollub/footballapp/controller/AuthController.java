@@ -28,21 +28,12 @@ import pl.pollub.footballapp.util.JwtUtil;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-
-
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -65,26 +56,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
-
         if (userOptional.isEmpty() || !userService.checkPassword(loginRequest.getPassword(), userOptional.get().getPassword())) {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
-
         User user = userOptional.get();
-
         if (user.isResettingPassword()) {
-            return ResponseEntity.status(403).body("Password reset in progress. Please complete the password reset process before logging in.");
+            return ResponseEntity.status(403).body("Please complete the password reset process before logging in.");
         }
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-
         String jwtToken = jwtUtil.generateToken(userDetails);
-
         Map<String, String> response = new HashMap<>();
         response.put("email", user.getEmail());
         response.put("role", user.getRole().name());
-        response.put("token", jwtToken);  // Include the JWT token in the response
-
+        response.put("token", jwtToken);
         return ResponseEntity.ok(response);
     }
 
