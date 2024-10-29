@@ -41,6 +41,7 @@ function App() {
     const [message, setMessage] = useState('');
     const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
+    const [showAdminPanel, setShowAdminPanel] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -114,6 +115,7 @@ function App() {
                 onOpenRegistration={() => toggleModal('isRegistrationOpen')}
                 onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
                 openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
+                setShowAdminPanel={setShowAdminPanel}
             />
             {message && <div className="alert-message">{message}</div>}
 
@@ -144,7 +146,7 @@ function App() {
                 />
 
                 <Routes>
-                    <Route path="/admin-panel" element={<AdminPanel />} />
+                    <Route path="/admin-panel" element={showAdminPanel ? <AdminPanel /> : null} />
                 </Routes>
 
                 {/*<CountryList />*/}

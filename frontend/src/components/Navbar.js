@@ -1,8 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DeleteAccountButton from './DeleteAccountButton';
 
-const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, setIsLoggedIn, setMessage }) => {
+const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, setIsLoggedIn, setMessage, setShowAdminPanel }) => {
+
+    const handleAdminPanelClick = () => {
+        setShowAdminPanel(true);
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-left">
@@ -24,9 +29,7 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
                         {loginData.role === 'ROLE_ADMIN' && (
                             <>
                                 <button onClick={openAddModeratorModal} className="navbar-btn">Add moderator</button>
-                                <Link to="/admin-panel">
-                                    <button className="navbar-btn">Administration panel</button>
-                                </Link>
+                                <button onClick={handleAdminPanelClick} className="navbar-btn">Administration panel</button>
                             </>
                         )}
                         <button onClick={onLogout} className="navbar-btn">Logout</button>

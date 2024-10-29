@@ -13,7 +13,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        if (password.length < 12) {
+        if (password.length < 1) {
             setMessage('The password must contain at least 8 characters.');
             setMessageType('error');
             return;
@@ -33,6 +33,13 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
             });
             setMessage(response.data);
             setMessageType('success');
+            setTimeout(() => {
+                setMessage('');
+                setUsername('');
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+            }, 2000);
         } catch (error) {
             setMessage('Registration error. User already exists or other errors.');
             setMessageType('error');

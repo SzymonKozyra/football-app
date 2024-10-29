@@ -24,7 +24,12 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
             );
             setMessage('Moderator added successfully');
             setMessageType('success');
-
+            setTimeout(() => {
+                setMessage('');
+                setEmail('');
+                setPassword('');
+                setUsername('');
+            }, 2000);
         } catch (error) {
             // Log the actual error from the backend
             console.error('Error adding moderator:', error.response?.data || error.message);
@@ -57,7 +62,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Add Account</h2>
+                <h2>Add Moderator</h2>
                 <form onSubmit={handleAddModerator}>
                     <div>
                         <label>Email:</label>
@@ -69,7 +74,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                         />
                     </div>
                     <div>
-                        <label>Username:</label> {/* New input field for username */}
+                        <label>Username:</label>
                         <input
                             type="text"
                             value={username}
@@ -87,8 +92,9 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                         />
                     </div>
                     <button type="submit">Add Moderator</button>
-                    <button type="submit">Dodaj moderatora</button>
                 </form>
+
+                <h2>Add Admin</h2>
                 <form onSubmit={handleAddAdmin}>
                     <div>
                         <label>Email:</label>
@@ -100,7 +106,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                         />
                     </div>
                     <div>
-                        <label>Username:</label> {/* New input field for username */}
+                        <label>Username:</label>
                         <input
                             type="text"
                             value={username}
@@ -109,7 +115,7 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                         />
                     </div>
                     <div>
-                        <label>Hasło:</label>
+                        <label>Password:</label>
                         <input
                             type="password"
                             value={password}
@@ -117,8 +123,9 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Dodaj admina</button>
+                    <button type="submit">Add Admin</button>
                 </form>
+
                 {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Close</button>
             </div>

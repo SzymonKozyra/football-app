@@ -24,7 +24,6 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
             setIsLoggedIn(true);
             setLoginData({ email: responseEmail, role });
             onClose();
-            window.location.reload();
         } catch (error) {
             setMessage('Error while logging in');
             setMessageType('error');
