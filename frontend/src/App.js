@@ -6,7 +6,7 @@ import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
 import AddModeratorForm from './components/AddModeratorForm';
-import { useLocation, Route, Routes } from 'react-router-dom';
+import { useLocation, Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddLeagueForm from './components/AddLeagueForm';
 import AddCoachesTransferForm from './components/AddCoachesTransferForm';
@@ -41,7 +41,7 @@ function App() {
     const [message, setMessage] = useState('');
     const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
-    const [showAdminPanel, setShowAdminPanel] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -80,6 +80,7 @@ function App() {
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
         localStorage.setItem('logoutOrDeleteAccMessage', 'Successfully logged out');
+        navigate('/');
         window.location.reload();
     };
 
@@ -115,7 +116,6 @@ function App() {
                 onOpenRegistration={() => toggleModal('isRegistrationOpen')}
                 onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
                 openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
-                setShowAdminPanel={setShowAdminPanel}
             />
             {message && <div className="alert-message">{message}</div>}
 
@@ -146,7 +146,16 @@ function App() {
                 />
 
                 <Routes>
-                    <Route path="/admin-panel" element={showAdminPanel ? <AdminPanel /> : null} />
+                    <Route
+                        path="/admin-panel"
+                        element={
+                            isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
+                                <AdminPanel />
+                            ) : (
+                                <Navigate to="/" replace />
+                            )
+                        }
+                    />
                 </Routes>
 
                 {/*<CountryList />*/}
