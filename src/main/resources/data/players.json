@@ -1,0 +1,20 @@
+[
+  {
+    "firstName": "Piotr",
+    "lastName": "Kutas",
+    "dateOfBirth": "1985-05-20",
+    "nickname": "Pitek",
+    "picture": "piotr.png",
+    "positionId": 2,
+    "countryId": 123,
+    "clubId": 1,
+    "nationalTeamId": 2,
+    "value": 2000000.00
+  },
+  {
+    "firstName": "Anna",
+    "lastName": "Chujalska",
+    "dateOfBirth": "1993-07-10",
+    "nickname": "Anka"
+  }
+]

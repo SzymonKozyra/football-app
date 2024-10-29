@@ -13,6 +13,7 @@ import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.requests.PlayerRequest;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class PlayerService {
@@ -85,4 +86,11 @@ public class PlayerService {
 
         playerRepository.save(existingPlayer);
     }
+
+    public void addPlayers(List<PlayerRequest> playerRequests) {
+        for (PlayerRequest playerRequest : playerRequests) {
+            addPlayer(playerRequest);  // Wywołanie istniejącej metody addPlayer dla każdego gracza
+        }
+    }
+
 }

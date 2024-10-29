@@ -25,6 +25,7 @@ import AddRefereeForm from "./components/AddRefereeForm";
 import RefereeSearchAndEditForm from "./components/RefereeSearchAndEditForm";
 import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
+import PlayerImportForm from "./components/PlayerImportForm";
 
 function App() {
     const [modals, setModals] = useState({
@@ -192,6 +193,8 @@ function App() {
                 <AddPlayerForm />
                 <h1>Edit player</h1>
                 <PlayerSearchAndEditForm />
+                <h1>Improt player</h1>
+                <PlayerImportForm />
 
             </div>
         </div>

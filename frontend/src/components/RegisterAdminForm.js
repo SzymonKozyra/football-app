@@ -7,12 +7,12 @@ const RegisterAdminForm = () => {
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
 
-    useEffect(() => {
-        // Sprawdź, czy konto admina już istnieje
-        axios.get('http://localhost:8080/api/auth/check-admin')
-            .then(response => setAdminExists(response.data))
-            .catch(error => console.error('Error checking admin existence:', error));
-    }, []);
+        useEffect(() => {
+            // Sprawdź, czy konto admina już istnieje
+            axios.get('http://localhost:8080/api/auth/check-admin')
+                .then(response => setAdminExists(response.data))
+                .catch(error => console.error('Error checking admin existence:', error));
+        }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
