@@ -149,6 +149,56 @@ const AddCoachesTransferForm = () => {
     const [transferDate, setTransferDate] = useState('');
     const [transferValue, setTransferValue] = useState('');
 
+
+    //WYBIERANIE KLUBÓW
+    //////////////////////////////////////////////////////////////
+    const [previousClubSearchQuery, setPreviousClubSearchQuery] = useState('');
+    const [destinationClubSearchQuery, setDestinationClubSearchQuery] = useState('');
+    const [filteredPreviousClubs, setFilteredPreviousClubs] = useState([]);
+    const [filteredDestinationClubs, setFilteredDestinationClubs] = useState([]);
+
+
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+        if (previousClubSearchQuery && token) {
+            axios.get(`http://localhost:8080/api/teams/search?query=${previousClubSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(response => setFilteredPreviousClubs(response.data))
+            .catch(error => console.error('Error fetching previous clubs:', error));
+        } else {
+            setFilteredPreviousClubs([]);
+        }
+    }, [previousClubSearchQuery]);
+
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+        if (destinationClubSearchQuery && token) {
+            axios.get(`http://localhost:8080/api/teams/search?query=${destinationClubSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(response => setFilteredDestinationClubs(response.data))
+            .catch(error => console.error('Error fetching destination clubs:', error));
+        } else {
+            setFilteredDestinationClubs([]);
+        }
+    }, [destinationClubSearchQuery]);
+
+
+    const handlePreviousClubSelect = (club) => {
+        setPreviousClub(club.name);
+        setPreviousClubSearchQuery(club.name);
+        setFilteredPreviousClubs([]);
+    };
+
+    const handleDestinationClubSelect = (club) => {
+        setDestinationClub(club.name);
+        setDestinationClubSearchQuery(club.name);
+        setFilteredDestinationClubs([]);
+    };
+    //////////////////////////////////////////////////////////////
+
+
     // Funkcja do pobierania dzisiejszej daty w formacie YYYY-MM-DD
     const getTodayDate = () => {
         const today = new Date();
@@ -187,13 +237,18 @@ const AddCoachesTransferForm = () => {
         setTransferValue('');
         setSearchQuery('');
         setFilteredCoaches([]);
+
+        setPreviousClubSearchQuery('');
+        setDestinationClubSearchQuery('');
+        setFilteredPreviousClubs([]);
+        setFilteredDestinationClubs([]);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        if (!selectedCoach || !previousClub || !destinationClub || !transferDate || transferValue <= 0) {
+        if (!selectedCoach || !previousClub || !destinationClub || !transferDate || transferValue < 0) {
             alert('Please fill in all fields correctly');
             return;
         }
@@ -250,21 +305,49 @@ const AddCoachesTransferForm = () => {
                 <label>Previous Club</label>
                 <input
                     type="text"
-                    value={previousClub}
-                    onChange={(e) => setPreviousClub(e.target.value)}
-                    required
+                    value={previousClubSearchQuery}
+                    onChange={(e) => setPreviousClubSearchQuery(e.target.value)}
+                    placeholder="Search for a previous club"
                 />
+                {filteredPreviousClubs.length > 0 && (
+                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                        {filteredPreviousClubs.map((club) => (
+                            <li
+                                key={club.id}
+                                onClick={() => handlePreviousClubSelect(club)}
+                                style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}
+                            >
+                                {club.name}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
 
             <div>
                 <label>Destination Club</label>
                 <input
                     type="text"
-                    value={destinationClub}
-                    onChange={(e) => setDestinationClub(e.target.value)}
-                    required
+                    value={destinationClubSearchQuery}
+                    onChange={(e) => setDestinationClubSearchQuery(e.target.value)}
+                    placeholder="Search for a destination club"
                 />
+                {filteredDestinationClubs.length > 0 && (
+                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                        {filteredDestinationClubs.map((club) => (
+                            <li
+                                key={club.id}
+                                onClick={() => handleDestinationClubSelect(club)}
+                                style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}
+                            >
+                                {club.name}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
+
+
 
             <div>
                 <label>Transfer Date</label>
