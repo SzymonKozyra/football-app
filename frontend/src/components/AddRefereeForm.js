@@ -10,6 +10,18 @@ const AddRefereeForm = () => {
     const [file, setFile] = useState(null);
     const [importMode, setImportMode] = useState(false); // False = manual entry, True = import file
 
+
+    // Funkcja do pobierania dzisiejszej daty w formacie YYYY-MM-DD
+    //minimalny wiek sedziego to 25 (fullYear -25)
+        const getTodayDate = () => {
+            const today = new Date();
+            const year = today.getFullYear()-25;
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
+            const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+            return `${year}-${month}-${day}`;
+        };
+
+
     useEffect(() => {
         // Fetch countries from the backend
         axios.get('http://localhost:8080/api/countries', {
@@ -98,6 +110,7 @@ const AddRefereeForm = () => {
                             <label>Date of Birth</label>
                             <input
                                 type="date"
+                                max={getTodayDate()}
                                 value={dateOfBirth}
                                 onChange={(e) => setDateOfBirth(e.target.value)}
                                 required
