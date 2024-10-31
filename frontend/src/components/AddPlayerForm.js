@@ -22,6 +22,18 @@ const AddPlayerForm = () => {
     const [teams, setTeams] = useState([]);
     const [isClub, setIsClub] = useState(false);
 
+
+    /////////////////////////////////////////////////////////////////
+    //zawodnik nie mlodszy niz 15 lat
+    const getTodayDate = () => {
+            const today = new Date();
+            const year = today.getFullYear()-15;
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
+            const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+            return `${year}-${month}-${day}`;
+        };
+    /////////////////////////////////////////////////////////////////
+
     useEffect(() => {
         // Fetch data for select options
         axios.get('http://localhost:8080/api/positions', {
@@ -59,7 +71,7 @@ const AddPlayerForm = () => {
             <input type="text" value={playerData.lastName} onChange={e => setPlayerData({ ...playerData, lastName: e.target.value })} />
 
             <label>Date of Birth</label>
-            <input type="date" value={playerData.dateOfBirth} onChange={e => setPlayerData({ ...playerData, dateOfBirth: e.target.value })} />
+            <input type="date" max={getTodayDate()} value={playerData.dateOfBirth} onChange={e => setPlayerData({ ...playerData, dateOfBirth: e.target.value })} />
 
             <label>Nickname</label>
             <input type="text" value={playerData.nickname} onChange={e => setPlayerData({ ...playerData, nickname: e.target.value })} />
@@ -92,7 +104,7 @@ const AddPlayerForm = () => {
             />
 
             <label>Value</label>
-            <input type="number" value={playerData.value} onChange={e => setPlayerData({ ...playerData, value: e.target.value })} />
+            <input type="number" min="0" value={playerData.value} onChange={e => setPlayerData({ ...playerData, value: e.target.value })} />
 
 
             <button type="submit">Add Player</button>
