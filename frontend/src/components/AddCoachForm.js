@@ -13,6 +13,15 @@ const AddCoachForm = () => {
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
 
+    //WIEK TRENERA > 25
+    const getTodayDate = () => {
+        const today = new Date();
+        const year = today.getFullYear()-25;
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
+        const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+        return `${year}-${month}-${day}`;
+    };
+
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')
             .then(response => setCountries(response.data))
@@ -123,6 +132,7 @@ const AddCoachForm = () => {
                             type="date"
                             value={dateOfBirth}
                             onChange={e => setDateOfBirth(e.target.value)}
+                            max={getTodayDate()}
                             required
                         />
                     </div>
