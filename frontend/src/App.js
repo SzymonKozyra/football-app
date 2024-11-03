@@ -27,6 +27,12 @@ import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 import PlayerImportForm from "./components/PlayerImportForm";
 
+
+import AddInjuryForm from "./components/AddInjuryForm";
+//import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
+//import InjuryImportForm from "./components/InjuryImportForm";
+
+
 function App() {
     const [modals, setModals] = useState({
         isRegistrationOpen: false,
@@ -187,6 +193,10 @@ function App() {
                 <AddRefereeForm />
                 <h1>Edit referee</h1>
                 <RefereeSearchAndEditForm />
+
+                <h1>Add injury</h1>
+                <AddInjuryForm />
+
 
 
                 <h1>Add player</h1>
