@@ -42,14 +42,15 @@ public class InjuryController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<?> addInjury(@RequestBody Injury injuryRequest) {
-        Optional<Player> player = playerRepository.findById(injuryRequest.getPlayer().getId());
+    public ResponseEntity<?> addInjury(@RequestBody InjuryRequest injuryRequest) {
+        Optional<Player> player = playerRepository.findById(injuryRequest.getPlayerId());
 
         if (player.isEmpty()) {
             return ResponseEntity.badRequest().body("Player not found");
         }
 
-        if (injuryRepository.existsByTypeAndStartDateAndPlayer(injuryRequest.getType(), injuryRequest.getStartDate(), player.get())) {
+        if (injuryRepository.existsByTypeAndStartDateAndPlayer(
+                injuryRequest.getType(), LocalDate.parse(injuryRequest.getStartDate()), player.get())) {
             return ResponseEntity.badRequest().body("Injury already exists for this player");
         }
 
