@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import DeleteAccountButton from './DeleteAccountButton';
 
-const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, setIsLoggedIn, setMessage }) => {
+const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, openAddAdminModal, setIsLoggedIn, setMessage }) => {
     return (
         <nav className="navbar">
             <div className="navbar-left">
@@ -23,6 +23,7 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
                         <span className="navbar-email">{loginData.email}</span>
                         {loginData.role === 'ROLE_ADMIN' && (
                             <>
+                                <button onClick={openAddAdminModal} className="navbar-btn">Add admin</button>
                                 <button onClick={openAddModeratorModal} className="navbar-btn">Add moderator</button>
                                 <Link to="/admin-panel">
                                     <button className="navbar-btn">Administration panel</button>

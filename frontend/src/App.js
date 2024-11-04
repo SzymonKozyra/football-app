@@ -26,11 +26,11 @@ import RefereeSearchAndEditForm from "./components/RefereeSearchAndEditForm";
 import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 import PlayerImportForm from "./components/PlayerImportForm";
-
-
 import AddInjuryForm from "./components/AddInjuryForm";
+import AddAdminForm from "./components/AddAdminForm";
 //import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
 //import InjuryImportForm from "./components/InjuryImportForm";
+
 
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
         isPasswordResetOpen: false,
         isNewPasswordOpen: false,
         isAddModeratorOpen: false,
+        isAddAdminOpen: false,
     });
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -63,6 +64,9 @@ function App() {
             const email = localStorage.getItem('email');
             const role = localStorage.getItem('role');
             setLoginData({ email, role });
+        } else {
+            setIsLoggedIn(false);
+            setLoginData({ email: '', role: '' });
         }
     }, []);
 
@@ -88,6 +92,7 @@ function App() {
         setLoginData({ email: '', role: '' });
         localStorage.setItem('logoutOrDeleteAccMessage', 'Successfully logged out');
         navigate('/');
+        window.scrollTo(0, 0);
         window.location.reload();
     };
 
@@ -123,6 +128,7 @@ function App() {
                 onOpenRegistration={() => toggleModal('isRegistrationOpen')}
                 onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
                 openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
+                openAddAdminModal={() => toggleModal('isAddAdminOpen')}
             />
             {message && <div className="alert-message">{message}</div>}
 
@@ -151,13 +157,17 @@ function App() {
                     isOpen={modals.isAddModeratorOpen}
                     onClose={() => toggleModal('isAddModeratorOpen')}
                 />
+                <AddAdminForm
+                    isOpen={modals.isAddAdminOpen}
+                    onClose={() => toggleModal('isAddAdminOpen')}
+                />
 
                 <Routes>
                     <Route
                         path="/admin-panel"
                         element={
                             isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
-                                <AdminPanel />
+                                <AdminPanel setIsLoggedIn={setIsLoggedIn} />
                             ) : (
                                 <Navigate to="/" replace />
                             )

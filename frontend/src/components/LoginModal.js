@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Modal.css';
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -18,12 +20,14 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
             console.log(response.data);
             const { token, email: responseEmail } = response.data;
             localStorage.setItem('jwtToken', token);
+            localStorage.setItem('email', email);
             const role = response.data.role || 'USER';
-            setMessage('Logged in');
-            setMessageType('success');
+            localStorage.setItem('role', role);
             setIsLoggedIn(true);
             setLoginData({ email: responseEmail, role });
             onClose();
+            navigate('/');
+            window.scrollTo(0, 0);
         } catch (error) {
             setMessage('Error while logging in');
             setMessageType('error');

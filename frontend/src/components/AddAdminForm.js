@@ -1,15 +1,16 @@
+// AddAdminForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Modal.css';
 
-const AddModeratorForm = ({ isOpen, onClose }) => {
+const AddAdminForm = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
 
-    const handleAddModerator = async (e) => {
+    const handleAddAdmin = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
         if (!token) {
@@ -18,11 +19,11 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
         }
         try {
             const response = await axios.post(
-                'http://localhost:8080/api/admin/add-moderator',
+                'http://localhost:8080/api/admin/add-admin',
                 { email, password, username },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setMessage('Moderator added successfully');
+            setMessage('Admin added successfully');
             setMessageType('success');
             setTimeout(() => {
                 setMessage('');
@@ -31,9 +32,9 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                 setUsername('');
             }, 2000);
         } catch (error) {
-            // Log the actual error from the backend
-            console.error('Error adding moderator:', error.response?.data || error.message);
-            setMessage(`Failed to add moderator: ${error.response?.data || 'Unknown error'}`);
+            console.error('Error adding admin:', error.response?.data || error.message);
+            setMessage(`Failed to add admin: ${error.response?.data || 'Unknown error'}`);
+            setMessageType('error');
         }
     };
 
@@ -42,8 +43,8 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Add Moderator</h2>
-                <form onSubmit={handleAddModerator}>
+                <h2>Add Admin</h2>
+                <form onSubmit={handleAddAdmin}>
                     <div>
                         <label>Email:</label>
                         <input
@@ -71,9 +72,8 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
                             required
                         />
                     </div>
-                    <button type="submit">Add Moderator</button>
+                    <button type="submit">Add Admin</button>
                 </form>
-
                 {message && <p className={`message ${messageType}`}>{message}</p>}
                 <button onClick={onClose}>Close</button>
             </div>
@@ -81,4 +81,4 @@ const AddModeratorForm = ({ isOpen, onClose }) => {
     );
 };
 
-export default AddModeratorForm;
+export default AddAdminForm;

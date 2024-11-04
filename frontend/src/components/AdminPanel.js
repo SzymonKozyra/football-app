@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import NewPasswordModal from './NewPasswordModal';
 import './AdminPanel.css';
+import { useNavigate } from 'react-router-dom';
 
-const AdminPanel = () => {
+const AdminPanel = ({ setIsLoggedIn }) => {
     const [users, setUsers] = useState([]);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -22,26 +26,61 @@ const AdminPanel = () => {
     }, []);
 
     const handleDelete = async (email) => {
-        try {
-            await axios.delete(`http://localhost:8080/api/admin/delete-user/${email}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
-            });
-            setUsers(users.filter((user) => user.email !== email));
-        } catch (error) {
-            console.error('Error deleting user:', error);
+        const loggedInEmail = localStorage.getItem('email');
+
+        if (window.confirm(`Do you really want to delete "${email}" account?`)) {
+            try {
+                await axios.delete(`http://localhost:8080/api/admin/delete-user/${email}`, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
+                });
+
+                if (email === loggedInEmail) {
+                    localStorage.removeItem('jwtToken');
+                    setIsLoggedIn(false);
+                    localStorage.setItem('logoutOrDeleteAccMessage', 'Your account has been deleted.');
+                    navigate('/');
+                    window.scrollTo(0, 0);
+                    window.location.reload();
+                } else {
+                    setUsers(users.filter((user) => user.email !== email));
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+            }
         }
     };
 
-    const handleChangePassword = async (email, newPassword) => {
+
+    const openPasswordModal = (user) => {
+        setSelectedUser(user);
+        setIsPasswordModalOpen(true);
+    };
+
+    const handlePasswordChange = async (newPassword) => {
         try {
-            await axios.put(`http://localhost:8080/api/admin/change-password/${email}`, { newPassword }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
-            });
+            await axios.put(
+                `http://localhost:8080/api/admin/change-password/${selectedUser.email}`,
+                newPassword,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                        'Content-Type': 'text/plain'
+                    },
+                }
+            );
             alert('Password changed successfully');
+            setIsPasswordModalOpen(false);
         } catch (error) {
             console.error('Error changing password:', error);
+            alert('Failed to change password');
         }
     };
+
+    const handleClose = () => {
+        navigate('/');
+        window.scrollTo(0, 0);
+    };
+
 
     return (
         <div className="admin-panel-container">
@@ -54,7 +93,7 @@ const AdminPanel = () => {
                         <td>
                             <button
                                 className="action-btn"
-                                onClick={() => handleChangePassword(user.email)}
+                                onClick={() => openPasswordModal(user)}
                             >
                                 Change Password
                             </button>
@@ -71,6 +110,18 @@ const AdminPanel = () => {
                 ))}
                 </tbody>
             </table>
+
+            {isPasswordModalOpen && (
+                <NewPasswordModal
+                    isOpen={isPasswordModalOpen}
+                    onClose={() => setIsPasswordModalOpen(false)}
+                    onSubmit={(newPassword) => handlePasswordChange(newPassword)}
+                />
+            )}
+
+            <button onClick={handleClose} className="close-btn">
+                Close
+            </button>
         </div>
     );
 };
