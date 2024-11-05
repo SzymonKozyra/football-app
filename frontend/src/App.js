@@ -27,6 +27,7 @@ import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 import PlayerImportForm from "./components/PlayerImportForm";
 import AddInjuryForm from "./components/AddInjuryForm";
+import AddCoachContractForm from './components/AddCoachContractForm';
 import AddAdminForm from "./components/AddAdminForm";
 //import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
 //import InjuryImportForm from "./components/InjuryImportForm";
@@ -206,6 +207,12 @@ function App() {
 
                 <h1>Add injury</h1>
                 <AddInjuryForm />
+
+
+                <h1>Add AddCoachContract</h1>
+                <AddCoachContractForm />
+
+
 
 
 
