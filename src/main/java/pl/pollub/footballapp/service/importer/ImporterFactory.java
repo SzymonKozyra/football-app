@@ -13,6 +13,8 @@ public class ImporterFactory {
 
     @Autowired
     private CsvCityImporter csvCityImporter;
+    @Autowired
+    private JsonCityImporter jsonCityImporter;
 
     @Autowired
     private JsonStadiumImporter jsonStadiumImporter;
@@ -64,7 +66,7 @@ public class ImporterFactory {
         if (fileType.equalsIgnoreCase("csv")) {
             return csvCityImporter;
         } else if (fileType.equalsIgnoreCase("json")) {
-            return new JsonCityImporter();
+            return jsonCityImporter;
         } else {
             throw new IllegalArgumentException("Unsupported file type: " + fileType);
         }

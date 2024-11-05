@@ -74,7 +74,7 @@ public class CityController {
                     city.setCountry(country);
                     cityRepository.save(city);
                 }
-                System.out.println("KURWAAAAAAAAAAAAAAAAAA                KURWA");
+                System.out.println("City " + cityRequest.getName() + " imported succesfully.");
             }
 
             return ResponseEntity.ok("Cities imported successfully");
