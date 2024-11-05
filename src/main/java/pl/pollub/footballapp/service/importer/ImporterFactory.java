@@ -12,6 +12,9 @@ import pl.pollub.footballapp.service.importer.CsvCoachImporter;
 public class ImporterFactory {
 
     @Autowired
+    private CsvCityImporter csvCityImporter;
+
+    @Autowired
     private JsonStadiumImporter jsonStadiumImporter;
 
     @Autowired
@@ -59,7 +62,7 @@ public class ImporterFactory {
 
     public DataImporter getImporterCity(String fileType) {
         if (fileType.equalsIgnoreCase("csv")) {
-            return new CsvCityImporter();
+            return csvCityImporter;
         } else if (fileType.equalsIgnoreCase("json")) {
             return new JsonCityImporter();
         } else {
