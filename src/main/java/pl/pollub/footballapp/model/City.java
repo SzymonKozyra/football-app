@@ -3,7 +3,6 @@ package pl.pollub.footballapp.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cities")
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

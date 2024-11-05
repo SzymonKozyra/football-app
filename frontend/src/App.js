@@ -176,34 +176,34 @@ function App() {
                     />
                 </Routes>
 
-                {/*<CountryList />*/}
+                {/*/!*<CountryList />*!/*/}
 
-                <AddStadiumForm />
+                {/*<AddStadiumForm />*/}
 
-                <StadiumSearchAndEditForm />
+                {/*<StadiumSearchAndEditForm />*/}
 
-                <AddLeagueForm />
+                {/*<AddLeagueForm />*/}
 
-                <LeagueSearchAndEditForm />
+                {/*<LeagueSearchAndEditForm />*/}
 
-                <AddCoachForm />
+                {/*<AddCoachForm />*/}
 
-                <CoachSearchAndEditForm />
+                {/*<CoachSearchAndEditForm />*/}
 
-                <AddCoachesTransferForm />
+                {/*<AddCoachesTransferForm />*/}
 
                 <AddCityForm />
 
-                <h1>Add Team</h1>
-                <AddTeamForm />
+                {/*<h1>Add Team</h1>*/}
+                {/*<AddTeamForm />*/}
 
-                <h1>Edit Team</h1>
-                <TeamSearchAndEditForm />
+                {/*<h1>Edit Team</h1>*/}
+                {/*<TeamSearchAndEditForm />*/}
 
-                <h1>Add referee</h1>
-                <AddRefereeForm />
-                <h1>Edit referee</h1>
-                <RefereeSearchAndEditForm />
+                {/*<h1>Add referee</h1>*/}
+                {/*<AddRefereeForm />*/}
+                {/*<h1>Edit referee</h1>*/}
+                {/*<RefereeSearchAndEditForm />*/}
 
                 <h1>Add injury</h1>
                 <AddInjuryForm />
