@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Modal.css';
 import axios from "axios";
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
     const [username, setUsername] = useState('');
@@ -15,13 +15,13 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
 
         if (password.length < 1) {
             setMessage('The password must contain at least 8 characters.');
-            setMessageType('error');
+            setMessageType('danger');
             return;
         }
 
         if (password !== confirmPassword) {
             setMessage('Passwords must be identical.');
-            setMessageType('error');
+            setMessageType('danger');
             return;
         }
 
@@ -42,7 +42,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
             }, 2000);
         } catch (error) {
             setMessage('Registration error. User already exists or other errors.');
-            setMessageType('error');
+            setMessageType('danger');
         }
     };
 
@@ -57,64 +57,69 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
         }
     }, [isOpen]);
 
-    if (!isOpen) return null;
-
     return (
-        <div className="modal-overlay">
-            <div className="modal">
-                <h2>Registration</h2>
-                <form onSubmit={handleRegister}>
-                    <div>
-                        <label>Username:</label>
-                        <input
+        <Modal show={isOpen} onHide={onClose} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Registration</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleRegister}>
+                    <Form.Group controlId="formUsername">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
-                    </div>
-                    <div>
-                        <label>Email:</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group controlId="formEmail" className="mt-3">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group controlId="formPassword" className="mt-3">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                    </div>
-                    <div>
-                        <label>Confirm password:</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group controlId="formConfirmPassword" className="mt-3">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
-                    </div>
-                    <button type="submit">Register</button>
-                </form>
-                {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Close</button>
-                <p className="blue-text">
+                    </Form.Group>
+                    {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
+                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                        Register
+                    </Button>
+                </Form>
+                <p className="text-center text-primary mt-3">
                     Already have an account?{' '}
-                    <a href="#" onClick={() => {
-                        onClose();
-                        onOpenLogin();
-                    }} className="login-link">
+                    <a
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onClose();
+                            onOpenLogin();
+                        }}
+                    >
                         Login
                     </a>
                 </p>
-            </div>
-        </div>
+            </Modal.Body>
+        </Modal>
     );
 };
 

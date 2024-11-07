@@ -31,22 +31,39 @@ public class PlayerService {
     private TeamRepository teamRepository;
 
     public void addPlayer(PlayerRequest playerRequest) {
+        if (playerRequest.getCountryId() == null) {
+            throw new IllegalArgumentException("Country ID is required.");
+        }
+        if (playerRequest.getPositionId() == null) {
+            throw new IllegalArgumentException("Position ID is required.");
+        }
+
         Player player = new Player();
         player.setFirstName(playerRequest.getFirstName());
         player.setLastName(playerRequest.getLastName());
         player.setDateOfBirth(playerRequest.getDateOfBirth());
-        player.setNickname(playerRequest.getNickname());
-        player.setPicture(playerRequest.getPicture());
-        player.setPosition(positionRepository.findById(playerRequest.getPositionId()).orElseThrow());
-        player.setCountry(countryRepository.findById(playerRequest.getCountryId()).orElseThrow());
+
+        if (playerRequest.getNickname() != null) {
+            player.setNickname(playerRequest.getNickname());
+        }
+        if (playerRequest.getPicture() != null) {
+            player.setPicture(playerRequest.getPicture());
+        }
+
+        player.setPosition(positionRepository.findById(playerRequest.getPositionId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Position ID.")));
+
+        player.setCountry(countryRepository.findById(playerRequest.getCountryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Country ID.")));
+
         if (playerRequest.getClubId() != null) {
-            player.setClub(teamRepository.findById(playerRequest.getClubId()).orElseThrow());
+            player.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
         }
         if (playerRequest.getNationalTeamId() != null) {
-            player.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElseThrow());
+            player.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
         }
-        player.setValue(playerRequest.getValue()); // Set value
 
+        player.setValue(playerRequest.getValue() != null ? playerRequest.getValue() : BigDecimal.ZERO);
         playerRepository.save(player);
     }
 
@@ -54,43 +71,47 @@ public class PlayerService {
         Player existingPlayer = playerRepository.findById(playerRequest.getId())
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        Country country = countryRepository.findById(playerRequest.getCountryId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid country ID"));
-
-        Position position = positionRepository.findById(playerRequest.getPositionId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid position ID"));
-
-        Team club = null;
-        if (playerRequest.getClubId() != null) {
-            club = teamRepository.findById(playerRequest.getClubId())
-                    .filter(Team::isClub)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid club ID or team is not a club"));
+        if (playerRequest.getCountryId() == null) {
+            throw new IllegalArgumentException("Country ID is required.");
         }
-
-        Team nationalTeam = null;
-        if (playerRequest.getNationalTeamId() != null) {
-            nationalTeam = teamRepository.findById(playerRequest.getNationalTeamId())
-                    .filter(team -> !team.isClub())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid national team ID or team is a club"));
+        if (playerRequest.getPositionId() == null) {
+            throw new IllegalArgumentException("Position ID is required.");
         }
 
         existingPlayer.setFirstName(playerRequest.getFirstName());
         existingPlayer.setLastName(playerRequest.getLastName());
         existingPlayer.setDateOfBirth(playerRequest.getDateOfBirth());
-        existingPlayer.setNickname(playerRequest.getNickname());
-        existingPlayer.setPicture(playerRequest.getPicture());
-        existingPlayer.setCountry(country);
-        existingPlayer.setPosition(position);
-        existingPlayer.setClub(club);
-        existingPlayer.setNationalTeam(nationalTeam);
+
+        if (playerRequest.getNickname() != null) {
+            existingPlayer.setNickname(playerRequest.getNickname());
+        }
+        if (playerRequest.getPicture() != null) {
+            existingPlayer.setPicture(playerRequest.getPicture());
+        }
+
+        existingPlayer.setCountry(countryRepository.findById(playerRequest.getCountryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Country ID.")));
+
+        existingPlayer.setPosition(positionRepository.findById(playerRequest.getPositionId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Position ID.")));
+
+        if (playerRequest.getClubId() != null) {
+            existingPlayer.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
+        }
+        if (playerRequest.getNationalTeamId() != null) {
+            existingPlayer.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
+        }
+
+        if (playerRequest.getValue() != null) {
+            existingPlayer.setValue(playerRequest.getValue());
+        }
 
         playerRepository.save(existingPlayer);
     }
 
     public void addPlayers(List<PlayerRequest> playerRequests) {
         for (PlayerRequest playerRequest : playerRequests) {
-            addPlayer(playerRequest);  // Wywołanie istniejącej metody addPlayer dla każdego gracza
+            addPlayer(playerRequest);
         }
     }
-
 }

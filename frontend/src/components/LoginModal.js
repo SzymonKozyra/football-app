@@ -1,36 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './Modal.css';
-import { useNavigate } from 'react-router-dom';
+import { Modal, Button, Form } from 'react-bootstrap';
+import '../Modal.css';
 
-const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
+const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData, onOpenPasswordReset }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
-    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
-                email,
-                password
-            });
-            console.log(response.data);
-            const { token, email: responseEmail } = response.data;
+            const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+            const { token, email: responseEmail, role = 'USER' } = response.data;
+
             localStorage.setItem('jwtToken', token);
-            localStorage.setItem('email', email);
-            const role = response.data.role || 'USER';
+            localStorage.setItem('email', responseEmail);
             localStorage.setItem('role', role);
+
             setIsLoggedIn(true);
             setLoginData({ email: responseEmail, role });
             onClose();
-            navigate('/');
-            window.scrollTo(0, 0);
         } catch (error) {
             setMessage('Error while logging in');
-            setMessageType('error');
+            setMessageType('danger');
         }
     };
 
@@ -41,37 +35,51 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData }) => {
         setMessageType('');
     }, [isOpen]);
 
-    if (!isOpen) return null;
-
     return (
-        <div className="modal-overlay">
-            <div className="modal">
-                <h2>Login</h2>
-                <form onSubmit={handleLogin}>
-                    <div>
-                        <label>Email:</label>
-                        <input
+        <Modal show={isOpen} onHide={onClose} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Login</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleLogin}>
+                    <Form.Group controlId="formEmail">
+                        <Form.Label>Email:</Form.Label>
+                        <Form.Control
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group controlId="formPassword" className="mt-3">
+                        <Form.Label>Password:</Form.Label>
+                        <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                    </div>
-                    <button type="submit">Login</button>
-                </form>
-                {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Close</button>
-            </div>
-        </div>
+                    </Form.Group>
+                    {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
+                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                        Login
+                    </Button>
+                </Form>
+                <div className="text-center mt-3">
+                    <a
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onClose(); // Close login modal
+                            onOpenPasswordReset(); // Open password reset modal
+                        }}
+                        className="text-primary"
+                    >
+                        Forgot Password?
+                    </a>
+                </div>
+            </Modal.Body>
+        </Modal>
     );
 };
 

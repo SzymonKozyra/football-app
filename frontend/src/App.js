@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Modal.css';
+
+
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
@@ -27,11 +31,14 @@ import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 import PlayerImportForm from "./components/PlayerImportForm";
 import AddInjuryForm from "./components/AddInjuryForm";
-import AddCoachContractForm from './components/AddCoachContractForm';
 import AddAdminForm from "./components/AddAdminForm";
 //import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
 //import InjuryImportForm from "./components/InjuryImportForm";
 
+
+import AdminView from './views/AdminView';
+import ModeratorView from './views/ModeratorView';
+import UserView from './views/UserView';
 
 
 function App() {
@@ -51,6 +58,9 @@ function App() {
     const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [currentMode, setCurrentMode] = useState('user'); // New state for tracking mode
+
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -80,6 +90,16 @@ function App() {
         }
     }, [location.search]);
 
+    useEffect(() => {
+        // Initialize mode based on role
+        if (loginData.role === 'ROLE_ADMIN') {
+            setCurrentMode('admin');
+        } else if (loginData.role === 'ROLE_MODERATOR') {
+            setCurrentMode('moderator');
+        }
+    }, [loginData]);
+
+
     const toggleModal = (modalName) => {
         setModals((prevModals) => ({
             ...prevModals,
@@ -96,6 +116,34 @@ function App() {
         window.scrollTo(0, 0);
         window.location.reload();
     };
+
+    const handleNewPasswordSubmit = async (newPassword) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
+                token, // token should be in the state or retrieved from the URL
+                password: newPassword,
+            });
+
+            if (response.status === 200) {
+                console.log("Password reset successfully!");
+                //toggleModal('isNewPasswordOpen');
+            }
+        } catch (error) {
+            console.error("Error resetting password:", error);
+        }
+    };
+
+    const handleModeSwitch = () => {
+        setCurrentMode((prevMode) => {
+            if (loginData.role === 'ROLE_ADMIN') {
+                return prevMode === 'admin' ? 'user' : 'admin';
+            } else if (loginData.role === 'ROLE_MODERATOR') {
+                return prevMode === 'moderator' ? 'user' : 'moderator';
+            }
+            return 'user';
+        });
+    };
+
 
     useEffect(() => {
         const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
@@ -130,10 +178,16 @@ function App() {
                 onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
                 openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
                 openAddAdminModal={() => toggleModal('isAddAdminOpen')}
+                onModeSwitch={handleModeSwitch} // Pass handleModeSwitch to Navbar
+                currentMode={currentMode}
             />
             {message && <div className="alert-message">{message}</div>}
 
             <div className="main-content">
+                {currentMode === 'admin' && <AdminView />}
+                {currentMode === 'moderator' && <ModeratorView />}
+                {currentMode === 'user' && <UserView />}
+            </div>
                 <RegistrationModal
                     isOpen={modals.isRegistrationOpen}
                     onClose={() => toggleModal('isRegistrationOpen')}
@@ -144,6 +198,7 @@ function App() {
                     onClose={() => toggleModal('isLoginOpen')}
                     setIsLoggedIn={setIsLoggedIn}
                     setLoginData={setLoginData}
+                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
                 />
                 <PasswordResetModal
                     isOpen={modals.isPasswordResetOpen}
@@ -152,15 +207,8 @@ function App() {
                 <NewPasswordModal
                     isOpen={modals.isNewPasswordOpen}
                     onClose={() => toggleModal('isNewPasswordOpen')}
+                    onSubmit={handleNewPasswordSubmit} // Pass the function here
                     token={token}
-                />
-                <AddModeratorForm
-                    isOpen={modals.isAddModeratorOpen}
-                    onClose={() => toggleModal('isAddModeratorOpen')}
-                />
-                <AddAdminForm
-                    isOpen={modals.isAddAdminOpen}
-                    onClose={() => toggleModal('isAddAdminOpen')}
                 />
 
                 <Routes>
@@ -175,55 +223,6 @@ function App() {
                         }
                     />
                 </Routes>
-
-                {/*/!*<CountryList />*!/*/}
-
-                {/*<AddStadiumForm />*/}
-
-                {/*<StadiumSearchAndEditForm />*/}
-
-                {/*<AddLeagueForm />*/}
-
-                {/*<LeagueSearchAndEditForm />*/}
-
-                {/*<AddCoachForm />*/}
-
-                {/*<CoachSearchAndEditForm />*/}
-
-                {/*<AddCoachesTransferForm />*/}
-
-                <AddCityForm />
-
-                {/*<h1>Add Team</h1>*/}
-                {/*<AddTeamForm />*/}
-
-                {/*<h1>Edit Team</h1>*/}
-                {/*<TeamSearchAndEditForm />*/}
-
-                {/*<h1>Add referee</h1>*/}
-                {/*<AddRefereeForm />*/}
-                {/*<h1>Edit referee</h1>*/}
-                {/*<RefereeSearchAndEditForm />*/}
-
-                <h1>Add injury</h1>
-                <AddInjuryForm />
-
-
-                <h1>Add AddCoachContract</h1>
-                <AddCoachContractForm />
-
-
-
-
-
-                <h1>Add player</h1>
-                <AddPlayerForm />
-                <h1>Edit player</h1>
-                <PlayerSearchAndEditForm />
-                <h1>Improt player</h1>
-                <PlayerImportForm />
-
-            </div>
         </div>
     );
 }

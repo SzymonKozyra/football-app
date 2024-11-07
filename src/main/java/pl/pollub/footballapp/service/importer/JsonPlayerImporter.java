@@ -21,12 +21,12 @@ public class JsonPlayerImporter implements DataImporter {
     public List<PlayerRequest> importData(InputStream inputStream) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Dodanie obsługi LocalDate z odpowiednim formatowaniem
+        // Add support for LocalDate with the appropriate formatting
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         objectMapper.registerModule(javaTimeModule);
 
-        // Parsowanie danych z JSON do tablicy PlayerRequest
+        // Parse JSON data to array of PlayerRequest
         PlayerRequest[] playerRequests = objectMapper.readValue(inputStream, PlayerRequest[].class);
 
         return Arrays.asList(playerRequests);
