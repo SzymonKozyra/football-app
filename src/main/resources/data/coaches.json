@@ -1,23 +1,23 @@
 [
   {
-    "firstName": "JAcek",
-    "lastName": "Doe",
+    "firstName": "Sa",
+    "lastName": "Ass",
     "dateOfBirth": "1980-05-15",
-    "nickname": "Johndany",
+    "nickname": "",
     "countryName": "Poland"
   },
   {
-    "firstName": "Jodadahn",
-    "lastName": "dadaDoe",
+    "firstName": "Kamil",
+    "lastName": "Grabara",
     "dateOfBirth": "1980-05-15",
-    "nickname": "Johdanny",
+    "nickname": "",
     "countryName": "Poland"
   },
   {
-    "firstName": "Jodahn",
-    "lastName": "Dodae",
-    "dateOfBirth": "1980-05-15",
-    "nickname": "Johdanny",
+    "firstName": "Leon",
+    "lastName": "Ass",
+    "dateOfBirth": "1981-05-15",
+    "nickname": "",
     "countryName": "Poland"
   }
 ]

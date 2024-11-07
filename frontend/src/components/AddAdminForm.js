@@ -75,7 +75,6 @@ const AddAdminForm = ({ isOpen, onClose }) => {
                     <button type="submit">Add Admin</button>
                 </form>
                 {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Close</button>
             </div>
         </div>
     );
