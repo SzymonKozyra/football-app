@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Modal.css';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
     const [password, setPassword] = useState('');
@@ -11,45 +11,56 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setMessage('Passwords are not the same!');
-            setMessageType('error');
+            setMessage('Passwords do not match.');
+            setMessageType('danger');
             return;
         }
 
         onSubmit(password);
+        setMessage('Password has been successfully changed.');
+        setMessageType('success');
+
+        // Reset fields after a short delay
+        // setTimeout(() => {
+        //     setPassword('');
+        //     setConfirmPassword('');
+        //     setMessage('');
+        //     onClose();
+        // }, 4000);
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="modal-overlay">
-            <div className="modal">
-                <h2>Set New Password</h2>
-                <form onSubmit={handlePasswordReset}>
-                    <div>
-                        <label>New password:</label>
-                        <input
+        <Modal show={isOpen} onHide={onClose} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Set New Password</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handlePasswordReset}>
+                    <Form.Group controlId="formPassword">
+                        <Form.Label>New Password:</Form.Label>
+                        <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                    </div>
-                    <div>
-                        <label>Confirm password:</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group controlId="formConfirmPassword" className="mt-3">
+                        <Form.Label>Confirm Password:</Form.Label>
+                        <Form.Control
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                         />
-                    </div>
-                    <button type="submit">Change Password</button>
-                </form>
-                {message && <p className={`message ${messageType}`}>{message}</p>}
-                <button onClick={onClose}>Close</button>
-            </div>
-        </div>
+                    </Form.Group>
+                    {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
+                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                        Change Password
+                    </Button>
+                </Form>
+            </Modal.Body>
+        </Modal>
     );
 };
 

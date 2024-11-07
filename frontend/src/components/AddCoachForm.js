@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../App.css';
+import {Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddCoachForm = () => {
     const [firstName, setFirstName] = useState('');
@@ -13,12 +14,12 @@ const AddCoachForm = () => {
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
 
-    //WIEK TRENERA > 25
+    // Set age limit to 25+
     const getTodayDate = () => {
         const today = new Date();
-        const year = today.getFullYear()-25;
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
-        const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+        const year = today.getFullYear() - 25;
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
@@ -62,7 +63,6 @@ const AddCoachForm = () => {
                     alert('Failed to add coach');
                 });
         } else {
-            // File import logic
             const formData = new FormData();
             formData.append('file', file);
             formData.append('type', fileType);
@@ -83,105 +83,156 @@ const AddCoachForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Add Coach</h1>
-            <div className="radio-group">
-                <label>
-                    <input
-                        type="radio"
-                        value="manual"
-                        checked={manualEntry}
-                        onChange={() => setManualEntry(true)}
-                    />
-                    Manual Entry
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        value="import"
-                        checked={!manualEntry}
-                        onChange={() => setManualEntry(false)}
-                    />
-                    Import from File
-                </label>
-            </div>
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Add Coach</h1>
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+                <Row className="mb-3 justify-content-center">
+                    <Col xs="auto">
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="entryType"
+                            defaultValue="manual"
+                            onChange={(value) => setManualEntry(value === 'manual')}
+                        >
+                            <ToggleButton
+                                id="manual-entry"
+                                value="manual"
+                                variant={manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Manual Entry
+                            </ToggleButton>
+                            <ToggleButton
+                                id="import-file"
+                                value="import"
+                                variant={!manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Import from File
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Row>
 
-            {manualEntry ? (
-                <>
-                    <div>
-                        <label>First Name</label>
-                        <input
-                            type="text"
-                            value={firstName}
-                            onChange={e => setFirstName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Last Name</label>
-                        <input
-                            type="text"
-                            value={lastName}
-                            onChange={e => setLastName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Date of Birth</label>
-                        <input
-                            type="date"
-                            value={dateOfBirth}
-                            onChange={e => setDateOfBirth(e.target.value)}
-                            max={getTodayDate()}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Nickname</label>
-                        <input
-                            type="text"
-                            value={nickname}
-                            onChange={e => setNickname(e.target.value)}
-                        />
-                    </div>
+                {manualEntry ? (
+                    <>
+                        <Form.Group controlId="formFirstName" className="mb-3">
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={firstName}
+                                onChange={e => setFirstName(e.target.value)}
+                                placeholder="Enter first name"
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formLastName" className="mb-3">
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={lastName}
+                                onChange={e => setLastName(e.target.value)}
+                                placeholder="Enter last name"
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formDateOfBirth" className="mb-3">
+                            <Form.Label>Date of Birth</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={dateOfBirth}
+                                onChange={e => setDateOfBirth(e.target.value)}
+                                max={getTodayDate()}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formNickname" className="mb-3">
+                            <Form.Label>Nickname</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={nickname}
+                                onChange={e => setNickname(e.target.value)}
+                                placeholder="Enter nickname"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select
+                                value={selectedCountry}
+                                onChange={(e) => setSelectedCountry(e.target.value)}
+                                required
+                            >
+                                <option value="">Select a country</option>
+                                {countries.map(country => (
+                                    <option key={country.id} value={country.name}>
+                                        {country.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </>
+                ) : (
+                    <>
+                        <Form.Group controlId="formFileType" className="mb-3">
+                            <Form.Label>File Type</Form.Label>
+                            <Form.Select
+                                value={fileType}
+                                onChange={(e) => setFileType(e.target.value)}
+                                required
+                            >
+                                <option value="">Select file type</option>
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Import Coaches (CSV or JSON)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".csv,.json"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                    </>
+                )}
 
-                    <div>
-                        <label>Country</label>
-                        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)} required>
-                            <option value="">Select a country</option>
-                            {countries.map(country => (
-                                <option key={country.id} value={country.name}>
-                                    {country.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <div>
-                        <label>File Type</label>
-                        <select value={fileType} onChange={e => setFileType(e.target.value)} required>
-                            <option value="">Select File Type</option>
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV</option>
-                        </select>
-                    </div>
+                <Button variant="primary" type="submit" className="w-100 mt-3">
+                    {manualEntry ? 'Add Coach' : 'Import Coaches'}
+                </Button>
+            </Form>
 
-                    <div>
-                        <label>Import Coaches (CSV or JSON)</label>
-                        <input
-                            type="file"
-                            accept=".csv,.json"
-                            onChange={e => setFile(e.target.files[0])}
-                            required
-                        />
-                    </div>
-                </>
-            )}
-
-            <button type="submit">Add Coach</button>
-        </form>
+            {/* Template Section */}
+            <Accordion className="mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>File Format Templates</Accordion.Header>
+                    <Accordion.Body className="text-start">
+                        <h5>JSON Template</h5>
+                        <pre>
+                            {`[
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1980-05-15",
+    "nickname": "The One",
+    "countryName": "China"
+  },
+  {
+    "firstName": "Kamil",
+    "lastName": "Nowak",
+    "dateOfBirth": "1950-12-14",
+    "nickname": "",
+    "countryName": "Poland"
+  }
+]`}
+                        </pre>
+                        <h5>CSV Template</h5>
+                        <pre>
+                            {`CityName,CountryName
+AnotherCity,AnotherCountry`}
+                        </pre>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        </Container>
     );
 };
 

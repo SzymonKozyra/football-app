@@ -34,6 +34,7 @@ public class ImporterFactory {
     @Autowired
     private JsonCoachImporter jsonCoachImporter;
 
+
     public DataImporter getImporter(String fileType) {
         if ("json".equalsIgnoreCase(fileType)) {
             return jsonStadiumImporter;

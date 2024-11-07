@@ -17,11 +17,12 @@ import java.util.List;
 
 @Service
 public class CsvPlayerImporter implements DataImporter {
+
     private Long parseLong(String value) {
         try {
             return value != null && !value.isEmpty() ? Long.parseLong(value) : null;
         } catch (NumberFormatException e) {
-            return null;  // W przypadku błędu konwersji zwracamy null
+            return null;
         }
     }
 
@@ -29,10 +30,9 @@ public class CsvPlayerImporter implements DataImporter {
         try {
             return value != null && !value.isEmpty() ? Double.parseDouble(value) : null;
         } catch (NumberFormatException e) {
-            return null;  // W przypadku błędu konwersji zwracamy null
+            return null;
         }
     }
-
 
     @Override
     public List<PlayerRequest> importData(InputStream inputStream) throws IOException {
@@ -43,21 +43,23 @@ public class CsvPlayerImporter implements DataImporter {
         Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
         for (CSVRecord csvRecord : csvRecords) {
+            Double parsedValue = parseDouble(csvRecord.get("value"));
+            BigDecimal value = parsedValue != null ? BigDecimal.valueOf(parsedValue) : BigDecimal.ZERO;
+
             PlayerRequest playerRequest = new PlayerRequest(
                     csvRecord.get("firstName"),
                     csvRecord.get("lastName"),
-                    LocalDate.parse(csvRecord.get("dateOfBirth")),  // Konwersja do LocalDate
+                    LocalDate.parse(csvRecord.get("dateOfBirth")),
                     csvRecord.get("nickname"),
                     csvRecord.get("picture"),
-                    parseLong(csvRecord.get("positionId")),  // Konwersja do Long
-                    parseLong(csvRecord.get("countryId")),   // Konwersja do Long
-                    parseLong(csvRecord.get("clubId")),      // Konwersja do Long
-                    parseLong(csvRecord.get("nationalTeamId")), // Konwersja do Long
-                    BigDecimal.valueOf(parseDouble(csvRecord.get("value")))      // Konwersja do Double (dla wartości)
+                    parseLong(csvRecord.get("positionId")),
+                    parseLong(csvRecord.get("countryId")),
+                    parseLong(csvRecord.get("clubId")),
+                    parseLong(csvRecord.get("nationalTeamId")),
+                    value
             );
             playerRequests.add(playerRequest);
         }
-
 
         return playerRequests;
     }

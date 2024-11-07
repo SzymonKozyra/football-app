@@ -14,5 +14,7 @@ public interface CityRepository extends JpaRepository<City, Long> {
     boolean existsByNameAndCountry(String name, Country country);
 
     Object findByNameContaining(String query);
+
+    Optional<City> findByNameAndCountry(String cityName, Country country);
 }
 
