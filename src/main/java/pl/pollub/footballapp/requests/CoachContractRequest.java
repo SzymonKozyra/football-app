@@ -3,28 +3,12 @@ package pl.pollub.footballapp.requests;
 import java.time.LocalDate;
 
 public class CoachContractRequest {
-    private Long coachId;
-    private Long teamId;
     private LocalDate startDate;
     private LocalDate endDate;
-    private double salary;
-    private double transferFee;
-
-    public Long getCoachId() {
-        return coachId;
-    }
-
-    public void setCoachId(Long coachId) {
-        this.coachId = coachId;
-    }
-
-    public Long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
-    }
+    private Long teamId;
+    private Long coachId;
+    private Double salary;
+    private Double transferFee;
 
     public LocalDate getStartDate() {
         return startDate;
@@ -42,19 +26,35 @@ public class CoachContractRequest {
         this.endDate = endDate;
     }
 
-    public double getSalary() {
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public Long getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(Long coachId) {
+        this.coachId = coachId;
+    }
+
+    public Double getSalary() {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(Double salary) {
         this.salary = salary;
     }
 
-    public double getTransferFee() {
+    public Double getTransferFee() {
         return transferFee;
     }
 
-    public void setTransferFee(double transferFee) {
+    public void setTransferFee(Double transferFee) {
         this.transferFee = transferFee;
     }
 }

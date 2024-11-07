@@ -11,21 +11,42 @@ public class CoachContract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    @OneToOne
-    @JoinColumn(name = "team_id")
+    @Column(nullable = false)
+    private boolean isActive;
+
+
+    //@OneToOne
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
     @ManyToOne
-    @JoinColumn(name = "coach_id")
+    @JoinColumn(name = "coach_id", nullable = false)
     private Coach coach;
 
+    @Column(nullable = false)
+    private Double salary;
 
-    private double salary;
-    private double transferFee;
+    private Double transferFee;
+
+    @PrePersist
+    @PreUpdate
+    private void updateIsActive() {
+        this.isActive = (endDate == null || endDate.isAfter(LocalDate.now()));
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean active) {
+        isActive = active;
+    }
 
     public Long getId() {
         return id;

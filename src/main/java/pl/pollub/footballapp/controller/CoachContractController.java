@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.model.CoachContract;
+import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.repository.CoachContractRepository;
 import pl.pollub.footballapp.repository.CoachRepository;
@@ -33,7 +34,12 @@ public class CoachContractController {
 //        coachContractRepository.findByCoachIdAndEndDateIsNull(request.getCoachId()).ifPresent(contract -> {
 //            throw new IllegalArgumentException("Coach already has an active contract.");
 //        });
-        if (coachContractRepository.findByCoachIdAndEndDateIsNull(request.getCoachId()).isPresent()) {
+//        if (coachContractRepository.findByCoachIdAndEndDateIsNull(request.getCoachId()).isPresent()) {
+//            return ResponseEntity.badRequest().body("Coach already has an active contract.");
+//        }
+        boolean hasActiveContract = coachContractRepository.existsByCoachIdAndIsActive(request.getCoachId(), true);
+
+        if (hasActiveContract) {
             return ResponseEntity.badRequest().body("Coach already has an active contract.");
         }
 
@@ -46,44 +52,91 @@ public class CoachContractController {
         Team team = teamRepository.findById(request.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Team not found with id: " + request.getTeamId()));
 
-
-
         CoachContract coachContract = new CoachContract();
         coachContract.setStartDate(request.getStartDate());
         coachContract.setEndDate(request.getEndDate());
-        coachContract.setSalary(request.getSalary());
-        coachContract.setTransferFee(request.getTransferFee());
         coachContract.setCoach(coach);
         coachContract.setTeam(team);
-
-
+        coachContract.setSalary(request.getSalary());
+        coachContract.setTransferFee(request.getTransferFee());
         coachContractRepository.save(coachContract);
-
-        //return coachContractRepository.save(coachContract);
-        return ResponseEntity.ok("Contract added successfully");
+        return ResponseEntity.ok("Coach contract added successfully");
     }
+
+    @GetMapping("/coach/{coachId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public List<CoachContract> getContractsByCoach(@PathVariable Long coachId) {
+        return coachContractRepository.findByCoachId(coachId);
+    }
+
+    @GetMapping("/team/{teamId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public List<CoachContract> getContractsByTeam(@PathVariable Long teamId) {
+        return coachContractRepository.findByTeamId(teamId);
+    }
+
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<CoachContract>> searchCoachContracts(@RequestParam Long coachId) {
-        // Wyszukiwanie kontraktów na podstawie ID trenera
+        // Contracts by coach ID
         List<CoachContract> contracts = coachContractRepository.findByCoachId(coachId);
         return ResponseEntity.ok(contracts);
     }
 
+//    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<CoachContract> editCoachContract(@PathVariable Long id, @RequestBody CoachContractRequest request) {
+//        CoachContract coachContract = coachContractRepository.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+//        coachContract.setStartDate(request.getStartDate());
+//        coachContract.setEndDate(request.getEndDate());
+//        coachContract.setSalary(request.getSalary());
+//        coachContract.setTransferFee(request.getTransferFee());
+//        coachContractRepository.save(coachContract);
+//        return ResponseEntity.ok(coachContract);
+//    }
+
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<CoachContract> getCoachContractById(@PathVariable Long id) {
+        CoachContract coachContract = coachContractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+        return ResponseEntity.ok(coachContract);
+    }
+
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")
-    public CoachContract editCoachContract(@PathVariable Long id, @RequestBody CoachContractRequest request) {
-        CoachContract coachContract = coachContractRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+    //public ResponseEntity<?> editCoachContract(@PathVariable Long id, @RequestBody CoachContractRequest request) {
+    public ResponseEntity<CoachContract> editCoachContract(@PathVariable Long id, @RequestBody CoachContractRequest request) {
 
-        // Aktualizacja pól kontraktu
+        if (id == null) {
+            throw new IllegalArgumentException("Contract ID must not be null");
+        }
+
+
+        CoachContract coachContract = coachContractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        Coach coach = coachRepository.findById(coachContract.getCoach().getId())
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+
+        Team team = teamRepository.findById(coachContract.getTeam().getId())
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+
+        coachContract.setCoach(coach);
+        coachContract.setTeam(team);
         coachContract.setStartDate(request.getStartDate());
         coachContract.setEndDate(request.getEndDate());
         coachContract.setSalary(request.getSalary());
         coachContract.setTransferFee(request.getTransferFee());
 
-        return coachContractRepository.save(coachContract);
+//        coachContractRepository.save(coachContract);
+//        return ResponseEntity.ok("Coach contract updated successfully");
+        CoachContract updatedContract = coachContractRepository.save(coachContract);
+        return ResponseEntity.ok(updatedContract);
     }
 }
-
