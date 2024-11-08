@@ -19,24 +19,21 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
         onSubmit(password);
         setMessage('Password has been successfully changed.');
         setMessageType('success');
-
-        // Reset fields after a short delay
-        // setTimeout(() => {
-        //     setPassword('');
-        //     setConfirmPassword('');
-        //     setMessage('');
-        //     onClose();
-        // }, 4000);
+        setTimeout(() => {
+            setPassword('');
+            setConfirmPassword('');
+            setMessage('');
+            onClose();
+        }, 2000);
     };
 
     return (
         <Modal show={isOpen} onHide={onClose} centered>
-            <Modal.Header closeButton>
-                <Modal.Title>Set New Password</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+            <Modal.Header closeButton />
+            <Modal.Body className="text-center">
+                <h4 className="mb-4">Set New Password</h4>
                 <Form onSubmit={handlePasswordReset}>
-                    <Form.Group controlId="formPassword">
+                    <Form.Group controlId="formPassword" className="mt-3">
                         <Form.Label>New Password:</Form.Label>
                         <Form.Control
                             type="password"
@@ -55,7 +52,7 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
                         />
                     </Form.Group>
                     {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
-                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                    <Button variant="primary" type="submit" className="w-50 mt-4 mb-2">
                         Change Password
                     </Button>
                 </Form>

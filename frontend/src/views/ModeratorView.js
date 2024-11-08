@@ -14,7 +14,7 @@ import PlayerImportForm from '../components/PlayerImportForm';
 import AddRefereeForm from '../components/AddRefereeForm';
 import RefereeSearchAndEditForm from '../components/RefereeSearchAndEditForm';
 import AddInjuryForm from '../components/AddInjuryForm';
-import { Container, Row, Col, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
 const ModeratorView = () => {
     const [selectedComponent, setSelectedComponent] = useState(null);
@@ -45,28 +45,38 @@ const ModeratorView = () => {
             <Row>
                 {/* Sidebar */}
                 <Col md={3}>
-                    <h4 className="mb-4">Moderator Panel</h4>
-                    <ListGroup>
-                        <ListGroup.Item variant="secondary"><b>Add Data</b></ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddLeague')}>Add League</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddCoach')}>Add Coach</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddTeam')}>Add Team</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddStadium')}>Add Stadium</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddCity')}>Add City</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayer')}>Add Player</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddReferee')}>Add Referee</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
-                    </ListGroup>
-                    <ListGroup className="mt-4">
-                        <ListGroup.Item variant="secondary"><b>Edit Data</b></ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditLeagues')}>Edit Leagues</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditCoaches')}>Edit Coaches</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditTeams')}>Edit Teams</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditStadiums')}>Edit Stadiums</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayers')}>Edit Players</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('ImportPlayers')}>Import Players</ListGroup.Item>
-                        <ListGroup.Item action onClick={() => setSelectedComponent('EditReferees')}>Edit Referees</ListGroup.Item>
-                    </ListGroup>
+                    <h4 className="mb-4">Moderator Functions</h4>
+                    <Accordion defaultActiveKey="2">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Add Data</Accordion.Header>
+                            <Accordion.Body>
+                                <ListGroup>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddLeague')}>Add League</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCoach')}>Add Coach</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddTeam')}>Add Team</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddStadium')}>Add Stadium</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCity')}>Add City</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayer')}>Add Player</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddReferee')}>Add Referee</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
+                                </ListGroup>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>Edit Data</Accordion.Header>
+                            <Accordion.Body>
+                                <ListGroup>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditLeagues')}>Edit Leagues</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditCoaches')}>Edit Coaches</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditTeams')}>Edit Teams</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditStadiums')}>Edit Stadiums</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayers')}>Edit Players</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('ImportPlayers')}>Import Players</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditReferees')}>Edit Referees</ListGroup.Item>
+                                </ListGroup>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
                 </Col>
 
                 {/* Main Content Area */}

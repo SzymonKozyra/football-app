@@ -9,7 +9,6 @@ import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
-import AddModeratorForm from './components/AddModeratorForm';
 import { useLocation, Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddLeagueForm from './components/AddLeagueForm';
@@ -31,7 +30,6 @@ import AddPlayerForm from "./components/AddPlayerForm";
 import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
 import PlayerImportForm from "./components/PlayerImportForm";
 import AddInjuryForm from "./components/AddInjuryForm";
-import AddAdminForm from "./components/AddAdminForm";
 //import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
 //import InjuryImportForm from "./components/InjuryImportForm";
 

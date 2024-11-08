@@ -26,7 +26,7 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
                 <div className="d-flex align-items-center">
                     {isLoggedIn && (loginData.role === 'ROLE_ADMIN' || loginData.role === 'ROLE_MODERATOR') && (
                         <button onClick={onModeSwitch} className="btn btn-outline-secondary me-2">
-                            {currentMode === 'user' ? 'Switch to ' + loginData.role : 'Switch to User'}
+                            {currentMode === 'user' ? `Switch to ${loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MOD'} View` : 'Switch to USER View'}
                         </button>
                     )}
                     {isLoggedIn ? (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const PlayerSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -78,7 +79,7 @@ const PlayerSearchAndEditForm = () => {
         })
             .then(response => {
                 alert('Player updated successfully');
-                setSelectedPlayer(null); // Clear selected player after update
+                setSelectedPlayer(null);
             })
             .catch(error => {
                 console.error('Error updating player:', error);
@@ -87,14 +88,15 @@ const PlayerSearchAndEditForm = () => {
     };
 
     return (
-        <div>
-            <h2>Search Player</h2>
-            <form onSubmit={handleSearch}>
+        <div className="form-container">
+            <h1>Search Player</h1>
+            <form onSubmit={handleSearch} className="form-container">
                 <input
                     type="text"
                     placeholder="Enter first or last name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
                 />
                 <button type="submit">Search</button>
             </form>
@@ -102,9 +104,9 @@ const PlayerSearchAndEditForm = () => {
             {players.length > 0 && (
                 <div>
                     <h3>Players found:</h3>
-                    <ul>
+                    <ul className="player-list">
                         {players.map(player => (
-                            <li key={player.id}>
+                            <li key={player.id} className="list-item">
                                 <strong>ID:</strong> {player.id} -
                                 <strong> Name:</strong> {player.firstName} {player.lastName} -
                                 <strong> Position:</strong> {player.position.abbreviation} -
@@ -123,7 +125,7 @@ const PlayerSearchAndEditForm = () => {
             )}
 
             {selectedPlayer && (
-                <div>
+                <div className="form-container">
                     <h3>Edit Player: {selectedPlayer.firstName} {selectedPlayer.lastName}</h3>
                     <form onSubmit={handleEditSubmit}>
                         <div>
@@ -132,6 +134,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.firstName}
                                 onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -140,6 +143,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.lastName}
                                 onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -148,6 +152,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="date"
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({ ...editData, dateOfBirth: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -156,6 +161,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.nickname}
                                 onChange={(e) => setEditData({ ...editData, nickname: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -164,6 +170,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.picture}
                                 onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -171,6 +178,7 @@ const PlayerSearchAndEditForm = () => {
                             <select
                                 value={editData.positionId}
                                 onChange={(e) => setEditData({ ...editData, positionId: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Position</option>
                                 {positions.map(position => (
@@ -185,6 +193,7 @@ const PlayerSearchAndEditForm = () => {
                             <select
                                 value={editData.countryId}
                                 onChange={(e) => setEditData({ ...editData, countryId: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (
@@ -198,6 +207,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.clubId}
                                 onChange={(e) => setEditData({ ...editData, clubId: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -206,6 +216,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.nationalTeamId}
                                 onChange={(e) => setEditData({ ...editData, nationalTeamId: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -214,6 +225,7 @@ const PlayerSearchAndEditForm = () => {
                                 type="number"
                                 value={editData.value}
                                 onChange={(e) => setEditData({ ...editData, value: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <button type="submit">Save Changes</button>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const PlayerImportForm = () => {
     const [file, setFile] = useState(null);
@@ -35,17 +36,21 @@ const PlayerImportForm = () => {
     };
 
     return (
-        <div>
-            <h2>Import Players</h2>
-            <form onSubmit={handleSubmit}>
-                <label>Select File:</label>
-                <input type="file" onChange={handleFileChange} />
+        <div className="form-container">
+            <h1>Import Players</h1>
+            <form onSubmit={handleSubmit} className="form-container">
+                <div>
+                    <label>Select File:</label>
+                    <input type="file" onChange={handleFileChange} className="input-field" />
+                </div>
 
-                <label>File Type:</label>
-                <select value={fileType} onChange={handleFileTypeChange}>
-                    <option value="csv">CSV</option>
-                    <option value="json">JSON</option>
-                </select>
+                <div>
+                    <label>File Type:</label>
+                    <select value={fileType} onChange={handleFileTypeChange} className="input-field">
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
 
                 <button type="submit">Import Players</button>
             </form>
