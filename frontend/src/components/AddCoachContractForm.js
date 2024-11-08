@@ -111,6 +111,7 @@ const AddCoachContractForm = () => {
             endDate,
             salary,
             transferFee,
+            transferType,
             coachId: selectedCoach ? selectedCoach.id : null,
             teamId: selectedTeam ? selectedTeam.id : null
         };
