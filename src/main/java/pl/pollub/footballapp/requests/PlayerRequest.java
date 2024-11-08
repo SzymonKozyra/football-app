@@ -13,8 +13,8 @@ public class PlayerRequest {
     private String picture;
     private Long positionId; // Foreign key, referencing Position entity
     private Long countryId;  // Foreign key, referencing Country entity
-    private Long clubId;     // Foreign key, referencing Team entity (only if the team is a club)
-    private Long nationalTeamId; // Foreign key, referencing Team entity (only if the team is a national team)
+//    private Long clubId;     // Foreign key, referencing Team entity (only if the team is a club)
+//    private Long nationalTeamId; // Foreign key, referencing Team entity (only if the team is a national team)
 
     public BigDecimal getValue() {
         return value;
@@ -32,7 +32,7 @@ public class PlayerRequest {
     public PlayerRequest() {}
 
     public PlayerRequest(Long id, String firstName, String lastName, LocalDate dateOfBirth, String nickname,
-                         String picture, Long positionId, Long countryId, Long clubId, Long nationalTeamId) {
+                         String picture, Long positionId, Long countryId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,11 +41,11 @@ public class PlayerRequest {
         this.picture = picture;
         this.positionId = positionId;
         this.countryId = countryId;
-        this.clubId = clubId;
-        this.nationalTeamId = nationalTeamId;
+//        this.clubId = clubId;
+//        this.nationalTeamId = nationalTeamId;
     }
     public PlayerRequest(String firstName, String lastName, LocalDate dateOfBirth, String nickname, String picture,
-                         Long positionId, Long countryId, Long clubId, Long nationalTeamId, BigDecimal value) {
+                         Long positionId, Long countryId, BigDecimal value) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
@@ -53,8 +53,8 @@ public class PlayerRequest {
         this.picture = picture;
         this.positionId = positionId;
         this.countryId = countryId;
-        this.clubId = clubId;
-        this.nationalTeamId = nationalTeamId;
+//        this.clubId = clubId;
+//        this.nationalTeamId = nationalTeamId;
         this.value = value;
     }
 
@@ -83,9 +83,9 @@ public class PlayerRequest {
     public Long getCountryId() { return countryId; }
     public void setCountryId(Long countryId) { this.countryId = countryId; }
 
-    public Long getClubId() { return clubId; }
-    public void setClubId(Long clubId) { this.clubId = clubId; }
-
-    public Long getNationalTeamId() { return nationalTeamId; }
-    public void setNationalTeamId(Long nationalTeamId) { this.nationalTeamId = nationalTeamId; }
+//    public Long getClubId() { return clubId; }
+//    public void setClubId(Long clubId) { this.clubId = clubId; }
+//
+//    public Long getNationalTeamId() { return nationalTeamId; }
+//    public void setNationalTeamId(Long nationalTeamId) { this.nationalTeamId = nationalTeamId; }
 }

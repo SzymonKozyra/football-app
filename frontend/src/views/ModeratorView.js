@@ -67,6 +67,8 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayer')}>Add Player</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddReferee')}>Add Referee</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCoachContract')}>Add Coach Contract</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayerContract')}>Add Player Contract</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>
@@ -81,6 +83,8 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayers')}>Edit Players</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('ImportPlayers')}>Import Players</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditReferees')}>Edit Referees</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditCoachContracts')}>Edit Coach Contracts</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayerContracts')}>Edit Player Contracts</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>

@@ -12,17 +12,17 @@ const AddPlayerForm = () => {
         picture: '',
         positionId: '',
         countryId: '',
-        clubId: '',
-        nationalTeamId: '',
+//        clubId: '',
+//        nationalTeamId: '',
         value: ''
     });
 
     const [positions, setPositions] = useState([]);
     const [countries, setCountries] = useState([]);
-    const [clubSearchQuery, setClubSearchQuery] = useState('');
-    const [nationalTeamSearchQuery, setNationalTeamSearchQuery] = useState('');
-    const [filteredClubs, setFilteredClubs] = useState([]);
-    const [filteredNationalTeams, setFilteredNationalTeams] = useState([]);
+//    const [clubSearchQuery, setClubSearchQuery] = useState('');
+//    const [nationalTeamSearchQuery, setNationalTeamSearchQuery] = useState('');
+//    const [filteredClubs, setFilteredClubs] = useState([]);
+//    const [filteredNationalTeams, setFilteredNationalTeams] = useState([]);
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState("csv");
 
@@ -45,41 +45,41 @@ const AddPlayerForm = () => {
             .then(res => setCountries(res.data));
     }, []);
 
-    useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
+//    useEffect(() => {
+//        const token = localStorage.getItem('jwtToken');
+//
+//        if (clubSearchQuery && token) {
+//            axios.get(`http://localhost:8080/api/teams/search?query=${clubSearchQuery}&isClub=true`, {
+//                headers: { Authorization: `Bearer ${token}` }
+//            })
+//                .then(response => setFilteredClubs(response.data))
+//                .catch(error => console.error('Error fetching clubs:', error));
+//        } else {
+//            setFilteredClubs([]);
+//        }
+//
+//        if (nationalTeamSearchQuery && token) {
+//            axios.get(`http://localhost:8080/api/teams/search?query=${nationalTeamSearchQuery}&isClub=false`, {
+//                headers: { Authorization: `Bearer ${token}` }
+//            })
+//                .then(response => setFilteredNationalTeams(response.data))
+//                .catch(error => console.error('Error fetching national teams:', error));
+//        } else {
+//            setFilteredNationalTeams([]);
+//        }
+//    }, [clubSearchQuery, nationalTeamSearchQuery]);
 
-        if (clubSearchQuery && token) {
-            axios.get(`http://localhost:8080/api/teams/search?query=${clubSearchQuery}&isClub=true`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredClubs(response.data))
-                .catch(error => console.error('Error fetching clubs:', error));
-        } else {
-            setFilteredClubs([]);
-        }
+//    const handleClubSelect = (club) => {
+//        setPlayerData({ ...playerData, clubId: club.id });
+//        setClubSearchQuery(club.name);
+//        setFilteredClubs([]);
+//    };
 
-        if (nationalTeamSearchQuery && token) {
-            axios.get(`http://localhost:8080/api/teams/search?query=${nationalTeamSearchQuery}&isClub=false`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredNationalTeams(response.data))
-                .catch(error => console.error('Error fetching national teams:', error));
-        } else {
-            setFilteredNationalTeams([]);
-        }
-    }, [clubSearchQuery, nationalTeamSearchQuery]);
-
-    const handleClubSelect = (club) => {
-        setPlayerData({ ...playerData, clubId: club.id });
-        setClubSearchQuery(club.name);
-        setFilteredClubs([]);
-    };
-
-    const handleNationalTeamSelect = (nationalTeam) => {
-        setPlayerData({ ...playerData, nationalTeamId: nationalTeam.id });
-        setNationalTeamSearchQuery(nationalTeam.name);
-        setFilteredNationalTeams([]);
-    };
+//    const handleNationalTeamSelect = (nationalTeam) => {
+//        setPlayerData({ ...playerData, nationalTeamId: nationalTeam.id });
+//        setNationalTeamSearchQuery(nationalTeam.name);
+//        setFilteredNationalTeams([]);
+//    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -215,44 +215,6 @@ const AddPlayerForm = () => {
                                 </option>
                             ))}
                         </select>
-                    </div>
-
-                    <div>
-                        <label>Search Club</label>
-                        <input
-                            type="text"
-                            value={clubSearchQuery}
-                            onChange={e => setClubSearchQuery(e.target.value)}
-                            placeholder="Search for a club"
-                        />
-                        {filteredClubs.length > 0 && (
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {filteredClubs.map((club) => (
-                                    <li key={club.id} onClick={() => handleClubSelect(club)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
-                                        {club.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div>
-                        <label>Search National Team</label>
-                        <input
-                            type="text"
-                            value={nationalTeamSearchQuery}
-                            onChange={e => setNationalTeamSearchQuery(e.target.value)}
-                            placeholder="Search for a national team"
-                        />
-                        {filteredNationalTeams.length > 0 && (
-                            <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                {filteredNationalTeams.map((nationalTeam) => (
-                                    <li key={nationalTeam.id} onClick={() => handleNationalTeamSelect(nationalTeam)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
-                                        {nationalTeam.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
                     </div>
 
                     <div>
