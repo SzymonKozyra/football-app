@@ -20,7 +20,6 @@ public class CoachContract {
     private boolean isActive;
 
 
-    //@OneToOne
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
@@ -37,7 +36,7 @@ public class CoachContract {
     @PrePersist
     @PreUpdate
     private void updateIsActive() {
-        this.isActive = (endDate == null || endDate.isAfter(LocalDate.now()));
+        this.isActive = (endDate == null || !endDate.isBefore(LocalDate.now()));
     }
 
     public boolean getIsActive() {
