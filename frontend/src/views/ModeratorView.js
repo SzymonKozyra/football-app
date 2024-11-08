@@ -13,6 +13,10 @@ import PlayerSearchAndEditForm from '../components/PlayerSearchAndEditForm';
 import PlayerImportForm from '../components/PlayerImportForm';
 import AddRefereeForm from '../components/AddRefereeForm';
 import RefereeSearchAndEditForm from '../components/RefereeSearchAndEditForm';
+import AddCoachContractForm from "../components/AddCoachContractForm";
+import EditCoachContractForm from "../components/EditCoachContractForm";
+import AddPlayerContractForm from "../components/AddPlayerContractForm";
+import EditPlayerContractForm from "../components/EditPlayerContractForm";
 import AddInjuryForm from '../components/AddInjuryForm';
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
@@ -36,6 +40,10 @@ const ModeratorView = () => {
             case 'AddReferee': return <AddRefereeForm />;
             case 'EditReferees': return <RefereeSearchAndEditForm />;
             case 'AddInjury': return <AddInjuryForm />;
+            case 'AddCoachContract': return <AddCoachContractForm />;
+            case 'EditCoachContracts': return <EditCoachContractForm />;
+            case 'AddPlayerContract': return <AddPlayerContractForm />;
+            case 'EditPlayerContracts': return <EditPlayerContractForm />;
             default: return <p>Please select an option from the sidebar.</p>;
         }
     };
