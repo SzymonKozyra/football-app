@@ -10,8 +10,7 @@ const TeamSearchAndEditForm = () => {
         id: '',
         name: '',
         picture: '',
-        leagueId: '',
-        coachId: ''
+        leagueId: ''
     });
 
     const handleSearch = (e) => {
@@ -35,8 +34,7 @@ const TeamSearchAndEditForm = () => {
             id: team.id,
             name: team.name,
             picture: team.picture,
-            leagueId: team.league ? team.league.id : '',
-            coachId: team.coach ? team.coach.id : ''
+            leagueId: team.league ? team.league.id : ''
         });
     };
 
@@ -87,7 +85,6 @@ const TeamSearchAndEditForm = () => {
                                 /><br />
                                 <strong>Is Club:</strong> {team.isClub ? "Yes" : "No"}<br />
                                 <strong>League:</strong> {team.league ? team.league.name : 'No League'}<br />
-                                <strong>Coach:</strong> {team.coach ? `${team.coach.firstName} ${team.coach.lastName}` : 'No Coach'}<br />
                                 <button onClick={() => handleEditClick(team)}>Edit</button>
                             </li>
                         ))}
@@ -128,15 +125,6 @@ const TeamSearchAndEditForm = () => {
                                 type="number"
                                 value={editData.leagueId}
                                 onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
-                                className="input-field"
-                            />
-                        </div>
-                        <div>
-                            <label>Coach ID</label>
-                            <input
-                                type="number"
-                                value={editData.coachId}
-                                onChange={(e) => setEditData({ ...editData, coachId: e.target.value })}
                                 className="input-field"
                             />
                         </div>

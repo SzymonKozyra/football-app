@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.requests.TeamRequest;
-import pl.pollub.footballapp.repository.CoachRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.repository.TeamRepository;
 
@@ -15,9 +14,6 @@ import java.util.List;
 
 @Service
 public class JsonTeamImporter implements DataImporter {
-
-    @Autowired
-    private CoachRepository coachRepository;
 
     @Autowired
     private LeagueRepository leagueRepository;

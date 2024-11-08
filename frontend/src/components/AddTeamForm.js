@@ -7,8 +7,6 @@ const AddTeamForm = () => {
     const [picture, setPicture] = useState('');
     const [isClub, setIsClub] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredCoaches, setFilteredCoaches] = useState([]);
-    const [selectedCoach, setSelectedCoach] = useState(null);
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
@@ -18,16 +16,6 @@ const AddTeamForm = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
-
-        if (searchQuery && token) {
-            axios.get(`http://localhost:8080/api/coaches/search?query=${searchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredCoaches(response.data))
-                .catch(error => console.error('Error fetching coaches:', error));
-        } else {
-            setFilteredCoaches([]);
-        }
 
         if (leagueSearchQuery && token) {
             axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
@@ -39,12 +27,6 @@ const AddTeamForm = () => {
             setFilteredLeagues([]);
         }
     }, [searchQuery, leagueSearchQuery]);
-
-    const handleCoachSelect = (coach) => {
-        setSelectedCoach(coach);
-        setSearchQuery(`${coach.firstName} ${coach.lastName}`);
-        setFilteredCoaches([]);
-    };
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
@@ -65,8 +47,7 @@ const AddTeamForm = () => {
                 name: teamName,
                 picture: picture,
                 isClub: isClub,
-                leagueId: selectedLeague ? selectedLeague.id : null,
-                coachId: selectedCoach ? selectedCoach.id : null,
+                leagueId: selectedLeague ? selectedLeague.id : null
             };
 
             axios.post('http://localhost:8080/api/teams/add', teamData, {
@@ -76,7 +57,6 @@ const AddTeamForm = () => {
                     alert('Team added successfully');
                     setTeamName('');
                     setPicture('');
-                    setSelectedCoach(null);
                     setSearchQuery('');
                     setSelectedLeague(null);
                     setLeagueSearchQuery('');
@@ -158,25 +138,6 @@ const AddTeamForm = () => {
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label>Search Coach</label>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search for a coach"
-                        />
-                        {filteredCoaches.length > 0 && (
-                            <ul>
-                                {filteredCoaches.map((coach) => (
-                                    <li key={coach.id} onClick={() => handleCoachSelect(coach)}>
-                                        {coach.firstName} {coach.lastName} ({coach.nickname})
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
                     </div>
 
                     <div>
