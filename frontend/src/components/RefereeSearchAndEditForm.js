@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 const RefereeSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -14,7 +15,6 @@ const RefereeSearchAndEditForm = () => {
     });
 
     useEffect(() => {
-        // Fetch available countries
         axios.get('http://localhost:8080/api/countries', {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
         })
@@ -49,7 +49,7 @@ const RefereeSearchAndEditForm = () => {
 
         const updatedData = {
             ...editData,
-            countryName: editData.countryName // Sending country name, backend will find country ID
+            countryName: editData.countryName
         };
 
         axios.put(`http://localhost:8080/api/referees/${selectedReferee.id}`, updatedData, {
@@ -66,14 +66,15 @@ const RefereeSearchAndEditForm = () => {
     };
 
     return (
-        <div>
-            <h2>Search Referee</h2>
-            <form onSubmit={handleSearch}>
+        <div className="form-container">
+            <h1>Search Referee</h1>
+            <form onSubmit={handleSearch} className="form-container">
                 <input
                     type="text"
                     placeholder="Enter first or last name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input-field"
                 />
                 <button type="submit">Search</button>
             </form>
@@ -81,9 +82,9 @@ const RefereeSearchAndEditForm = () => {
             {referees.length > 0 && (
                 <div>
                     <h3>Referees found:</h3>
-                    <ul>
+                    <ul className="list-item">
                         {referees.map(referee => (
-                            <li key={referee.id}>
+                            <li key={referee.id} className="list-item">
                                 {referee.firstName} {referee.lastName} - {referee.country.name}
                                 <button onClick={() => handleEditClick(referee)}>Edit</button>
                             </li>
@@ -93,7 +94,7 @@ const RefereeSearchAndEditForm = () => {
             )}
 
             {selectedReferee && (
-                <div>
+                <div className="form-container">
                     <h3>Edit Referee: {selectedReferee.firstName} {selectedReferee.lastName}</h3>
                     <form onSubmit={handleEditSubmit}>
                         <div>
@@ -102,6 +103,7 @@ const RefereeSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.firstName}
                                 onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -110,6 +112,7 @@ const RefereeSearchAndEditForm = () => {
                                 type="text"
                                 value={editData.lastName}
                                 onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -118,6 +121,7 @@ const RefereeSearchAndEditForm = () => {
                                 type="date"
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({ ...editData, dateOfBirth: e.target.value })}
+                                className="input-field"
                             />
                         </div>
                         <div>
@@ -125,6 +129,7 @@ const RefereeSearchAndEditForm = () => {
                             <select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
+                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NewPasswordModal from './NewPasswordModal';
-import './AdminPanel.css';
 import { useNavigate } from 'react-router-dom';
+import { Table, Button, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminPanel = ({ setIsLoggedIn }) => {
     const [users, setUsers] = useState([]);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,6 +37,7 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                 });
 
                 if (email === loggedInEmail) {
+                    // If the admin is deleting their own account, log them out and display a message
                     localStorage.removeItem('jwtToken');
                     setIsLoggedIn(false);
                     localStorage.setItem('logoutOrDeleteAccMessage', 'Your account has been deleted.');
@@ -42,14 +45,16 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                     window.scrollTo(0, 0);
                     window.location.reload();
                 } else {
+                    // Update the user list and show success message
                     setUsers(users.filter((user) => user.email !== email));
+                    setAlert({ show: true, message: 'User deleted successfully', variant: 'success' });
                 }
             } catch (error) {
                 console.error('Error deleting user:', error);
+                setAlert({ show: true, message: 'Failed to delete user', variant: 'danger' });
             }
         }
     };
-
 
     const openPasswordModal = (user) => {
         setSelectedUser(user);
@@ -68,60 +73,60 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                     },
                 }
             );
-            alert('Password changed successfully');
+            setAlert({ show: true, message: 'Password changed successfully', variant: 'success' });
             setIsPasswordModalOpen(false);
         } catch (error) {
             console.error('Error changing password:', error);
-            alert('Failed to change password');
+            setAlert({ show: true, message: 'Failed to change password', variant: 'danger' });
         }
     };
 
-    const handleClose = () => {
-        navigate('/');
-        window.scrollTo(0, 0);
-    };
-
-
     return (
-        <div className="admin-panel-container">
-            <h1 className="admin-panel-title">Admin Panel - User Management</h1>
-            <table className="admin-panel-table">
+        <div className="container my-2">
+            <h2 className="text-center mb-4">Admin Panel - User Management</h2>
+
+            {alert.show && (
+                <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>
+                    {alert.message}
+                </Alert>
+            )}
+
+            <Table striped bordered hover responsive className="text-center mb-2">
+                <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
                 <tbody>
                 {users.map((user) => (
                     <tr key={user.email}>
-                        <td>{user.email}</td>
-                        <td>
-                            <button
-                                className="action-btn"
+                        <td className="align-middle">{user.email}</td>
+                        <td className="align-middle">
+                            <Button
+                                variant="outline-primary"
+                                className="me-2"
                                 onClick={() => openPasswordModal(user)}
                             >
                                 Change Password
-                            </button>
-                        </td>
-                        <td>
-                            <button
-                                className="action-btn delete-btn"
+                            </Button>
+                            <Button
+                                variant="outline-danger"
                                 onClick={() => handleDelete(user.email)}
                             >
                                 Delete User
-                            </button>
+                            </Button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
-            </table>
+            </Table>
 
-            {isPasswordModalOpen && (
-                <NewPasswordModal
-                    isOpen={isPasswordModalOpen}
-                    onClose={() => setIsPasswordModalOpen(false)}
-                    onSubmit={(newPassword) => handlePasswordChange(newPassword)}
-                />
-            )}
-
-            <button onClick={handleClose} className="close-btn">
-                Close
-            </button>
+            <NewPasswordModal
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+                onSubmit={(newPassword) => handlePasswordChange(newPassword)}
+            />
         </div>
     );
 };

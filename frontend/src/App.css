@@ -123,3 +123,32 @@
         margin: 20px;
     }
 }
+
+
+/* Styling for the list items in search results */
+.team-list, .league-list, .player-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.list-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.list-item button {
+    margin-top: 10px;
+}
+
+/* Styling for team images */
+.team-picture, .player-picture {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+
