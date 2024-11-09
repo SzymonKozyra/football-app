@@ -13,17 +13,11 @@ const AddPlayerForm = () => {
         picture: '',
         positionId: '',
         countryId: '',
-//        clubId: '',
-//        nationalTeamId: '',
         value: ''
     });
 
     const [positions, setPositions] = useState([]);
     const [countries, setCountries] = useState([]);
-//    const [clubSearchQuery, setClubSearchQuery] = useState('');
-//    const [nationalTeamSearchQuery, setNationalTeamSearchQuery] = useState('');
-//    const [filteredClubs, setFilteredClubs] = useState([]);
-//    const [filteredNationalTeams, setFilteredNationalTeams] = useState([]);
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState("csv");
 
@@ -46,41 +40,7 @@ const AddPlayerForm = () => {
             .then(res => setCountries(res.data));
     }, []);
 
-//    useEffect(() => {
-//        const token = localStorage.getItem('jwtToken');
-//
-//        if (clubSearchQuery && token) {
-//            axios.get(`http://localhost:8080/api/teams/search?query=${clubSearchQuery}&isClub=true`, {
-//                headers: { Authorization: `Bearer ${token}` }
-//            })
-//                .then(response => setFilteredClubs(response.data))
-//                .catch(error => console.error('Error fetching clubs:', error));
-//        } else {
-//            setFilteredClubs([]);
-//        }
-//
-//        if (nationalTeamSearchQuery && token) {
-//            axios.get(`http://localhost:8080/api/teams/search?query=${nationalTeamSearchQuery}&isClub=false`, {
-//                headers: { Authorization: `Bearer ${token}` }
-//            })
-//                .then(response => setFilteredNationalTeams(response.data))
-//                .catch(error => console.error('Error fetching national teams:', error));
-//        } else {
-//            setFilteredNationalTeams([]);
-//        }
-//    }, [clubSearchQuery, nationalTeamSearchQuery]);
 
-//    const handleClubSelect = (club) => {
-//        setPlayerData({ ...playerData, clubId: club.id });
-//        setClubSearchQuery(club.name);
-//        setFilteredClubs([]);
-//    };
-
-//    const handleNationalTeamSelect = (nationalTeam) => {
-//        setPlayerData({ ...playerData, nationalTeamId: nationalTeam.id });
-//        setNationalTeamSearchQuery(nationalTeam.name);
-//        setFilteredNationalTeams([]);
-//    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -217,42 +177,8 @@ const AddPlayerForm = () => {
                                 ))}
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group controlId="formClubSearch" className="mb-3">
-                            <Form.Label>Search Club</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={clubSearchQuery}
-                                onChange={e => setClubSearchQuery(e.target.value)}
-                                placeholder="Search for a club"
-                            />
-                            {filteredClubs.length > 0 && (
-                                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                    {filteredClubs.map((club) => (
-                                        <li key={club.id} onClick={() => handleClubSelect(club)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
-                                            {club.name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </Form.Group>
-                        <Form.Group controlId="formNationalTeamSearch" className="mb-3">
-                            <Form.Label>Search National Team</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={nationalTeamSearchQuery}
-                                onChange={e => setNationalTeamSearchQuery(e.target.value)}
-                                placeholder="Search for a national team"
-                            />
-                            {filteredNationalTeams.length > 0 && (
-                                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                    {filteredNationalTeams.map((nationalTeam) => (
-                                        <li key={nationalTeam.id} onClick={() => handleNationalTeamSelect(nationalTeam)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
-                                            {nationalTeam.name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </Form.Group>
+
+
                         <Form.Group controlId="formValue" className="mb-3">
                             <Form.Label>Value</Form.Label>
                             <Form.Control
@@ -303,16 +229,14 @@ const AddPlayerForm = () => {
         "nickname": "Johnny",
         "picture": "john_doe.png",
         "value": "5000000",
-        "club_id": "1",
         "country_id": "1",
-        "national_team_id": "1",
         "position_id": "2"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`first_name,last_name,date_of_birth,nickname,picture,value,club_id,country_id,national_team_id,position_id
+                            {`first_name,last_name,date_of_birth,nickname,picture,value,country_id,position_id
 John,Doe,1990-01-01,Johnny,john_doe.png,5000000,1,1,1,2`}
                         </pre>
                     </Accordion.Body>

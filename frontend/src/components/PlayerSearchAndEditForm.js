@@ -8,7 +8,6 @@ const PlayerSearchAndEditForm = () => {
     const [players, setPlayers] = useState([]);
     const [positions, setPositions] = useState([]);
     const [countries, setCountries] = useState([]);
-    const [teams, setTeams] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [editData, setEditData] = useState({
         firstName: '',
@@ -18,8 +17,6 @@ const PlayerSearchAndEditForm = () => {
         picture: '',
         positionId: '',
         countryId: '',
-        clubId: '',
-        nationalTeamId: '',
         value: ''
     });
 
@@ -32,12 +29,6 @@ const PlayerSearchAndEditForm = () => {
 
         axios.get('http://localhost:8080/api/countries')
             .then(res => setCountries(res.data));
-
-        axios.get('http://localhost:8080/api/teams', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-        })
-            .then(res => setTeams(res.data))
-            .catch(error => console.error('Error fetching teams:', error));
     }, []);
 
     const handleSearch = (e) => {
@@ -61,8 +52,6 @@ const PlayerSearchAndEditForm = () => {
             picture: player.picture,
             positionId: player.position.id,
             countryId: player.country.id,
-            clubId: player.club ? player.club.id : '',
-            nationalTeamId: player.nationalTeam ? player.nationalTeam.id : '',
             value: player.value
         });
     };
@@ -111,8 +100,6 @@ const PlayerSearchAndEditForm = () => {
                                         <strong>Name:</strong> {player.firstName} {player.lastName}<br />
                                         <strong>Position:</strong> {player.position.abbreviation}<br />
                                         <strong>Country:</strong> {player.country.name}<br />
-                                        <strong>Club:</strong> {player.club ? player.club.name : 'N/A'}<br />
-                                        <strong>National Team:</strong> {player.nationalTeam ? player.nationalTeam.name : 'N/A'}<br />
                                         <strong>Nickname:</strong> {player.nickname || 'N/A'}<br />
                                         <strong>Picture:</strong> {player.picture}<br />
                                         <strong>Value:</strong> ${player.value ? player.value.toFixed(2) : '0.00'}<br />
@@ -195,22 +182,6 @@ const PlayerSearchAndEditForm = () => {
                                     <option key={country.id} value={country.id}>{country.name}</option>
                                 ))}
                             </Form.Select>
-                        </Form.Group>
-                        <Form.Group controlId="formClubId" className="mb-3">
-                            <Form.Label>Club ID</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.clubId}
-                                onChange={(e) => setEditData({ ...editData, clubId: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formNationalTeamId" className="mb-3">
-                            <Form.Label>National Team ID</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.nationalTeamId}
-                                onChange={(e) => setEditData({ ...editData, nationalTeamId: e.target.value })}
-                            />
                         </Form.Group>
                         <Form.Group controlId="formValue" className="mb-3">
                             <Form.Label>Value</Form.Label>

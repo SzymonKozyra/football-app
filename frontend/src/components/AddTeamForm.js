@@ -148,25 +148,6 @@ const AddTeamForm = () => {
                             </Form.Select>
                         </Form.Group>
 
-                        <Form.Group controlId="formCoachSearch" className="mb-3">
-                            <Form.Label>Search Coach</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search for a coach"
-                            />
-                            {filteredCoaches.length > 0 && (
-                                <ul>
-                                    {filteredCoaches.map((coach) => (
-                                        <li key={coach.id} onClick={() => handleCoachSelect(coach)}>
-                                            {coach.firstName} {coach.lastName} ({coach.nickname})
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </Form.Group>
-
                         <Form.Group controlId="formLeagueSearch" className="mb-3">
                             <Form.Label>Search League</Form.Label>
                             <Form.Control
@@ -227,7 +208,6 @@ const AddTeamForm = () => {
         "is_club": true,
         "picture": "pictureFileName",
         "value": "5000000",
-        "coach_id": 0,
         "league_id": 0
     },
     {
@@ -235,14 +215,13 @@ const AddTeamForm = () => {
         "is_club": false,
         "picture": "anotherPictureFileName",
         "value": "3000000",
-        "coach_id": 1,
         "league_id": 1
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`name,is_club,picture,value,coach_id,league_id
+                            {`name,is_club,picture,value,league_id
 TeamName1,true,pictureFileName,5000000,0,0
 AnotherTeam,false,anotherPictureFileName,3000000,1,1`}
                         </pre>

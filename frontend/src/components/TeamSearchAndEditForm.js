@@ -90,7 +90,6 @@ const TeamSearchAndEditForm = () => {
                                         /><br />
                                         <strong>Is Club:</strong> {team.isClub ? "Yes" : "No"}<br />
                                         <strong>League:</strong> {team.league ? team.league.name : 'No League'}<br />
-                                        <strong>Coach:</strong> {team.coach ? `${team.coach.firstName} ${team.coach.lastName}` : 'No Coach'}
                                     </div>
                                     <Button variant="outline-primary" onClick={() => handleEditClick(team)}>Edit</Button>
                                 </Card.Body>
@@ -134,14 +133,6 @@ const TeamSearchAndEditForm = () => {
                                 onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
                             />
 
-                        </Form.Group>
-                        <Form.Group controlId="formCoachId" className="mb-3">
-                            <Form.Label>Coach ID</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={editData.coachId}
-                                onChange={(e) => setEditData({ ...editData, coachId: e.target.value })}
-                            />
                         </Form.Group>
                         <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
                     </Form>
