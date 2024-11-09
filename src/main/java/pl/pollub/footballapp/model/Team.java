@@ -15,10 +15,6 @@ public class Team {
     private BigDecimal value = BigDecimal.ZERO; // default value
     private boolean isClub;
 
-    @ManyToOne
-    @JoinColumn(name = "coach_id")
-    private Coach coach;
-
     public Long getId() {
         return id;
     }
@@ -57,14 +53,6 @@ public class Team {
 
     public void setIsClub(boolean club) {
         isClub = club;
-    }
-
-    public Coach getCoach() {
-        return coach;
-    }
-
-    public void setCoach(Coach coach) {
-        this.coach = coach;
     }
 
     public League getLeague() {

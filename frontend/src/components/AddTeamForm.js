@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../App.css';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddTeamForm = () => {
     const [teamName, setTeamName] = useState('');
     const [picture, setPicture] = useState('');
     const [isClub, setIsClub] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredCoaches, setFilteredCoaches] = useState([]);
-    const [selectedCoach, setSelectedCoach] = useState(null);
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
@@ -18,16 +17,6 @@ const AddTeamForm = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
-
-        if (searchQuery && token) {
-            axios.get(`http://localhost:8080/api/coaches/search?query=${searchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredCoaches(response.data))
-                .catch(error => console.error('Error fetching coaches:', error));
-        } else {
-            setFilteredCoaches([]);
-        }
 
         if (leagueSearchQuery && token) {
             axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
@@ -39,12 +28,6 @@ const AddTeamForm = () => {
             setFilteredLeagues([]);
         }
     }, [searchQuery, leagueSearchQuery]);
-
-    const handleCoachSelect = (coach) => {
-        setSelectedCoach(coach);
-        setSearchQuery(`${coach.firstName} ${coach.lastName}`);
-        setFilteredCoaches([]);
-    };
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
@@ -65,8 +48,7 @@ const AddTeamForm = () => {
                 name: teamName,
                 picture: picture,
                 isClub: isClub,
-                leagueId: selectedLeague ? selectedLeague.id : null,
-                coachId: selectedCoach ? selectedCoach.id : null,
+                leagueId: selectedLeague ? selectedLeague.id : null
             };
 
             axios.post('http://localhost:8080/api/teams/add', teamData, {
@@ -76,7 +58,6 @@ const AddTeamForm = () => {
                     alert('Team added successfully');
                     setTeamName('');
                     setPicture('');
-                    setSelectedCoach(null);
                     setSearchQuery('');
                     setSelectedLeague(null);
                     setLeagueSearchQuery('');
@@ -106,123 +87,169 @@ const AddTeamForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Add Team</h1>
-            <div className="radio-group">
-                <label>
-                    <input
-                        type="radio"
-                        value="manual"
-                        checked={manualEntry}
-                        onChange={() => setManualEntry(true)}
-                    />
-                    Manual Entry
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        value="import"
-                        checked={!manualEntry}
-                        onChange={() => setManualEntry(false)}
-                    />
-                    Import from File
-                </label>
-            </div>
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Add Team</h1>
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+                <Row className="mb-3 justify-content-center">
+                    <Col xs="auto">
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="entryType"
+                            defaultValue="manual"
+                            onChange={(value) => setManualEntry(value === 'manual')}
+                        >
+                            <ToggleButton
+                                id="manual-entry"
+                                value="manual"
+                                variant={manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Manual Entry
+                            </ToggleButton>
+                            <ToggleButton
+                                id="import-file"
+                                value="import"
+                                variant={!manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Import from File
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Row>
 
-            {manualEntry ? (
-                <>
-                    <div>
-                        <label>Team Name</label>
-                        <input
-                            type="text"
-                            value={teamName}
-                            onChange={(e) => setTeamName(e.target.value)}
-                            required
-                        />
-                    </div>
+                {manualEntry ? (
+                    <>
+                        <Form.Group controlId="formTeamName" className="mb-3">
+                            <Form.Label>Team Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={teamName}
+                                onChange={(e) => setTeamName(e.target.value)}
+                                placeholder="Enter team name"
+                                required
+                            />
+                        </Form.Group>
 
-                    <div>
-                        <label>Picture</label>
-                        <input
-                            type="text"
-                            placeholder="Enter picture filename"
-                            value={picture}
-                            onChange={(e) => setPicture(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <Form.Group controlId="formPicture" className="mb-3">
+                            <Form.Label>Picture</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter picture filename"
+                                value={picture}
+                                onChange={(e) => setPicture(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
 
-                    <div>
-                        <label>Is Club?</label>
-                        <select value={isClub} onChange={(e) => setIsClub(e.target.value === 'true')}>
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
+                        <Form.Group controlId="formIsClub" className="mb-3">
+                            <Form.Label>Is Club?</Form.Label>
+                            <Form.Select value={isClub} onChange={(e) => setIsClub(e.target.value === 'true')}>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </Form.Select>
+                        </Form.Group>
 
-                    <div>
-                        <label>Search Coach</label>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search for a coach"
-                        />
-                        {filteredCoaches.length > 0 && (
-                            <ul>
-                                {filteredCoaches.map((coach) => (
-                                    <li key={coach.id} onClick={() => handleCoachSelect(coach)}>
-                                        {coach.firstName} {coach.lastName} ({coach.nickname})
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                        <Form.Group controlId="formCoachSearch" className="mb-3">
+                            <Form.Label>Search Coach</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search for a coach"
+                            />
+                            {filteredCoaches.length > 0 && (
+                                <ul>
+                                    {filteredCoaches.map((coach) => (
+                                        <li key={coach.id} onClick={() => handleCoachSelect(coach)}>
+                                            {coach.firstName} {coach.lastName} ({coach.nickname})
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </Form.Group>
 
-                    <div>
-                        <label>Search League</label>
-                        <input
-                            type="text"
-                            value={leagueSearchQuery}
-                            onChange={(e) => setLeagueSearchQuery(e.target.value)}
-                            placeholder="Search for a league"
-                        />
-                        {filteredLeagues.length > 0 && (
-                            <ul>
-                                {filteredLeagues.map((league) => (
-                                    <li key={league.id} onClick={() => handleLeagueSelect(league)}>
-                                        {league.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                </>
-            ) : (
-                <>
-                    <div>
-                        <label>File Type</label>
-                        <select value={fileType} onChange={(e) => setFileType(e.target.value)} required>
-                            <option value="">Select file type</option>
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV</option>
-                        </select>
-                    </div>
+                        <Form.Group controlId="formLeagueSearch" className="mb-3">
+                            <Form.Label>Search League</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={leagueSearchQuery}
+                                onChange={(e) => setLeagueSearchQuery(e.target.value)}
+                                placeholder="Search for a league"
+                            />
+                            {filteredLeagues.length > 0 && (
+                                <ul>
+                                    {filteredLeagues.map((league) => (
+                                        <li key={league.id} onClick={() => handleLeagueSelect(league)}>
+                                            {league.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </Form.Group>
+                    </>
+                ) : (
+                    <>
+                        <Form.Group controlId="formFileType" className="mb-3">
+                            <Form.Label>File Type</Form.Label>
+                            <Form.Select value={fileType} onChange={(e) => setFileType(e.target.value)} required>
+                                <option value="">Select file type</option>
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </Form.Select>
+                        </Form.Group>
 
-                    <div>
-                        <label>Import Teams (CSV or JSON)</label>
-                        <input
-                            type="file"
-                            accept=".csv,.json"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            required
-                        />
-                    </div>
-                </>
-            )}
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Import Teams (CSV or JSON)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".csv,.json"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                    </>
+                )}
 
-            <button type="submit">Add Team</button>
-        </form>
+                <Button variant="primary" type="submit" className="w-100 mt-3">
+                    {manualEntry ? 'Add Team' : 'Import Teams'}
+                </Button>
+            </Form>
+
+            {/* Template Section */}
+            <Accordion className="mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>File Format Templates</Accordion.Header>
+                    <Accordion.Body className="text-start">
+                        <h5>JSON Template</h5>
+                        <pre>
+                            {`[
+    {
+        "name": "TeamName",
+        "is_club": true,
+        "picture": "pictureFileName",
+        "value": "5000000",
+        "coach_id": 0,
+        "league_id": 0
+    },
+    {
+        "name": "AnotherTeam",
+        "is_club": false,
+        "picture": "anotherPictureFileName",
+        "value": "3000000",
+        "coach_id": 1,
+        "league_id": 1
+    }
+]`}
+                        </pre>
+                        <h5>CSV Template</h5>
+                        <pre>
+                            {`name,is_club,picture,value,coach_id,league_id
+TeamName1,true,pictureFileName,5000000,0,0
+AnotherTeam,false,anotherPictureFileName,3000000,1,1`}
+                        </pre>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        </Container>
     );
 };
 

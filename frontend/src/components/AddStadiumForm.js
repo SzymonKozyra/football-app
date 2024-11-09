@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
 import '../App.css';
 
 const AddStadiumForm = () => {
@@ -14,18 +15,16 @@ const AddStadiumForm = () => {
     const [manualEntry, setManualEntry] = useState(true); // Default to manual entry
 
     useEffect(() => {
-        // Fetch countries from the backend
         axios.get('http://localhost:8080/api/countries')
             .then(response => setCountries(response.data))
             .catch(error => console.error("Error fetching countries:", error));
     }, []);
 
     const handleCountryChange = (e) => {
-        const countryId = e.target.value;
-        setSelectedCountry(countryId);
+        const countryName = e.target.value;
+        setSelectedCountry(countryName);
 
-        // Fetch cities based on selected country
-        axios.get(`http://localhost:8080/api/cities/by-country/${countryId}`)
+        axios.get(`http://localhost:8080/api/cities/by-country-name/${countryName}`)
             .then(response => setCities(response.data))
             .catch(error => console.error("Error fetching cities:", error));
     };
@@ -45,12 +44,11 @@ const AddStadiumForm = () => {
         }
 
         if (manualEntry) {
-            // Manual entry submission logic
             const stadiumData = {
                 name: stadiumName,
                 capacity: stadiumCapacity,
-                cityName: selectedCity,  // Powinno być cityName zamiast cityId
-                countryName: selectedCountry  // Powinno być countryName zamiast cityId
+                cityName: selectedCity,
+                countryName: selectedCountry
             };
 
             axios.post('http://localhost:8080/api/stadiums/add', stadiumData, {
@@ -58,7 +56,6 @@ const AddStadiumForm = () => {
             })
                 .then(response => {
                     alert('Stadium added successfully');
-                    // Reset form fields
                     setStadiumName('');
                     setStadiumCapacity('');
                     setSelectedCountry('');
@@ -69,7 +66,6 @@ const AddStadiumForm = () => {
                     alert('Failed to add stadium');
                 });
         } else {
-            // File import logic
             const formData = new FormData();
             formData.append('file', file);
             formData.append('type', fileType);
@@ -90,99 +86,137 @@ const AddStadiumForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Add Stadium</h1>
-            <div className="radio-group">
-                <label>
-                    <input
-                        type="radio"
-                        value="manual"
-                        checked={manualEntry}
-                        onChange={() => setManualEntry(true)}
-                    />
-                    Manual Entry
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        value="import"
-                        checked={!manualEntry}
-                        onChange={() => setManualEntry(false)}
-                    />
-                    Import from File
-                </label>
-            </div>
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Add Stadium</h1>
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+                <Row className="mb-3 justify-content-center">
+                    <Col xs="auto">
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="entryType"
+                            defaultValue="manual"
+                            onChange={(value) => setManualEntry(value === 'manual')}
+                        >
+                            <ToggleButton
+                                id="manual-entry"
+                                value="manual"
+                                variant={manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Manual Entry
+                            </ToggleButton>
+                            <ToggleButton
+                                id="import-file"
+                                value="import"
+                                variant={!manualEntry ? 'primary' : 'outline-primary'}
+                            >
+                                Import from File
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Row>
 
-            {manualEntry ? (
-                <>
-                    <div>
-                        <label>Country</label>
-                        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)} required>
-                            <option value="">Select a country</option>
-                            {countries.map(country => (
-                                <option key={country.id} value={country.name}>
-                                    {country.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                {manualEntry ? (
+                    <>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select value={selectedCountry} onChange={handleCountryChange} required>
+                                <option value="">Select a country</option>
+                                {countries.map(country => (
+                                    <option key={country.id} value={country.name}>
+                                        {country.name}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
 
-                    <div>
-                        <label>City Name</label>
-                        <input
-                            type="text"
-                            value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <Form.Group controlId="formCity" className="mb-3">
+                            <Form.Label>City</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={selectedCity}
+                                onChange={(e) => setSelectedCity(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
 
-                    <div>
-                        <label>Stadium Name</label>
-                        <input
-                            type="text"
-                            value={stadiumName}
-                            onChange={(e) => setStadiumName(e.target.value)}
-                            required
-                        />
-                    </div>
+                        <Form.Group controlId="formStadiumName" className="mb-3">
+                            <Form.Label>Stadium Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={stadiumName}
+                                onChange={(e) => setStadiumName(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
 
-                    <div>
-                        <label>Stadium Capacity</label>
-                        <input
-                            type="number"
-                            value={stadiumCapacity}
-                            onChange={(e) => setStadiumCapacity(e.target.value)}
-                            required
-                            min="1"
-                        />
-                    </div>
-                </>
-            ) : (
-                <>
-                    <div>
-                        <label>File Type</label>
-                        <select value={fileType} onChange={(e) => setFileType(e.target.value)} required>
-                            <option value="">Select file type</option>
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV</option>
-                        </select>
-                    </div>
+                        <Form.Group controlId="formStadiumCapacity" className="mb-3">
+                            <Form.Label>Stadium Capacity</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={stadiumCapacity}
+                                onChange={(e) => setStadiumCapacity(e.target.value)}
+                                required
+                                min="1"
+                            />
+                        </Form.Group>
+                    </>
+                ) : (
+                    <>
+                        <Form.Group controlId="formFileType" className="mb-3">
+                            <Form.Label>File Type</Form.Label>
+                            <Form.Select value={fileType} onChange={(e) => setFileType(e.target.value)} required>
+                                <option value="">Select file type</option>
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </Form.Select>
+                        </Form.Group>
 
-                    <div>
-                        <label>Import Stadiums (CSV or JSON)</label>
-                        <input
-                            type="file"
-                            accept=".csv,.json"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            required
-                        />
-                    </div>
-                </>
-            )}
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Import Stadiums (CSV or JSON)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".csv,.json"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                    </>
+                )}
 
-            <button type="submit">Add Stadium</button>
-        </form>
+                <Button variant="primary" type="submit" className="w-100 mt-3">
+                    {manualEntry ? 'Add Stadium' : 'Import Stadiums'}
+                </Button>
+            </Form>
+
+            <Accordion className="mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>File Format Templates</Accordion.Header>
+                    <Accordion.Body className="text-start">
+                        <h5>JSON Template</h5>
+                        <pre>
+                            {`[
+    {
+        "name": "StadiumName",
+        "capacity": 50000,
+        "city_name": "CityName"
+    },
+    {
+        "name": "AnotherStadium",
+        "capacity": 30000,
+        "city_name": "AnotherCityName"
+    }
+]`}
+                        </pre>
+                        <h5>CSV Template</h5>
+                        <pre>
+                            {`name,capacity,city_name
+StadiumName1,50000,CityName1
+AnotherStadium,30000,CityName2`}
+                        </pre>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        </Container>
     );
 };
 

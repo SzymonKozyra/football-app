@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import '../App.css';
 
 const TeamSearchAndEditForm = () => {
@@ -10,8 +11,7 @@ const TeamSearchAndEditForm = () => {
         id: '',
         name: '',
         picture: '',
-        leagueId: '',
-        coachId: ''
+        leagueId: ''
     });
 
     const handleSearch = (e) => {
@@ -35,8 +35,7 @@ const TeamSearchAndEditForm = () => {
             id: team.id,
             name: team.name,
             picture: team.picture,
-            leagueId: team.league ? team.league.id : '',
-            coachId: team.coach ? team.coach.id : ''
+            leagueId: team.league ? team.league.id : ''
         });
     };
 
@@ -58,93 +57,97 @@ const TeamSearchAndEditForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Search Team</h1>
-            <form onSubmit={handleSearch} className="form-container">
-                <input
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Search Team</h1>
+            <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
+                <Form.Control
                     type="text"
                     placeholder="Enter team name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field"
+                    className="me-2"
+                    style={{ maxWidth: '400px' }}
                 />
-                <button type="submit">Search</button>
-            </form>
+                <Button variant="primary" type="submit">Search</Button>
+            </Form>
 
             {teams.length > 0 && (
-                <div>
-                    <h3>Teams found:</h3>
-                    <ul className="team-list">
+                <div className="mb-4">
+                    <h3 className="text-center mb-3">Teams found:</h3>
+                    <Container>
                         {teams.map(team => (
-                            <li key={team.id} className="list-item">
-                                <strong>Id:</strong> {team.id}<br />
-                                <strong>Name:</strong> {team.name}<br />
-                                <strong>Picture:</strong>
-                                <img
-                                    src={`/assets/teams/${team.picture}`}
-                                    alt={`${team.name}`}
-                                    className="team-picture"
-                                /><br />
-                                <strong>Is Club:</strong> {team.isClub ? "Yes" : "No"}<br />
-                                <strong>League:</strong> {team.league ? team.league.name : 'No League'}<br />
-                                <strong>Coach:</strong> {team.coach ? `${team.coach.firstName} ${team.coach.lastName}` : 'No Coach'}<br />
-                                <button onClick={() => handleEditClick(team)}>Edit</button>
-                            </li>
+                            <Card key={team.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>ID:</strong> {team.id}<br />
+                                        <strong>Name:</strong> {team.name}<br />
+                                        <strong>Picture:</strong>
+                                        <img
+                                            src={`/assets/teams/${team.picture}`}
+                                            alt={team.name}
+                                            className="team-picture mx-2"
+                                            style={{ width: '50px', height: '50px' }}
+                                        /><br />
+                                        <strong>Is Club:</strong> {team.isClub ? "Yes" : "No"}<br />
+                                        <strong>League:</strong> {team.league ? team.league.name : 'No League'}<br />
+                                        <strong>Coach:</strong> {team.coach ? `${team.coach.firstName} ${team.coach.lastName}` : 'No Coach'}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleEditClick(team)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
                         ))}
-                    </ul>
+                    </Container>
                 </div>
             )}
 
             {selectedTeam && (
-                <div className="form-container">
-                    <h3>Edit Team: {selectedTeam.name}</h3>
-                    <form onSubmit={handleEditSubmit}>
-                        <div>
-                            <label>Team Name</label>
-                            <input
+                <div className="p-4 border rounded shadow-sm bg-light">
+                    <h3 className="text-center mb-4">Edit Team: {selectedTeam.name}</h3>
+                    <Form onSubmit={handleEditSubmit}>
+                        <Form.Group controlId="formTeamName" className="mb-3">
+                            <Form.Label>Team Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.name}
                                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Picture</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formPicture" className="mb-3">
+                            <Form.Label>Picture</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.picture}
                                 onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
-                                className="input-field"
                             />
                             <img
                                 src={`/assets/teams/${editData.picture}`}
                                 alt={editData.name}
-                                className="team-picture"
+                                className="team-picture mt-2"
+                                style={{ width: '100px', height: '100px' }}
                             />
-                        </div>
-                        <div>
-                            <label>League ID</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formLeagueId" className="mb-3">
+                            <Form.Label>League ID</Form.Label>
+                            <Form.Control
                                 type="number"
                                 value={editData.leagueId}
                                 onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Coach ID</label>
-                            <input
+
+                        </Form.Group>
+                        <Form.Group controlId="formCoachId" className="mb-3">
+                            <Form.Label>Coach ID</Form.Label>
+                            <Form.Control
                                 type="number"
                                 value={editData.coachId}
                                 onChange={(e) => setEditData({ ...editData, coachId: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 

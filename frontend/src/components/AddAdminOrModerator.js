@@ -40,6 +40,9 @@ const AddAdminOrModerator = () => {
             console.error(`Error adding ${role.toLowerCase()}:`, error.response?.data || error.message);
             setMessage(`Failed to add ${role.toLowerCase()}: ${error.response?.data || 'Unknown error'}`);
             setMessageType('danger');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000);
         }
     };
 
@@ -85,6 +88,7 @@ const AddAdminOrModerator = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter email"
                                 required
                             />
                         </Form.Group>
@@ -95,6 +99,7 @@ const AddAdminOrModerator = () => {
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Enter username"
                                 required
                             />
                         </Form.Group>
@@ -105,6 +110,7 @@ const AddAdminOrModerator = () => {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter password"
                                 required
                             />
                         </Form.Group>

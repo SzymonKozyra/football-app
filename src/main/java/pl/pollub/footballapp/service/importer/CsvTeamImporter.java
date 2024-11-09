@@ -5,7 +5,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.pollub.footballapp.repository.CoachRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.requests.TeamRequest;
@@ -19,9 +18,6 @@ import java.util.List;
 
 @Service
 public class CsvTeamImporter implements DataImporter {
-
-    @Autowired
-    private CoachRepository coachRepository;
 
     @Autowired
     private LeagueRepository leagueRepository;
@@ -42,7 +38,6 @@ public class CsvTeamImporter implements DataImporter {
                     csvRecord.get("name"),
                     csvRecord.get("picture"),
                     Boolean.parseBoolean(csvRecord.get("isClub")),
-                    Long.parseLong(csvRecord.get("coachId")), // Pobieranie ID trenera
                     Long.parseLong(csvRecord.get("leagueId")) // Pobieranie ID ligi
             );
             teamRequests.add(teamRequest);

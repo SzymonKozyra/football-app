@@ -56,12 +56,12 @@ public class PlayerService {
         player.setCountry(countryRepository.findById(playerRequest.getCountryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Country ID.")));
 
-        if (playerRequest.getClubId() != null) {
-            player.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
-        }
-        if (playerRequest.getNationalTeamId() != null) {
-            player.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
-        }
+//        if (playerRequest.getClubId() != null) {
+//            player.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
+//        }
+//        if (playerRequest.getNationalTeamId() != null) {
+//            player.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
+//        }
 
         player.setValue(playerRequest.getValue() != null ? playerRequest.getValue() : BigDecimal.ZERO);
         playerRepository.save(player);
@@ -95,12 +95,12 @@ public class PlayerService {
         existingPlayer.setPosition(positionRepository.findById(playerRequest.getPositionId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Position ID.")));
 
-        if (playerRequest.getClubId() != null) {
-            existingPlayer.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
-        }
-        if (playerRequest.getNationalTeamId() != null) {
-            existingPlayer.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
-        }
+//        if (playerRequest.getClubId() != null) {
+//            existingPlayer.setClub(teamRepository.findById(playerRequest.getClubId()).orElse(null));
+//        }
+//        if (playerRequest.getNationalTeamId() != null) {
+//            existingPlayer.setNationalTeam(teamRepository.findById(playerRequest.getNationalTeamId()).orElse(null));
+//        }
 
         if (playerRequest.getValue() != null) {
             existingPlayer.setValue(playerRequest.getValue());

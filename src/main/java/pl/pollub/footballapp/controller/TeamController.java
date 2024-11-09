@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.model.League;
-import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
-import pl.pollub.footballapp.repository.CoachRepository;
 import pl.pollub.footballapp.requests.TeamRequest;
 import pl.pollub.footballapp.service.importer.DataImporter;
 import pl.pollub.footballapp.service.importer.ImporterFactory;
@@ -30,9 +28,6 @@ public class TeamController {
     private LeagueRepository leagueRepository;
 
     @Autowired
-    private CoachRepository coachRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
 
 
@@ -41,9 +36,6 @@ public class TeamController {
     public ResponseEntity<?> addTeam(@RequestBody TeamRequest teamRequest) {
         League league = leagueRepository.findById(teamRequest.getLeagueId())
                 .orElseThrow(() -> new RuntimeException("League not found"));
-
-        Coach coach = coachRepository.findById(teamRequest.getCoachId())
-                .orElseThrow(() -> new RuntimeException("Coach not found"));
 
         // Sprawdzanie duplikatów: nie może być tego samego klubu w jednej lidze
         if (teamRepository.existsByNameAndLeague(teamRequest.getName(), league)) {
@@ -55,11 +47,6 @@ public class TeamController {
         team.setPicture(teamRequest.getPicture());
         team.setIsClub(teamRequest.isClub());
         team.setLeague(league);
-        team.setCoach(coach);
-
-        // Obliczanie wartości drużyny (przykład logiki, można dostosować)
-        //team.setValue(calculateTeamValue(team));
-
         teamRepository.save(team);
         return ResponseEntity.ok("Team added successfully");
     }
@@ -75,9 +62,6 @@ public class TeamController {
                 League league = leagueRepository.findById(teamRequest.getLeagueId())
                         .orElseThrow(() -> new IllegalArgumentException("League not found: " + teamRequest.getLeagueId()));
 
-                Coach coach = coachRepository.findById(teamRequest.getCoachId())
-                        .orElseThrow(() -> new IllegalArgumentException("Coach not found: " + teamRequest.getCoachId()));
-
                 // Sprawdzanie duplikatów
                 if (!teamRepository.existsByNameAndLeague(teamRequest.getName(), league)) {
                     Team team = new Team();
@@ -85,7 +69,6 @@ public class TeamController {
                     team.setPicture(teamRequest.getPicture());
                     team.setIsClub(teamRequest.isClub());
                     team.setLeague(league);
-                    team.setCoach(coach);
 
                     //team.setValue(calculateTeamValue(team));
 

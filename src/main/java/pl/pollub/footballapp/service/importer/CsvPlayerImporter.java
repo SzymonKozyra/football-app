@@ -54,8 +54,6 @@ public class CsvPlayerImporter implements DataImporter {
                     csvRecord.get("picture"),
                     parseLong(csvRecord.get("positionId")),
                     parseLong(csvRecord.get("countryId")),
-                    parseLong(csvRecord.get("clubId")),
-                    parseLong(csvRecord.get("nationalTeamId")),
                     value
             );
             playerRequests.add(playerRequest);

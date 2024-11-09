@@ -2,7 +2,7 @@ package pl.pollub.footballapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.pollub.footballapp.model.CoachContract;
-import pl.pollub.footballapp.model.PlayerContract;
+//import pl.pollub.footballapp.model.PlayerContract;
 
 import java.time.LocalDate;
 import java.util.List;

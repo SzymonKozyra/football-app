@@ -9,22 +9,17 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
 
     const handlePasswordReset = (e) => {
         e.preventDefault();
-
         if (password !== confirmPassword) {
             setMessage('Passwords do not match.');
             setMessageType('danger');
+            setTimeout(() => {
+                setMessage('');
+            }, 2000);
             return;
         }
-
         onSubmit(password);
-        setMessage('Password has been successfully changed.');
-        setMessageType('success');
-        setTimeout(() => {
-            setPassword('');
-            setConfirmPassword('');
-            setMessage('');
-            onClose();
-        }, 2000);
+        setPassword('');
+        setConfirmPassword('');
     };
 
     return (
@@ -39,6 +34,7 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter new password"
                             required
                         />
                     </Form.Group>
@@ -48,6 +44,7 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm password"
                             required
                         />
                     </Form.Group>

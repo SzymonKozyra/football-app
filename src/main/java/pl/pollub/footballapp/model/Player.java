@@ -28,13 +28,13 @@ public class Player {
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @ManyToOne
-    @JoinColumn(name = "club_id")
-    private Team club;
-
-    @ManyToOne
-    @JoinColumn(name = "national_team_id")
-    private Team nationalTeam;
+//    @ManyToOne
+//    @JoinColumn(name = "club_id")
+//    private Team club;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "national_team_id")
+//    private Team nationalTeam;
 
     // Getters and Setters
 
@@ -111,19 +111,19 @@ public class Player {
         this.country = country;
     }
 
-    public Team getClub() {
-        return club;
-    }
-
-    public void setClub(Team club) {
-        this.club = club;
-    }
-
-    public Team getNationalTeam() {
-        return nationalTeam;
-    }
-
-    public void setNationalTeam(Team nationalTeam) {
-        this.nationalTeam = nationalTeam;
-    }
+//    public Team getClub() {
+//        return club;
+//    }
+//
+//    public void setClub(Team club) {
+//        this.club = club;
+//    }
+//
+//    public Team getNationalTeam() {
+//        return nationalTeam;
+//    }
+//
+//    public void setNationalTeam(Team nationalTeam) {
+//        this.nationalTeam = nationalTeam;
+//    }
 }
