@@ -33,8 +33,8 @@ import EditCoachContractForm from "./components/EditCoachContractForm";
 import AddPlayerContractForm from "./components/AddPlayerContractForm";
 import EditPlayerContractForm from "./components/EditPlayerContractForm";
 import AddInjuryForm from "./components/AddInjuryForm";
-//import InjurySearchAndEditForm from "./components/InjurySearchAndEditForm";
-//import InjuryImportForm from "./components/InjuryImportForm";
+import EditInjuryForm from "./components/EditInjuryForm";
+
 
 
 import AdminView from './views/AdminView';

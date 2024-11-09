@@ -36,8 +36,8 @@ const AddInjuryForm = () => {
     const getTodayDate = () => {
         const today = new Date();
         const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
-        const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
@@ -89,9 +89,7 @@ const AddInjuryForm = () => {
         .catch(error => {
             console.error('Error adding injury:', error);
             alert('Failed to add injury');
-
         });
-
     };
 
     return (
@@ -154,7 +152,7 @@ const AddInjuryForm = () => {
                             type="text"
                             value={playerSearchQuery}
                             onChange={(e) => setPlayerSearchQuery(e.target.value)}
-                            placeholder="Wprowadź imię i nazwisko zawodnika"
+                            placeholder="Search for a player"
                         />
                         {filteredPlayers.length > 0 && (
                             <ul>
