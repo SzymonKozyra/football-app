@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import '../App.css';
 
 const PlayerSearchAndEditForm = () => {
@@ -46,12 +47,8 @@ const PlayerSearchAndEditForm = () => {
         axios.get(`http://localhost:8080/api/players/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
-                setPlayers(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching players:', error);
-            });
+            .then(response => setPlayers(response.data))
+            .catch(error => console.error('Error fetching players:', error));
     };
 
     const handleEditClick = (player) => {
@@ -88,97 +85,96 @@ const PlayerSearchAndEditForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Search Player</h1>
-            <form onSubmit={handleSearch} className="form-container">
-                <input
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Search Player</h1>
+            <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
+                <Form.Control
                     type="text"
                     placeholder="Enter first or last name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field"
+                    className="me-2"
+                    style={{ maxWidth: '400px' }}
                 />
-                <button type="submit">Search</button>
-            </form>
+                <Button variant="primary" type="submit">Search</Button>
+            </Form>
 
             {players.length > 0 && (
-                <div>
-                    <h3>Players found:</h3>
-                    <ul className="player-list">
+                <div className="mb-4">
+                    <h3 className="text-center mb-3">Players found:</h3>
+                    <Container>
                         {players.map(player => (
-                            <li key={player.id} className="list-item">
-                                <strong>ID:</strong> {player.id} -
-                                <strong> Name:</strong> {player.firstName} {player.lastName} -
-                                <strong> Position:</strong> {player.position.abbreviation} -
-                                <strong> Country:</strong> {player.country.name} -
-                                <strong> Club:</strong> {player.club ? player.club.name : 'N/A'} -
-                                <strong> National Team:</strong> {player.nationalTeam ? player.nationalTeam.name : 'N/A'} -
-                                <strong> Nickname:</strong> {player.nickname ? player.nickname : 'N/A'} -
-                                <strong> Picture:</strong> {player.picture} -
-                                <strong> Value:</strong> ${player.value ? player.value.toFixed(2) : '0.00'} -
-                                <strong> Date of Birth:</strong> {player.dateOfBirth}
-                                <button onClick={() => handleEditClick(player)}>Edit</button>
-                            </li>
+                            <Card key={player.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>ID:</strong> {player.id}<br />
+                                        <strong>Name:</strong> {player.firstName} {player.lastName}<br />
+                                        <strong>Position:</strong> {player.position.abbreviation}<br />
+                                        <strong>Country:</strong> {player.country.name}<br />
+                                        <strong>Club:</strong> {player.club ? player.club.name : 'N/A'}<br />
+                                        <strong>National Team:</strong> {player.nationalTeam ? player.nationalTeam.name : 'N/A'}<br />
+                                        <strong>Nickname:</strong> {player.nickname || 'N/A'}<br />
+                                        <strong>Picture:</strong> {player.picture}<br />
+                                        <strong>Value:</strong> ${player.value ? player.value.toFixed(2) : '0.00'}<br />
+                                        <strong>Date of Birth:</strong> {player.dateOfBirth}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleEditClick(player)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
                         ))}
-                    </ul>
+                    </Container>
                 </div>
             )}
 
             {selectedPlayer && (
-                <div className="form-container">
-                    <h3>Edit Player: {selectedPlayer.firstName} {selectedPlayer.lastName}</h3>
-                    <form onSubmit={handleEditSubmit}>
-                        <div>
-                            <label>First Name</label>
-                            <input
+                <div className="p-4 border rounded shadow-sm bg-light">
+                    <h3 className="text-center mb-4">Edit Player: {selectedPlayer.firstName} {selectedPlayer.lastName}</h3>
+                    <Form onSubmit={handleEditSubmit}>
+                        <Form.Group controlId="formFirstName" className="mb-3">
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.firstName}
                                 onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Last Name</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formLastName" className="mb-3">
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.lastName}
                                 onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Date of Birth</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formDateOfBirth" className="mb-3">
+                            <Form.Label>Date of Birth</Form.Label>
+                            <Form.Control
                                 type="date"
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({ ...editData, dateOfBirth: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Nickname</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formNickname" className="mb-3">
+                            <Form.Label>Nickname</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.nickname}
                                 onChange={(e) => setEditData({ ...editData, nickname: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Picture</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formPicture" className="mb-3">
+                            <Form.Label>Picture</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.picture}
                                 onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Position</label>
-                            <select
+                        </Form.Group>
+                        <Form.Group controlId="formPosition" className="mb-3">
+                            <Form.Label>Position</Form.Label>
+                            <Form.Select
                                 value={editData.positionId}
                                 onChange={(e) => setEditData({ ...editData, positionId: e.target.value })}
-                                className="input-field"
                             >
                                 <option value="">Select Position</option>
                                 {positions.map(position => (
@@ -186,53 +182,49 @@ const PlayerSearchAndEditForm = () => {
                                         {position.abbreviation}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label>Country</label>
-                            <select
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select
                                 value={editData.countryId}
                                 onChange={(e) => setEditData({ ...editData, countryId: e.target.value })}
-                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (
                                     <option key={country.id} value={country.id}>{country.name}</option>
                                 ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label>Club ID</label>
-                            <input
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formClubId" className="mb-3">
+                            <Form.Label>Club ID</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.clubId}
                                 onChange={(e) => setEditData({ ...editData, clubId: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>National Team ID</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formNationalTeamId" className="mb-3">
+                            <Form.Label>National Team ID</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.nationalTeamId}
                                 onChange={(e) => setEditData({ ...editData, nationalTeamId: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Value</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formValue" className="mb-3">
+                            <Form.Label>Value</Form.Label>
+                            <Form.Control
                                 type="number"
                                 value={editData.value}
                                 onChange={(e) => setEditData({ ...editData, value: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 

@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.model.CoachContract;
-import pl.pollub.footballapp.model.PlayerContract;
+//import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.repository.CoachContractRepository;
 import pl.pollub.footballapp.repository.CoachRepository;

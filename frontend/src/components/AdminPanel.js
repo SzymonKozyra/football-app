@@ -11,6 +11,8 @@ const AdminPanel = ({ setIsLoggedIn }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
     const navigate = useNavigate();
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -37,17 +39,28 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                 });
 
                 if (email === loggedInEmail) {
-                    // If the admin is deleting their own account, log them out and display a message
+                    // If the admin is deleting their own account, set the message and log them out after a short delay
                     localStorage.removeItem('jwtToken');
                     setIsLoggedIn(false);
                     localStorage.setItem('logoutOrDeleteAccMessage', 'Your account has been deleted.');
-                    navigate('/');
-                    window.scrollTo(0, 0);
-                    window.location.reload();
+                    setMessageType('success');
+
+                    // Set a delay before navigating to home and reloading the page
+                    setTimeout(() => {
+                        navigate('/');
+                        window.scrollTo(0, 0);
+                        window.location.reload();
+                    }, 3000); // 3-second delay
                 } else {
                     // Update the user list and show success message
                     setUsers(users.filter((user) => user.email !== email));
-                    setAlert({ show: true, message: 'User deleted successfully', variant: 'success' });
+                    setMessage(`User deleted successfully`);
+                    setMessageType('success');
+
+                    // Clear the message after a short delay
+                    setTimeout(() => {
+                        setMessage('');
+                    }, 2000);
                 }
             } catch (error) {
                 console.error('Error deleting user:', error);
@@ -55,6 +68,7 @@ const AdminPanel = ({ setIsLoggedIn }) => {
             }
         }
     };
+
 
     const openPasswordModal = (user) => {
         setSelectedUser(user);
@@ -73,7 +87,11 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                     },
                 }
             );
-            setAlert({ show: true, message: 'Password changed successfully', variant: 'success' });
+            setMessage('Password changed successfully');
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage('');
+            }, 2000);
             setIsPasswordModalOpen(false);
         } catch (error) {
             console.error('Error changing password:', error);
@@ -85,11 +103,12 @@ const AdminPanel = ({ setIsLoggedIn }) => {
         <div className="container my-2">
             <h2 className="text-center mb-4">Admin Panel - User Management</h2>
 
-            {alert.show && (
-                <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>
-                    {alert.message}
-                </Alert>
-            )}
+            {/*{alert.show && (*/}
+            {/*    <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>*/}
+            {/*        {alert.message}*/}
+            {/*    </Alert>*/}
+            {/*)}*/}
+            {message && <Alert variant={messageType}>{message}</Alert>}
 
             <Table striped bordered hover responsive className="text-center mb-2">
                 <thead>

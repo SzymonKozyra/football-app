@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../App.css';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddInjuryForm = () => {
     const [importMode, setImportMode] = useState(false);
@@ -26,30 +27,22 @@ const AddInjuryForm = () => {
         setFile(null);
     };
 
-    const injuryData = {
-        playerId: selectedPlayer?.id,
-        type: injuryType,
-        startDate: injuryStartDate,
-        endDate: injuryEndDate
-    };
-
     const getTodayDate = () => {
         const today = new Date();
         const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Dodaje zero przed jednocyfrowym miesiącem
-        const day = String(today.getDate()).padStart(2, '0'); // Dodaje zero przed jednocyfrowym dniem
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
-        console.log(token);
         if (playerSearchQuery && token) {
             axios.get(`http://localhost:8080/api/players/search?query=${playerSearchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            .then(response => setFilteredPlayers(response.data))
-            .catch(error => console.error('Error fetching players:', error));
+                .then(response => setFilteredPlayers(response.data))
+                .catch(error => console.error('Error fetching players:', error));
         } else {
             setFilteredPlayers([]);
         }
@@ -76,128 +69,163 @@ const AddInjuryForm = () => {
             startDate: injuryStartDate,
             endDate: injuryEndDate
         };
-        console.log(injuryData);
-
 
         axios.post('http://localhost:8080/api/injuries/add', injuryData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(response => {
-            alert('Injury added successfully');
-            resetForm();
-        })
-        .catch(error => {
-            console.error('Error adding injury:', error);
-            alert('Failed to add injury');
-
-        });
-
+            .then(response => {
+                alert('Injury added successfully');
+                resetForm();
+            })
+            .catch(error => {
+                console.error('Error adding injury:', error);
+                alert('Failed to add injury');
+            });
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>{importMode ? 'Importuj kontuzje' : 'Dodaj kontuzję'}</h1>
-            <div className="radio-group">
-                <label>
-                    <input
-                        type="radio"
-                        value="manual"
-                        checked={!importMode}
-                        onChange={() => setImportMode(false)}
-                    />
-                    Ręczne dodawanie
-                </label>
-                <label>
-                    <input
-                        type="radio"
-                        value="import"
-                        checked={importMode}
-                        onChange={() => setImportMode(true)}
-                    />
-                    Importuj z pliku
-                </label>
-            </div>
-
-            {!importMode ? (
-                <>
-                    <div>
-                        <label>Typ kontuzji</label>
-                        <input
-                            type="text"
-                            value={injuryType}
-                            onChange={(e) => setInjuryType(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Data rozpoczęcia</label>
-                        <input
-                            type="date"
-                            max={getTodayDate()}
-                            value={injuryStartDate}
-                            onChange={(e) => setInjuryStartDate(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Data zakończenia</label>
-                        <input
-                            type="date"
-                            min={injuryStartDate}
-                            value={injuryEndDate}
-                            onChange={(e) => setInjuryEndDate(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label>Wyszukaj zawodnika</label>
-                        <input
-                            type="text"
-                            value={playerSearchQuery}
-                            onChange={(e) => setPlayerSearchQuery(e.target.value)}
-                            placeholder="Wprowadź imię i nazwisko zawodnika"
-                        />
-                        {filteredPlayers.length > 0 && (
-                            <ul>
-                                {filteredPlayers.map(player => (
-                                    <li key={player.id} onClick={() => handlePlayerSelect(player)}>
-                                        {player.firstName} {player.lastName}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                </>
-            ) : (
-                <>
-                    <div>
-                        <label>Typ pliku</label>
-                        <select
-                            value={fileType}
-                            onChange={(e) => setFileType(e.target.value)}
-                            required
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">{importMode ? 'Import Injuries' : 'Add Injury'}</h1>
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+                <Row className="mb-3 justify-content-center">
+                    <Col xs="auto">
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="entryType"
+                            defaultValue="manual"
+                            onChange={(value) => setImportMode(value === 'import')}
                         >
-                            <option value="">Wybierz typ pliku</option>
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Importuj kontuzje (CSV lub JSON)</label>
-                        <input
-                            type="file"
-                            accept=".csv,.json"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            required
-                        />
-                    </div>
-                </>
-            )}
+                            <ToggleButton
+                                id="manual-entry"
+                                value="manual"
+                                variant={!importMode ? 'primary' : 'outline-primary'}
+                            >
+                                Manual Entry
+                            </ToggleButton>
+                            <ToggleButton
+                                id="import-file"
+                                value="import"
+                                variant={importMode ? 'primary' : 'outline-primary'}
+                            >
+                                Import from File
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Row>
 
-            <button type="submit">{importMode ? 'Importuj kontuzje' : 'Dodaj kontuzję'}</button>
-        </form>
+                {!importMode ? (
+                    <>
+                        <Form.Group controlId="formInjuryType" className="mb-3">
+                            <Form.Label>Type</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={injuryType}
+                                onChange={(e) => setInjuryType(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formStartDate" className="mb-3">
+                            <Form.Label>Start Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                max={getTodayDate()}
+                                value={injuryStartDate}
+                                onChange={(e) => setInjuryStartDate(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formEndDate" className="mb-3">
+                            <Form.Label>End Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                min={injuryStartDate}
+                                value={injuryEndDate}
+                                onChange={(e) => setInjuryEndDate(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formPlayerSearch" className="mb-3">
+                            <Form.Label>Search Player</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={playerSearchQuery}
+                                onChange={(e) => setPlayerSearchQuery(e.target.value)}
+                                placeholder="Enter player's name"
+                            />
+                            {filteredPlayers.length > 0 && (
+                                <ul style={{ listStyleType: 'none', padding: 0 }}>
+                                    {filteredPlayers.map(player => (
+                                        <li key={player.id} onClick={() => handlePlayerSelect(player)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
+                                            {player.firstName} {player.lastName}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </Form.Group>
+                    </>
+                ) : (
+                    <>
+                        <Form.Group controlId="formFileType" className="mb-3">
+                            <Form.Label>File Type</Form.Label>
+                            <Form.Select
+                                value={fileType}
+                                onChange={(e) => setFileType(e.target.value)}
+                                required
+                            >
+                                <option value="">Select file type</option>
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Import Injuries (CSV or JSON)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".csv,.json"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                    </>
+                )}
+
+                <Button variant="primary" type="submit" className="w-100 mt-3">
+                    {importMode ? 'Import Injuries' : 'Add Injury'}
+                </Button>
+            </Form>
+
+            {/* Template Section */}
+            <Accordion className="mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>File Format Templates</Accordion.Header>
+                    <Accordion.Body className="text-start">
+                        <h5>JSON Template</h5>
+                        <pre>
+                            {`[
+    {
+        "type": "InjuryType",
+        "start_date": "2024-10-15",
+        "end_date": "2024-11-15",
+        "player_id": "5"
+    },
+    {
+        "type": "AnotherInjuryType",
+        "start_date": "2023-05-13",
+        "end_date": "2023-08-13",
+        "player_id": "6"
+    }
+]`}
+                        </pre>
+                        <h5>CSV Template</h5>
+                        <pre>
+                            {`type,start_date,end_date,player_id
+InjuryType1,2024-10-15,2024-11-15,5
+InjuryType2,2023-05-13,2023-08-13,6`}
+                        </pre>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        </Container>
     );
 };
 
 export default AddInjuryForm;
-
-

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
 import '../App.css';
 
 const CoachSearchAndEditForm = () => {
@@ -77,80 +78,81 @@ const CoachSearchAndEditForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Search Coach</h1>
-            <form onSubmit={handleSearch} className="form-container">
-                <input
+        <Container className="my-5">
+            <h1 className="text-center mb-4">Search Coach</h1>
+            <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
+                <Form.Control
                     type="text"
                     placeholder="Enter first or last name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field"
+                    className="me-2"
+                    style={{ maxWidth: '400px' }}
                 />
-                <button type="submit">Search</button>
-            </form>
+                <Button variant="primary" type="submit">Search</Button>
+            </Form>
 
             {coaches.length > 0 && (
                 <div>
-                    <h3>Coaches found:</h3>
-                    <ul className="coach-list">
+                    <h3 className="text-center mb-3">Coaches found:</h3>
+                    <Container>
                         {coaches.map(coach => (
-                            <li key={coach.id}>
-                                {/* Displaying all relevant coach information */}
-                                {coach.id}: {coach.firstName} {coach.lastName} ({coach.nickname}), Country: {coach.country.name}
-                                <button onClick={() => handleEditClick(coach)}>Edit</button>
-                            </li>
+                            <Card key={coach.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>ID:</strong> {coach.id}<br />
+                                        <strong>Name:</strong> {coach.firstName} {coach.lastName} ({coach.nickname})<br />
+                                        <strong>Country:</strong> {coach.country.name}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleEditClick(coach)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
                         ))}
-                    </ul>
+                    </Container>
                 </div>
             )}
 
             {selectedCoach && (
-                <div className="form-container">
-                    <h3>Edit Coach: {selectedCoach.firstName} {selectedCoach.lastName}</h3>
-                    <form onSubmit={handleEditSubmit}>
-                        <div>
-                            <label>First Name</label>
-                            <input
+                <div className="mt-5">
+                    <h3 className="text-center">Edit Coach: {selectedCoach.firstName} {selectedCoach.lastName}</h3>
+                    <Form onSubmit={handleEditSubmit} className="p-4 border rounded shadow-sm bg-light">
+                        <Form.Group controlId="formFirstName" className="mb-3">
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.firstName}
                                 onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Last Name</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formLastName" className="mb-3">
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.lastName}
                                 onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Date of Birth</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formDateOfBirth" className="mb-3">
+                            <Form.Label>Date of Birth</Form.Label>
+                            <Form.Control
                                 type="date"
                                 value={editData.dateOfBirth}
                                 onChange={(e) => setEditData({ ...editData, dateOfBirth: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Nickname</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formNickname" className="mb-3">
+                            <Form.Label>Nickname</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.nickname}
                                 onChange={(e) => setEditData({ ...editData, nickname: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Country</label>
-                            <select
+                        </Form.Group>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
-                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (
@@ -158,13 +160,13 @@ const CoachSearchAndEditForm = () => {
                                         {country.name}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                            </Form.Select>
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 

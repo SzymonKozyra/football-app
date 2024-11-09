@@ -18,7 +18,7 @@ const AdminView = ({ setIsLoggedIn }) => {
         <Container fluid className="my-5">
             <Row>
                 <Col md={3}>
-                    <Accordion defaultActiveKey="0">
+                    <Accordion>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Admin Functions</Accordion.Header>
                             <Accordion.Body>

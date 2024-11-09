@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import '../App.css';
 
 const StadiumSearchAndEditForm = () => {
@@ -15,7 +16,6 @@ const StadiumSearchAndEditForm = () => {
     });
 
     useEffect(() => {
-        // Fetch available countries
         axios.get('http://localhost:8080/api/countries', {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
         })
@@ -27,16 +27,11 @@ const StadiumSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        // Fetch stadiums matching the search query
         axios.get(`http://localhost:8080/api/stadiums/search?query=${searchQuery}`, {
-            headers: { Authorization: `Bearer ${token}` } // Use JWT token for authorization
+            headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
-                setStadiums(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching stadiums:', error);
-            });
+            .then(response => setStadiums(response.data))
+            .catch(error => console.error('Error fetching stadiums:', error));
     };
 
     const handleEditClick = (stadium) => {
@@ -45,7 +40,7 @@ const StadiumSearchAndEditForm = () => {
             name: stadium.name,
             capacity: stadium.capacity,
             cityName: stadium.city.name,
-            countryName: stadium.city.country.name // Use country name for display
+            countryName: stadium.city.country.name
         });
     };
 
@@ -53,22 +48,20 @@ const StadiumSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        // Find the countryId based on the selected country name
         const selectedCountry = countries.find(country => country.name === editData.countryName);
         const countryId = selectedCountry ? selectedCountry.id : null;
 
         const updatedData = {
             ...editData,
-            countryId // Replace countryName with countryId for submission
+            countryId
         };
 
-        // Send the updated stadium data to the backend
         axios.put(`http://localhost:8080/api/stadiums/${selectedStadium.id}`, updatedData, {
-            headers: { Authorization: `Bearer ${token}` } // Use JWT token for authorization
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 alert('Stadium updated successfully');
-                setSelectedStadium(null); // Clear selected stadium after update
+                setSelectedStadium(null);
             })
             .catch(error => {
                 console.error('Error updating stadium:', error);
@@ -77,74 +70,75 @@ const StadiumSearchAndEditForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Search Stadium</h1>
-            <form onSubmit={handleSearch} className="form-container">
-                <input
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Search Stadium</h1>
+            <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
+                <Form.Control
                     type="text"
                     placeholder="Enter stadium name or city"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field"
+                    className="me-2"
+                    style={{ maxWidth: '400px' }}
                 />
-                <button type="submit">Search</button>
-            </form>
+                <Button variant="primary" type="submit">Search</Button>
+            </Form>
 
             {stadiums.length > 0 && (
-                <div>
-                    <h3>Stadiums found:</h3>
-                    <ul className="stadium-list">
+                <div className="mb-4">
+                    <h3 className="text-center mb-3">Stadiums found:</h3>
+                    <Container>
                         {stadiums.map(stadium => (
-                            <li key={stadium.id}>
-                                <strong>ID:</strong> {stadium.id}<br />
-                                <strong>Name:</strong> {stadium.name}<br />
-                                <strong>Capacity:</strong> {stadium.capacity}<br />
-                                <strong>City:</strong> {stadium.city.name}<br />
-                                <strong>Country:</strong> {stadium.city.country.name}<br />
-                                <button onClick={() => handleEditClick(stadium)}>Edit</button>
-                            </li>
+                            <Card key={stadium.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>ID:</strong> {stadium.id}<br />
+                                        <strong>Name:</strong> {stadium.name}<br />
+                                        <strong>Capacity:</strong> {stadium.capacity}<br />
+                                        <strong>City:</strong> {stadium.city.name}<br />
+                                        <strong>Country:</strong> {stadium.city.country.name}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
                         ))}
-                    </ul>
+                    </Container>
                 </div>
             )}
 
             {selectedStadium && (
-                <div className="form-container">
-                    <h3>Edit Stadium: {selectedStadium.name}</h3>
-                    <form onSubmit={handleEditSubmit}>
-                        <div>
-                            <label>Name</label>
-                            <input
+                <div className="p-4 border rounded shadow-sm bg-light">
+                    <h3 className="text-center mb-4">Edit Stadium: {selectedStadium.name}</h3>
+                    <Form onSubmit={handleEditSubmit}>
+                        <Form.Group controlId="formStadiumName" className="mb-3">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.name}
                                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Capacity</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formCapacity" className="mb-3">
+                            <Form.Label>Capacity</Form.Label>
+                            <Form.Control
                                 type="number"
                                 value={editData.capacity}
                                 onChange={(e) => setEditData({ ...editData, capacity: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>City</label>
-                            <input
+                        </Form.Group>
+                        <Form.Group controlId="formCityName" className="mb-3">
+                            <Form.Label>City</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.cityName}
                                 onChange={(e) => setEditData({ ...editData, cityName: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Country</label>
-                            <select
+                        </Form.Group>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
-                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (
@@ -152,13 +146,13 @@ const StadiumSearchAndEditForm = () => {
                                         {country.name}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                            </Form.Select>
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 

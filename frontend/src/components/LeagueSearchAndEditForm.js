@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import '../App.css';
 
 const LeagueSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [leagues, setLeagues] = useState([]);
-    const [countries, setCountries] = useState([]); // Lista krajów
+    const [countries, setCountries] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
     const [editData, setEditData] = useState({
         name: '',
-        countryName: '' // Korzystamy z nazwy kraju zamiast countryId
+        countryName: ''
     });
 
     useEffect(() => {
-        // Pobierz dostępne kraje z backendu
         axios.get('http://localhost:8080/api/countries', {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
         })
@@ -30,7 +30,7 @@ const LeagueSearchAndEditForm = () => {
         const token = localStorage.getItem('jwtToken');
 
         axios.get(`http://localhost:8080/api/leagues/search?query=${searchQuery}`, {
-            headers: { Authorization: `Bearer ${token}` }  // Autoryzacja przez JWT token
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 setLeagues(response.data);
@@ -44,7 +44,7 @@ const LeagueSearchAndEditForm = () => {
         setSelectedLeague(league);
         setEditData({
             name: league.name,
-            countryName: league.country.name // Używamy nazwy kraju
+            countryName: league.country.name
         });
     };
 
@@ -52,21 +52,20 @@ const LeagueSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        // Znajdź countryId na podstawie nazwy kraju
         const selectedCountry = countries.find(country => country.name === editData.countryName);
         const countryId = selectedCountry ? selectedCountry.id : null;
 
         const updatedData = {
             ...editData,
-            countryId // Zamieniamy countryName na countryId dla wysłania do backendu
+            countryId
         };
 
         axios.put(`http://localhost:8080/api/leagues/${selectedLeague.id}`, updatedData, {
-            headers: { Authorization: `Bearer ${token}` }  // Autoryzacja przez JWT token
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 alert('League updated successfully');
-                setSelectedLeague(null); // Wyczyść po udanej aktualizacji
+                setSelectedLeague(null);
             })
             .catch(error => {
                 console.error('Error updating league:', error);
@@ -75,54 +74,57 @@ const LeagueSearchAndEditForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Search League</h1>
-            <form onSubmit={handleSearch} className="form-container">
-                <input
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Search League</h1>
+            <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
+                <Form.Control
                     type="text"
                     placeholder="Enter league name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-field"
+                    className="me-2"
+                    style={{ maxWidth: '400px' }}
                 />
-                <button type="submit">Search</button>
-            </form>
+                <Button variant="primary" type="submit">Search</Button>
+            </Form>
 
             {leagues.length > 0 && (
-                <div>
-                    <h3>Leagues found:</h3>
-                    <ul className="league-list">
+                <div className="mb-4">
+                    <h3 className="text-center mb-3">Leagues found:</h3>
+                    <Container>
                         {leagues.map(league => (
-                            <li key={league.id}>
-                                <strong>ID:</strong> {league.id}<br />
-                                <strong>Name:</strong> {league.name}<br />
-                                <strong>Country:</strong> {league.country.name}<br />
-                                <button onClick={() => handleEditClick(league)}>Edit</button>
-                            </li>
+                            <Card key={league.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>ID:</strong> {league.id}<br />
+                                        <strong>Name:</strong> {league.name}<br />
+                                        <strong>Country:</strong> {league.country.name}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleEditClick(league)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
                         ))}
-                    </ul>
+                    </Container>
                 </div>
             )}
 
             {selectedLeague && (
-                <div className="form-container">
-                    <h3>Edit League: {selectedLeague.name}</h3>
-                    <form onSubmit={handleEditSubmit}>
-                        <div>
-                            <label>League Name</label>
-                            <input
+                <div className="p-4 border rounded shadow-sm bg-light">
+                    <h3 className="text-center mb-4">Edit League: {selectedLeague.name}</h3>
+                    <Form onSubmit={handleEditSubmit}>
+                        <Form.Group controlId="formLeagueName" className="mb-3">
+                            <Form.Label>League Name</Form.Label>
+                            <Form.Control
                                 type="text"
                                 value={editData.name}
                                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                className="input-field"
                             />
-                        </div>
-                        <div>
-                            <label>Country</label>
-                            <select
+                        </Form.Group>
+                        <Form.Group controlId="formCountry" className="mb-3">
+                            <Form.Label>Country</Form.Label>
+                            <Form.Select
                                 value={editData.countryName}
                                 onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
-                                className="input-field"
                             >
                                 <option value="">Select Country</option>
                                 {countries.map(country => (
@@ -130,13 +132,13 @@ const LeagueSearchAndEditForm = () => {
                                         {country.name}
                                     </option>
                                 ))}
-                            </select>
-                        </div>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                            </Form.Select>
+                        </Form.Group>
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
                 </div>
             )}
-        </div>
+        </Container>
     );
 };
 
