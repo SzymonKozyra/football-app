@@ -94,7 +94,7 @@ const PlayerSearchAndEditForm = () => {
                     <Container>
                         {players.map(player => (
                             <Card key={player.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
                                         <strong>ID:</strong> {player.id}<br />
                                         <strong>Name:</strong> {player.firstName} {player.lastName}<br />

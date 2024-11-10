@@ -144,11 +144,10 @@
 }
 
 /* Styling for team images */
-.team-picture, .player-picture {
+.team-picture, .player-picture, .league-picture, .coach-picture {
     width: 100px;
     height: 100px;
-    object-fit: cover;
-    border-radius: 4px;
+    object-fit: contain;
 }
 
 

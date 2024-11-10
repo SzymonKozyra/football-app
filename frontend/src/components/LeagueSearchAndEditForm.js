@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../App.css'
 
 const LeagueSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -94,13 +95,37 @@ const LeagueSearchAndEditForm = () => {
                     <Container>
                         {leagues.map(league => (
                             <Card key={league.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>ID:</strong> {league.id}<br />
-                                        <strong>Name:</strong> {league.name}<br />
-                                        <strong>Country:</strong> {league.country.name}
-                                    </div>
-                                    <Button variant="outline-primary" onClick={() => handleEditClick(league)}>Edit</Button>
+                                <Card.Body>
+                                    <Row className="align-items-center">
+                                        <Col xs="auto">
+                                            {/* Display country flag */}
+                                            <div style={{
+                                                display: 'inline-block',
+                                                backgroundColor: '#f0f0f0',
+                                                padding: '6px',
+                                                borderRadius: '4px',
+                                                boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.2)'
+                                            }}>
+                                                <img
+                                                    src={`/assets/flags/${league.country.code}.svg`}
+                                                    alt={league.country.name}
+                                                    className="league-picture"
+                                                />
+                                            </div>
+                                        </Col>
+                                        <Col style={{textAlign: 'left'}}>
+                                            <div>
+                                                <strong>ID:</strong> {league.id}<br/>
+                                                <strong>Name:</strong> {league.name}<br/>
+                                                <strong>Country:</strong> {league.country.name}
+                                            </div>
+                                        </Col>
+                                        <Col xs="auto" className="d-flex justify-content-end">
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(league)}>
+                                                Edit
+                                            </Button>
+                                        </Col>
+                                    </Row>
                                 </Card.Body>
                             </Card>
                         ))}

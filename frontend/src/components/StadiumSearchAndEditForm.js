@@ -90,7 +90,7 @@ const StadiumSearchAndEditForm = () => {
                     <Container>
                         {stadiums.map(stadium => (
                             <Card key={stadium.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
                                         <strong>ID:</strong> {stadium.id}<br />
                                         <strong>Name:</strong> {stadium.name}<br />

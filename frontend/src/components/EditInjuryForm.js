@@ -12,7 +12,7 @@ const EditInjuryForm = () => {
     const [injuryType, setInjuryType] = useState('');
     const [injuryStartDate, setInjuryStartDate] = useState('');
     const [injuryEndDate, setInjuryEndDate] = useState('');
-    const [error, setError] = useState(null);
+    const [noInjuriesMessage, setNoInjuriesMessage] = useState('');
 
     const resetForm = () => {
         setInjuryType('');
@@ -39,7 +39,6 @@ const EditInjuryForm = () => {
                 .then(response => setFilteredPlayers(response.data))
                 .catch(error => {
                     console.error('Error fetching players:', error);
-                    setError('Failed to load players.');
                 });
         } else {
             setFilteredPlayers([]);
@@ -50,6 +49,8 @@ const EditInjuryForm = () => {
         setSelectedPlayer(player);
         setPlayerSearchQuery(`${player.firstName} ${player.lastName}`);
         setFilteredPlayers([]);
+        setInjuries([]);
+        setNoInjuriesMessage(''); // Reset message when a new player is selected
     };
 
     const handleSearch = () => {
@@ -58,13 +59,13 @@ const EditInjuryForm = () => {
             axios.get(`http://localhost:8080/api/injuries/player/${selectedPlayer.id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-                .then(response => setInjuries(response.data))
+                .then(response => {
+                    setInjuries(response.data);
+                    setNoInjuriesMessage(response.data.length === 0 ? `No injuries found.` : '');
+                })
                 .catch(error => {
                     console.error('Error fetching injuries:', error);
-                    setError('Failed to load injuries.');
                 });
-        } else {
-            setError("Please select a player first.");
         }
     };
 
@@ -100,18 +101,16 @@ const EditInjuryForm = () => {
             })
             .catch(error => {
                 console.error('Error updating injury:', error);
-                setError('Failed to update injury.');
             });
     };
 
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Edit Injury</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <Form className="mb-4">
                 <Form.Group className="mb-3">
-                    <Form.Label>Search for Player</Form.Label>
+                    <Form.Label>Search for a player</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Enter player name"
@@ -137,22 +136,27 @@ const EditInjuryForm = () => {
                 <Button variant="primary" onClick={handleSearch}>Search</Button>
             </Form>
 
-            {selectedPlayer && injuries.length > 0 && (
+            {selectedPlayer && (
                 <div className="mb-4">
-                    <h3 className="text-center mb-3">Injuries of {selectedPlayer.firstName} {selectedPlayer.lastName}</h3>
+                    <h3 className="text-center mb-3">Injuries of {selectedPlayer.firstName} {selectedPlayer.lastName}:</h3>
                     <Container>
-                        {injuries.map(injury => (
-                            <Card key={injury.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Type:</strong> {injury.type}<br />
-                                        <strong>Start Date:</strong> {injury.startDate}<br />
-                                        <strong>End Date:</strong> {injury.endDate || 'Present'}
-                                    </div>
-                                    <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)}>Edit</Button>
-                                </Card.Body>
-                            </Card>
-                        ))}
+                        {injuries.length > 0 ? (
+                            injuries.map(injury => (
+                                <Card key={injury.id} className="mb-3 shadow-sm">
+                                    <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
+                                        <div>
+                                            <strong>ID:</strong> {injury.id}<br />
+                                            <strong>Type:</strong> {injury.type}<br />
+                                            <strong>Start Date:</strong> {injury.startDate}<br />
+                                            <strong>End Date:</strong> {injury.endDate || 'Present'}
+                                        </div>
+                                        <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)}>Edit</Button>
+                                    </Card.Body>
+                                </Card>
+                            ))
+                        ) : (
+                            <p className="text-center">{noInjuriesMessage}</p>
+                        )}
                     </Container>
                 </div>
             )}

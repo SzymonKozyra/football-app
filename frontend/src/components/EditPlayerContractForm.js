@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Form, ListGroup, Card, Button } from 'react-bootstrap';
+import { Container, Form, ListGroup, Card, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditPlayerContractForm = () => {
@@ -15,7 +15,7 @@ const EditPlayerContractForm = () => {
     const [salary, setSalary] = useState('');
     const [transferFee, setTransferFee] = useState('');
     const [transferType, setTransferType] = useState('');
-    const [error, setError] = useState(null);
+    const [noContractsMessage, setNoContractsMessage] = useState(''); // Message when no contracts are found
 
     // Load suggestions as the user types
     useEffect(() => {
@@ -31,7 +31,7 @@ const EditPlayerContractForm = () => {
                 .then(response => setSuggestions(response.data))
                 .catch(error => {
                     console.error('Error fetching suggestions:', error);
-                    setError('Failed to load suggestions.');
+                    setNoContractsMessage(`Failed to load suggestions.`);
                 });
         } else {
             setSuggestions([]);
@@ -48,7 +48,7 @@ const EditPlayerContractForm = () => {
     // Final search on "Search" button click, using the selected suggestion ID
     const handleSearch = () => {
         if (!selectedSuggestionId) {
-            setError("No matching results. Please select from suggestions.");
+            setNoContractsMessage('No matching results. Please select from suggestions.');
             return;
         }
 
@@ -56,7 +56,7 @@ const EditPlayerContractForm = () => {
             ? fetchContractsByPlayer(selectedSuggestionId)
             : fetchContractsByTeam(selectedSuggestionId);
 
-        setError(null);
+        setNoContractsMessage(''); // Clear message when a search is performed
     };
 
     const fetchContractsByPlayer = (playerId) => {
@@ -64,10 +64,13 @@ const EditPlayerContractForm = () => {
         axios.get(`http://localhost:8080/api/player-contracts/player/${playerId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setContractList(response.data))
+            .then(response => {
+                setContractList(response.data);
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+            })
             .catch(error => {
                 console.error('Error fetching player contracts:', error);
-                setError('Failed to load player contracts.');
+                setNoContractsMessage(`Failed to load player contracts.`);
             });
     };
 
@@ -76,10 +79,13 @@ const EditPlayerContractForm = () => {
         axios.get(`http://localhost:8080/api/player-contracts/team/${teamId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setContractList(response.data))
+            .then(response => {
+                setContractList(response.data);
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+            })
             .catch(error => {
                 console.error('Error fetching team contracts:', error);
-                setError('Failed to load team contracts.');
+                setNoContractsMessage(`Failed to load team contracts.`);
             });
     };
 
@@ -114,7 +120,7 @@ const EditPlayerContractForm = () => {
             })
             .catch(error => {
                 console.error('Error updating contract:', error);
-                setError('An error occurred while updating the contract.');
+                setNoContractsMessage(`An error occurred while updating the contract.`);
             });
     };
 
@@ -130,7 +136,6 @@ const EditPlayerContractForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search and Edit Player Contract</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <Form className="mb-4">
                 <Form.Group className="mb-3">
@@ -162,20 +167,20 @@ const EditPlayerContractForm = () => {
                 <Button variant="primary" onClick={handleSearch}>Search</Button>
             </Form>
 
-            {contractList.length > 0 && (
+            {contractList.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Contracts found:</h3>
                     <Container>
                         {contractList.map(contract => (
                             <Card key={contract.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
-                                        <strong>Player:</strong> {contract.player.firstName} {contract.player.lastName}<br/>
-                                        <strong>Team:</strong> {contract.team.name}<br/>
-                                        <strong>Start Date:</strong> {contract.startDate}<br/>
-                                        <strong>End Date:</strong> {contract.endDate}<br/>
-                                        <strong>Salary:</strong> {contract.salary}<br/>
-                                        <strong>Transfer Type:</strong> {contract.transferType}<br/>
+                                        <strong>Player:</strong> {contract.player.firstName} {contract.player.lastName}<br />
+                                        <strong>Team:</strong> {contract.team.name}<br />
+                                        <strong>Start Date:</strong> {contract.startDate}<br />
+                                        <strong>End Date:</strong> {contract.endDate}<br />
+                                        <strong>Salary:</strong> {contract.salary}<br />
+                                        <strong>Transfer Type:</strong> {contract.transferType}<br />
                                         {contract.transferType === "TRANSFER" && (
                                             <>
                                                 <strong>Transfer Fee:</strong> {contract.transferFee}
@@ -188,6 +193,8 @@ const EditPlayerContractForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noContractsMessage}</p> // Display message if no contracts found
             )}
 
             {selectedContract && (

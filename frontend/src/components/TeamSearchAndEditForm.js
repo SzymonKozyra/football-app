@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../App.css';
 
 const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -84,15 +85,11 @@ const TeamSearchAndEditForm = () => {
                                                 src={`/assets/teams/${team.picture}`}
                                                 alt={team.name}
                                                 className="team-picture"
-                                                style={{
-                                                    width: '100px',
-                                                    height: '100px',
-                                                    objectFit: 'contain',
-                                                }}
                                             />
                                         </Col>
                                         <Col style={{ textAlign: 'left' }}>
                                             <div>
+                                                <strong>ID:</strong> {team.id}<br />
                                                 <strong>Name:</strong> {team.name}<br />
                                                 <strong>Type:</strong> {team.isClub ? "Club" : "National Team"}<br />
                                                 <strong>League:</strong> {team.league ? team.league.name : 'No League'}

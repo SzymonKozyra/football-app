@@ -355,7 +355,7 @@ import { Container, Form, ListGroup, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditCoachContractForm = () => {
-    const [searchType, setSearchType] = useState('coach');
+    const [searchType, setSearchType] = useState('coach'); // 'coach' or 'team'
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [selectedSuggestionId, setSelectedSuggestionId] = useState(null);
@@ -365,7 +365,7 @@ const EditCoachContractForm = () => {
     const [endDate, setEndDate] = useState('');
     const [salary, setSalary] = useState('');
     const [transferFee, setTransferFee] = useState('');
-    const [error, setError] = useState(null);
+    const [noContractsMessage, setNoContractsMessage] = useState(''); // Message when no contracts are found
 
     // Load suggestions as the user types
     useEffect(() => {
@@ -381,7 +381,6 @@ const EditCoachContractForm = () => {
                 .then(response => setSuggestions(response.data))
                 .catch(error => {
                     console.error('Error fetching suggestions:', error);
-                    setError('Failed to load suggestions.');
                 });
         } else {
             setSuggestions([]);
@@ -398,7 +397,7 @@ const EditCoachContractForm = () => {
     // Final search on "Search" button click, using the selected suggestion ID
     const handleSearch = () => {
         if (!selectedSuggestionId) {
-            setError("No matching results. Please select from suggestions.");
+            setNoContractsMessage('No matching results. Please select from suggestions.');
             return;
         }
 
@@ -406,7 +405,7 @@ const EditCoachContractForm = () => {
             ? fetchContractsByCoach(selectedSuggestionId)
             : fetchContractsByTeam(selectedSuggestionId);
 
-        setError(null);
+        setNoContractsMessage(''); // Clear message when a search is performed
     };
 
     const fetchContractsByCoach = (coachId) => {
@@ -414,10 +413,12 @@ const EditCoachContractForm = () => {
         axios.get(`http://localhost:8080/api/coach-contracts/coach/${coachId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setContractList(response.data))
+            .then(response => {
+                setContractList(response.data);
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+            })
             .catch(error => {
                 console.error('Error fetching contracts by coach:', error);
-                setError('Failed to load coach contracts.');
             });
     };
 
@@ -426,10 +427,12 @@ const EditCoachContractForm = () => {
         axios.get(`http://localhost:8080/api/coach-contracts/team/${teamId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setContractList(response.data))
+            .then(response => {
+                setContractList(response.data);
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+            })
             .catch(error => {
                 console.error('Error fetching contracts by team:', error);
-                setError('Failed to load team contracts.');
             });
     };
 
@@ -462,7 +465,6 @@ const EditCoachContractForm = () => {
             })
             .catch(error => {
                 console.error('Error updating contract:', error);
-                setError('An error occurred while updating the contract.');
             });
     };
 
@@ -478,7 +480,6 @@ const EditCoachContractForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search and Edit Coach Contract</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <Form className="mb-4">
                 <Form.Group className="mb-3">
@@ -510,19 +511,20 @@ const EditCoachContractForm = () => {
                 <Button variant="primary" onClick={handleSearch}>Search</Button>
             </Form>
 
-            {contractList.length > 0 && (
+            {contractList.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Contracts found:</h3>
                     <Container>
                         {contractList.map(contract => (
                             <Card key={contract.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
-                                        <strong>Coach:</strong> {contract.coach.firstName} {contract.coach.lastName}<br/>
-                                        <strong>Team:</strong> {contract.team.name}<br/>
-                                        <strong>Start Date:</strong> {contract.startDate}<br/>
-                                        <strong>End Date:</strong> {contract.endDate}<br/>
-                                        <strong>Salary:</strong> {contract.salary}<br/>
+                                        <strong>ID:</strong> {contract.id}<br />
+                                        <strong>Coach:</strong> {contract.coach.firstName} {contract.coach.lastName}<br />
+                                        <strong>Team:</strong> {contract.team.name}<br />
+                                        <strong>Start Date:</strong> {contract.startDate}<br />
+                                        <strong>End Date:</strong> {contract.endDate}<br />
+                                        <strong>Salary:</strong> {contract.salary}<br />
                                         <strong>Transfer Fee:</strong> {contract.transferFee}
                                     </div>
                                     <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
@@ -531,6 +533,8 @@ const EditCoachContractForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noContractsMessage}</p> // Display message if no contracts found
             )}
 
             {selectedContract && (

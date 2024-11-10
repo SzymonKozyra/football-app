@@ -87,8 +87,9 @@ const RefereeSearchAndEditForm = () => {
                     <Container>
                         {referees.map(referee => (
                             <Card key={referee.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
+                                        <strong>ID:</strong> {referee.id}<br />
                                         <strong>Name:</strong> {referee.firstName} {referee.lastName}<br />
                                         <strong>Date of Birth:</strong> {referee.dateOfBirth}<br />
                                         <strong>Country:</strong> {referee.country.name}

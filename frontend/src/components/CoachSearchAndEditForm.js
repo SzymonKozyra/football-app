@@ -99,8 +99,9 @@ const CoachSearchAndEditForm = () => {
                     <Container>
                         {coaches.map(coach => (
                             <Card key={coach.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
                                     <div>
+                                        <strong>ID:</strong> {coach.id}<br/>
                                         <strong>Name:</strong> {coach.firstName} {coach.lastName} ({coach.nickname})<br/>
                                         <strong>Date of Birth:</strong> {coach.dateOfBirth}<br/>
                                         <strong>Country:</strong> {coach.country.name}
