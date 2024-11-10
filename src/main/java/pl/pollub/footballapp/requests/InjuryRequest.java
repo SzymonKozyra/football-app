@@ -1,21 +1,37 @@
 package pl.pollub.footballapp.requests;
 
+import java.time.LocalDate;
+
 public class InjuryRequest {
-    private Long id;
     private String type;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;  // This field can be null
     private Long playerId;
 
-    // Gettery i Settery
-
-    public Long getId() {
-        return id;
+    // Constructor
+    public InjuryRequest(String type, LocalDate startDate, LocalDate endDate, Long playerId) {
+        this.type = type;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.playerId = playerId;
     }
+    public InjuryRequest() {}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    @JsonCreator
+//    public InjuryRequest(
+//            @JsonProperty("type") String type,
+//            @JsonProperty("startDate") LocalDate startDate,
+//            @JsonProperty("endDate") LocalDate endDate,
+//            @JsonProperty("playerId") Long playerId
+//    ) {
+//        this.type = type;
+//        this.startDate = startDate;
+//        this.endDate = endDate;
+//        this.playerId = playerId;
+//    }
+
+
+    // Getters and Setters
 
     public String getType() {
         return type;
@@ -25,19 +41,19 @@ public class InjuryRequest {
         this.type = type;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

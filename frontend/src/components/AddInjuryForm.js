@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddInjuryForm = () => {
@@ -16,6 +16,8 @@ const AddInjuryForm = () => {
     const [filteredPlayers, setFilteredPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
 
+    const [duplicateRecords, setDuplicateRecords] = useState([]);
+
     const resetForm = () => {
         setInjuryType('');
         setInjuryStartDate('');
@@ -25,6 +27,7 @@ const AddInjuryForm = () => {
         setSelectedPlayer(null);
         setFileType('');
         setFile(null);
+        setDuplicateRecords([]);
     };
 
     const getTodayDate = () => {
@@ -63,24 +66,47 @@ const AddInjuryForm = () => {
             return;
         }
 
-        const injuryData = {
-            playerId: selectedPlayer?.id,
-            type: injuryType,
-            startDate: injuryStartDate,
-            endDate: injuryEndDate
-        };
+        if (!importMode) {
+            const injuryData = {
+                playerId: selectedPlayer?.id,
+                type: injuryType,
+                startDate: injuryStartDate,
+                endDate: injuryEndDate
+            };
 
-        axios.post('http://localhost:8080/api/injuries/add', injuryData, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
-                alert('Injury added successfully');
-                resetForm();
+            axios.post('http://localhost:8080/api/injuries/add', injuryData, {
+                headers: { Authorization: `Bearer ${token}` }
             })
-            .catch(error => {
-                console.error('Error adding injury:', error);
-                alert('Failed to add injury');
-            });
+                .then(response => {
+                    alert('Injury added successfully');
+                    resetForm();
+                })
+                .catch(error => {
+                    console.error('Error adding injury:', error);
+                    alert('Failed to add injury');
+                });
+        } else {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("type", fileType);
+
+            axios.post('http://localhost:8080/api/injuries/import', formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    alert(response.data);
+                    setDuplicateRecords(response.data.duplicates || []);
+                    resetForm();
+                })
+                .catch(error => {
+                    console.error("Error importing injuries:", error);
+                    alert(error.response?.data || 'Failed to import coaches');
+                    setDuplicateRecords(error.response?.data?.duplicates || []);
+                });
+        }
     };
 
     return (
@@ -193,7 +219,17 @@ const AddInjuryForm = () => {
                 </Button>
             </Form>
 
-            {/* Template Section */}
+            {duplicateRecords.length > 0 && (
+                <Alert variant="warning" className="mt-4">
+                    <strong>Duplicate Records Skipped:</strong>
+                    <ul>
+                        {duplicateRecords.map((record, index) => (
+                            <li key={index}>Record at row {record} was a duplicate and was skipped.</li>
+                        ))}
+                    </ul>
+                </Alert>
+            )}
+
             <Accordion className="mt-4">
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>File Format Templates</Accordion.Header>

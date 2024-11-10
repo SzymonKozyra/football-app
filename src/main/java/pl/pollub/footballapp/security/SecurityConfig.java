@@ -39,8 +39,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/coaches/search/**").hasRole("MODERATOR")
 
                         .requestMatchers("/api/coach-contracts/**").hasRole("MODERATOR")
+                        .requestMatchers("/api/positions/**").permitAll()
 
-                        .requestMatchers("/api").permitAll()
+                        //.requestMatchers("/api").permitAll()
                         .anyRequest().authenticated()  // Secure all other endpoints
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session for JWT

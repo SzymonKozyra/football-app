@@ -40,8 +40,6 @@ const AddPlayerForm = () => {
             .then(res => setCountries(res.data));
     }, []);
 
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
@@ -63,7 +61,16 @@ const AddPlayerForm = () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-                .then(response => alert("Players imported successfully"))
+                .then(response => {
+                    const { data } = response;
+                    // Check for duplicates information in the response
+                    if (data.includes("The following records were not added due to duplicates:")) {
+                        alert(data); // Display the backend message with duplicates information
+                    } else {
+                        alert("Players imported successfully");
+                    }
+                    setFile(null);
+                })
                 .catch(error => {
                     console.error("Error importing players:", error);
                     alert("Failed to import players");
@@ -128,7 +135,6 @@ const AddPlayerForm = () => {
                                 max={getTodayDate()}
                                 value={playerData.dateOfBirth}
                                 onChange={e => setPlayerData({ ...playerData, dateOfBirth: e.target.value })}
-                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formNickname" className="mb-3">
@@ -177,7 +183,6 @@ const AddPlayerForm = () => {
                                 ))}
                             </Form.Select>
                         </Form.Group>
-
 
                         <Form.Group controlId="formValue" className="mb-3">
                             <Form.Label>Value</Form.Label>
@@ -231,13 +236,20 @@ const AddPlayerForm = () => {
         "value": "5000000",
         "country_id": "1",
         "position_id": "2"
+    },
+    {
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "country_id": "2",
+        "position_id": "3"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
                             {`first_name,last_name,date_of_birth,nickname,picture,value,country_id,position_id
-John,Doe,1990-01-01,Johnny,john_doe.png,5000000,1,1,1,2`}
+John,Doe,1990-01-01,Johnny,john_doe.png,5000000,1,2
+Jane,Smith,,,,,2,3`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

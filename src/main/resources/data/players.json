@@ -1,20 +1,20 @@
 [
   {
-    "firstName": "Piotr",
-    "lastName": "Kutas",
-    "dateOfBirth": "1985-05-20",
-    "nickname": "Pitek",
-    "picture": "piotr.png",
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1990-01-01",
+    "nickname": "Johnny",
+    "picture": "john_doe.png",
     "positionId": 2,
-    "countryId": 123,
-    "clubId": 1,
-    "nationalTeamId": 2,
-    "value": 2000000.00
+    "countryId": 1,
+    "value": 5000000.00
   },
   {
     "firstName": "Anna",
-    "lastName": "Chujalska",
+    "lastName": "Smith",
     "dateOfBirth": "1993-07-10",
-    "nickname": "Anka"
+    "positionId": 3,
+    "countryId": 1
   }
 ]
+

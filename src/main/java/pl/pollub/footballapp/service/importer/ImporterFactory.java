@@ -33,6 +33,10 @@ public class ImporterFactory {
 
     @Autowired
     private JsonCoachImporter jsonCoachImporter;
+    @Autowired
+    private JsonInjuryImporter jsonInjuryImporter;
+    @Autowired
+    private CsvInjuryImporter csvInjuryImporter;
 
 
     public DataImporter getImporter(String fileType) {
@@ -101,4 +105,15 @@ public class ImporterFactory {
             throw new IllegalArgumentException("Unsupported file type: " + fileType);
         }
     }
+
+    public DataImporter getImporterInjury(String fileType) {
+        if ("json".equalsIgnoreCase(fileType)) {
+            return jsonInjuryImporter;
+        } else if ("csv".equalsIgnoreCase(fileType)) {
+            return csvInjuryImporter;
+        } else {
+            throw new IllegalArgumentException("Unsupported file type: " + fileType);
+        }
+    }
+
 }

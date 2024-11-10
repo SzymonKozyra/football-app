@@ -43,13 +43,16 @@ public class CsvPlayerImporter implements DataImporter {
         Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
         for (CSVRecord csvRecord : csvRecords) {
+            String dateOfBirth = csvRecord.get("dateOfBirth").trim();
+            LocalDate parsedDate = dateOfBirth.isEmpty() ? null : LocalDate.parse(dateOfBirth);
+
             Double parsedValue = parseDouble(csvRecord.get("value"));
             BigDecimal value = parsedValue != null ? BigDecimal.valueOf(parsedValue) : BigDecimal.ZERO;
 
             PlayerRequest playerRequest = new PlayerRequest(
                     csvRecord.get("firstName"),
                     csvRecord.get("lastName"),
-                    LocalDate.parse(csvRecord.get("dateOfBirth")),
+                    parsedDate,
                     csvRecord.get("nickname"),
                     csvRecord.get("picture"),
                     parseLong(csvRecord.get("positionId")),
