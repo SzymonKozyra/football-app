@@ -56,7 +56,7 @@ const ModeratorView = () => {
                 {/* Sidebar */}
                 <Col md={3}>
                     <h4 className="mb-4">Moderator Functions</h4>
-                    <Accordion defaultActiveKey="2">
+                    <Accordion>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Add Data</Accordion.Header>
                             <Accordion.Body>

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../App.css';
+import { Container, Form, ListGroup, Card, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditPlayerContractForm = () => {
-    const [searchType, setSearchType] = useState('player'); // 'player' lub 'team'
+    const [searchType, setSearchType] = useState('player');
     const [searchQuery, setSearchQuery] = useState('');
-    const [results, setResults] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
+    const [selectedSuggestionId, setSelectedSuggestionId] = useState(null);
     const [contractList, setContractList] = useState([]);
-    const [selectedContractId, setSelectedContractId] = useState(null);
-
-    const [playerId, setPlayerId] = useState(null);
-    const [teamId, setTeamId] = useState(null);
+    const [selectedContract, setSelectedContract] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [salary, setSalary] = useState('');
@@ -18,10 +17,10 @@ const EditPlayerContractForm = () => {
     const [transferType, setTransferType] = useState('');
     const [error, setError] = useState(null);
 
-    // Wyszukiwanie zawodników lub drużyn na podstawie wybranego typu
+    // Load suggestions as the user types
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (searchQuery && token) {
+        if (searchQuery) {
+            const token = localStorage.getItem('jwtToken');
             const url = searchType === 'player'
                 ? `http://localhost:8080/api/players/search?query=${searchQuery}`
                 : `http://localhost:8080/api/teams/search?query=${searchQuery}`;
@@ -29,23 +28,35 @@ const EditPlayerContractForm = () => {
             axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            .then(response => setResults(response.data))
-            .catch(error => {
-                console.error('Błąd przy pobieraniu wyników:', error);
-                setError('Nie udało się załadować wyników.');
-            });
+                .then(response => setSuggestions(response.data))
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    setError('Failed to load suggestions.');
+                });
         } else {
-            setResults([]);
+            setSuggestions([]);
         }
     }, [searchQuery, searchType]);
 
-    const handleSelect = (item) => {
-        if (searchType === 'player') {
-            fetchContractsByPlayer(item.id);
-        } else {
-            fetchContractsByTeam(item.id);
+    // Set selected suggestion ID and populate input on suggestion click
+    const handleSelectSuggestion = (item) => {
+        setSearchQuery(searchType === 'player' ? `${item.firstName} ${item.lastName}` : item.name);
+        setSelectedSuggestionId(item.id);
+        setSuggestions([]);  // Clear suggestions after selecting one
+    };
+
+    // Final search on "Search" button click, using the selected suggestion ID
+    const handleSearch = () => {
+        if (!selectedSuggestionId) {
+            setError("No matching results. Please select from suggestions.");
+            return;
         }
-        setSearchQuery(item.name || `${item.firstName} ${item.lastName}`);
+
+        searchType === 'player'
+            ? fetchContractsByPlayer(selectedSuggestionId)
+            : fetchContractsByTeam(selectedSuggestionId);
+
+        setError(null);
     };
 
     const fetchContractsByPlayer = (playerId) => {
@@ -53,11 +64,11 @@ const EditPlayerContractForm = () => {
         axios.get(`http://localhost:8080/api/player-contracts/player/${playerId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(response => setContractList(response.data))
-        .catch(error => {
-            console.error('Błąd przy pobieraniu kontraktów zawodnika:', error);
-            setError('Nie udało się załadować kontraktów zawodnika.');
-        });
+            .then(response => setContractList(response.data))
+            .catch(error => {
+                console.error('Error fetching player contracts:', error);
+                setError('Failed to load player contracts.');
+            });
     };
 
     const fetchContractsByTeam = (teamId) => {
@@ -65,46 +76,23 @@ const EditPlayerContractForm = () => {
         axios.get(`http://localhost:8080/api/player-contracts/team/${teamId}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(response => setContractList(response.data))
-        .catch(error => {
-            console.error('Błąd przy pobieraniu kontraktów klubu:', error);
-            setError('Nie udało się załadować kontraktów klubu.');
-        });
+            .then(response => setContractList(response.data))
+            .catch(error => {
+                console.error('Error fetching team contracts:', error);
+                setError('Failed to load team contracts.');
+            });
     };
 
-    const handleContractSelect = (contractId) => {
-        setSelectedContractId(contractId);
-        fetchContractDetails(contractId);
+    const handleContractSelect = (contract) => {
+        setSelectedContract(contract);
+        setStartDate(contract.startDate);
+        setEndDate(contract.endDate);
+        setSalary(contract.salary);
+        setTransferFee(contract.transferFee);
+        setTransferType(contract.transferType);
     };
 
-    const fetchContractDetails = (contractId) => {
-        const token = localStorage.getItem('jwtToken');
-        if (!token) {
-            setError('Brak autoryzacji - zaloguj się ponownie.');
-            return;
-        }
-
-        axios.get(`http://localhost:8080/api/player-contracts/${contractId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(response => {
-            const contract = response.data;
-            setStartDate(contract.startDate);
-            setEndDate(contract.endDate);
-            setSalary(contract.salary);
-            setTransferFee(contract.transferFee);
-            setTransferType(contract.transferType);
-            setPlayerId(contract.player.playerId);
-            setTeamId(contract.team.teamId);
-            setError(null);
-        })
-        .catch(error => {
-            console.error('Błąd przy pobieraniu szczegółów kontraktu:', error.response ? error.response.data : error.message);
-            setError('Nie udało się załadować szczegółów kontraktu.');
-        });
-    };
-
-    const handleSubmit = (e) => {
+    const handleEditSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
@@ -116,116 +104,150 @@ const EditPlayerContractForm = () => {
             transferType
         };
 
-        axios.put(`http://localhost:8080/api/player-contracts/${selectedContractId}`, updatedContractData, {
+        axios.put(`http://localhost:8080/api/player-contracts/${selectedContract.id}`, updatedContractData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(() => {
-            alert('Kontrakt zawodnika został pomyślnie zaktualizowany');
-            setSelectedContractId(null);
-            setContractList([]);
-        })
-        .catch(error => {
-            console.error('Błąd przy aktualizacji kontraktu:', error);
-            setError('Wystąpił błąd podczas aktualizacji kontraktu.');
-        });
+            .then(() => {
+                alert('Player contract updated successfully');
+                setSelectedContract(null);
+                setContractList([]);
+            })
+            .catch(error => {
+                console.error('Error updating contract:', error);
+                setError('An error occurred while updating the contract.');
+            });
+    };
+
+    const handleSearchTypeChange = (e) => {
+        setSearchType(e.target.value);
+        setSearchQuery('');
+        setSuggestions([]);
+        setContractList([]);
+        setSelectedContract(null);
+        setSelectedSuggestionId(null);
     };
 
     return (
-        <div className="form-container">
-            <h2>Wybierz i Edytuj Kontrakt Zawodnika</h2>
-
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Search and Edit Player Contract</h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <div>
-                <label>Wybierz typ wyszukiwania:</label>
-                <select onChange={(e) => setSearchType(e.target.value)} value={searchType}>
-                    <option value="player">Zawodnik</option>
-                    <option value="team">Klub</option>
-                </select>
-            </div>
+            <Form className="mb-4">
+                <Form.Group className="mb-3">
+                    <Form.Label>Choose search type:</Form.Label>
+                    <Form.Select onChange={handleSearchTypeChange} value={searchType}>
+                        <option value="player">Player</option>
+                        <option value="team">Team</option>
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Control
+                        type="text"
+                        placeholder={`Enter ${searchType === 'player' ? 'player' : 'team'} name`}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </Form.Group>
 
-            <div>
-                <label>Wyszukaj:</label>
-                <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={`Wyszukaj ${searchType === 'player' ? 'zawodnika' : 'klub'}`}
-                />
-                {results.length > 0 && (
-                    <ul>
-                        {results.map((item) => (
-                            <li key={item.id} onClick={() => handleSelect(item)}>
+                {suggestions.length > 0 && (
+                    <ListGroup className="mb-3">
+                        {suggestions.map((item) => (
+                            <ListGroup.Item key={item.id} onClick={() => handleSelectSuggestion(item)} style={{ cursor: 'pointer' }}>
                                 {searchType === 'player' ? `${item.firstName} ${item.lastName}` : item.name}
-                            </li>
+                            </ListGroup.Item>
                         ))}
-                    </ul>
+                    </ListGroup>
                 )}
-            </div>
 
-            <ul>
-                {contractList.map((contract) => (
-                    <li key={contract.id}>
-                        Kontrakt ID: {contract.id}, Start: {contract.startDate}, Koniec: {contract.endDate}, Wynagrodzenie: {contract.salary}, Typ Transferu: {contract.transferType}
-                        <button onClick={() => handleContractSelect(contract.id)}>Edytuj</button>
-                    </li>
-                ))}
-            </ul>
+                <Button variant="primary" onClick={handleSearch}>Search</Button>
+            </Form>
 
-            {selectedContractId && (
-                <form onSubmit={handleSubmit}>
-                    <h3>Edytuj Kontrakt</h3>
+            {contractList.length > 0 && (
+                <div className="mb-4">
+                    <h3 className="text-center mb-3">Contracts found:</h3>
+                    <Container>
+                        {contractList.map(contract => (
+                            <Card key={contract.id} className="mb-3 shadow-sm">
+                                <Card.Body className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Player:</strong> {contract.player.firstName} {contract.player.lastName}<br/>
+                                        <strong>Team:</strong> {contract.team.name}<br/>
+                                        <strong>Start Date:</strong> {contract.startDate}<br/>
+                                        <strong>End Date:</strong> {contract.endDate}<br/>
+                                        <strong>Salary:</strong> {contract.salary}<br/>
+                                        <strong>Transfer Type:</strong> {contract.transferType}<br/>
+                                        {contract.transferType === "TRANSFER" && (
+                                            <>
+                                                <strong>Transfer Fee:</strong> {contract.transferFee}
+                                            </>
+                                        )}
+                                    </div>
+                                    <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
+                                </Card.Body>
+                            </Card>
+                        ))}
+                    </Container>
+                </div>
+            )}
 
-                    <label>Data Rozpoczęcia:</label>
-                    <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        required
-                    />
-
-                    <label>Data Zakończenia:</label>
-                    <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        min={startDate}
-                    />
-
-                    <label>Pensja:</label>
-                    <input
-                        type="number"
-                        value={salary}
-                        onChange={(e) => setSalary(e.target.value)}
-                        min="0"
-                        required
-                    />
-
-                    <label>Typ Transferu:</label>
-                    <select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
-                        <option value="">Wybierz typ transferu</option>
-                        <option value="LOAN">Wypożyczenie</option>
-                        <option value="TRANSFER">Transfer</option>
-                        <option value="END_LOAN">Koniec Wypożyczenia</option>
-                    </select>
-
-                    {transferType === "TRANSFER" && (
-                        <div>
-                            <label>Opłata Transferowa:</label>
-                            <input
+            {selectedContract && (
+                <div className="p-4 border rounded shadow-sm bg-light">
+                    <h3 className="text-center mb-4">Edit Contract</h3>
+                    <Form onSubmit={handleEditSubmit}>
+                        <Form.Group controlId="formStartDate" className="mb-3">
+                            <Form.Label>Start Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formEndDate" className="mb-3">
+                            <Form.Label>End Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                min={startDate}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formSalary" className="mb-3">
+                            <Form.Label>Salary</Form.Label>
+                            <Form.Control
                                 type="number"
-                                value={transferFee}
-                                onChange={(e) => setTransferFee(e.target.value)}
+                                value={salary}
+                                onChange={(e) => setSalary(e.target.value)}
                                 min="0"
                                 required
                             />
-                        </div>
-                    )}
-
-                    <button type="submit">Zapisz</button>
-                </form>
+                        </Form.Group>
+                        <Form.Group controlId="formTransferType" className="mb-3">
+                            <Form.Label>Transfer Type</Form.Label>
+                            <Form.Select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
+                                <option value="">Select transfer type</option>
+                                <option value="LOAN">Loan</option>
+                                <option value="TRANSFER">Transfer</option>
+                                <option value="END_LOAN">End of Loan</option>
+                            </Form.Select>
+                        </Form.Group>
+                        {transferType === "TRANSFER" && (
+                            <Form.Group controlId="formTransferFee" className="mb-3">
+                                <Form.Label>Transfer Fee</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={transferFee}
+                                    onChange={(e) => setTransferFee(e.target.value)}
+                                    min="0"
+                                    required
+                                />
+                            </Form.Group>
+                        )}
+                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                    </Form>
+                </div>
             )}
-        </div>
+        </Container>
     );
 };
 

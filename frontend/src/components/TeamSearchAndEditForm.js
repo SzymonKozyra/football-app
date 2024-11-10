@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
-import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -77,21 +77,33 @@ const TeamSearchAndEditForm = () => {
                     <Container>
                         {teams.map(team => (
                             <Card key={team.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>ID:</strong> {team.id}<br />
-                                        <strong>Name:</strong> {team.name}<br />
-                                        <strong>Picture:</strong>
-                                        <img
-                                            src={`/assets/teams/${team.picture}`}
-                                            alt={team.name}
-                                            className="team-picture mx-2"
-                                            style={{ width: '50px', height: '50px' }}
-                                        /><br />
-                                        <strong>Is Club:</strong> {team.isClub ? "Yes" : "No"}<br />
-                                        <strong>League:</strong> {team.league ? team.league.name : 'No League'}<br />
-                                    </div>
-                                    <Button variant="outline-primary" onClick={() => handleEditClick(team)}>Edit</Button>
+                                <Card.Body>
+                                    <Row className="align-items-center">
+                                        <Col xs="auto">
+                                            <img
+                                                src={`/assets/teams/${team.picture}`}
+                                                alt={team.name}
+                                                className="team-picture"
+                                                style={{
+                                                    width: '100px',
+                                                    height: '100px',
+                                                    objectFit: 'contain',
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col style={{ textAlign: 'left' }}>
+                                            <div>
+                                                <strong>Name:</strong> {team.name}<br />
+                                                <strong>Type:</strong> {team.isClub ? "Club" : "National Team"}<br />
+                                                <strong>League:</strong> {team.league ? team.league.name : 'No League'}
+                                            </div>
+                                        </Col>
+                                        <Col xs="auto" className="d-flex justify-content-end">
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(team)}>
+                                                Edit
+                                            </Button>
+                                        </Col>
+                                    </Row>
                                 </Card.Body>
                             </Card>
                         ))}
@@ -122,7 +134,7 @@ const TeamSearchAndEditForm = () => {
                                 src={`/assets/teams/${editData.picture}`}
                                 alt={editData.name}
                                 className="team-picture mt-2"
-                                style={{ width: '100px', height: '100px' }}
+                                style={{ width: '100px', height: '100px', objectFit: 'contain' }}
                             />
                         </Form.Group>
                         <Form.Group controlId="formLeagueId" className="mb-3">
@@ -132,7 +144,6 @@ const TeamSearchAndEditForm = () => {
                                 value={editData.leagueId}
                                 onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
                             />
-
                         </Form.Group>
                         <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
                     </Form>

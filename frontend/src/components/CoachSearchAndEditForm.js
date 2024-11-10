@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 
 const CoachSearchAndEditForm = () => {
@@ -100,8 +101,8 @@ const CoachSearchAndEditForm = () => {
                             <Card key={coach.id} className="mb-3 shadow-sm">
                                 <Card.Body className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>ID:</strong> {coach.id}<br />
-                                        <strong>Name:</strong> {coach.firstName} {coach.lastName} ({coach.nickname})<br />
+                                        <strong>Name:</strong> {coach.firstName} {coach.lastName} ({coach.nickname})<br/>
+                                        <strong>Date of Birth:</strong> {coach.dateOfBirth}<br/>
                                         <strong>Country:</strong> {coach.country.name}
                                     </div>
                                     <Button variant="outline-primary" onClick={() => handleEditClick(coach)}>Edit</Button>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Form, Button, Card } from 'react-bootstrap';
-import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RefereeSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
-import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PlayerSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
