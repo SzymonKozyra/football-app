@@ -12,6 +12,7 @@ public class Coach {
 
     private String firstName;
     private String lastName;
+    @Column(name = "date_of_birth", nullable = true)
     private LocalDate dateOfBirth;
     private String nickname;
 

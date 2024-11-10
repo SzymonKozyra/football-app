@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface StadiumRepository extends JpaRepository<Stadium, Long> {
     Optional<Stadium> findByNameAndCity_Id(String name, Long cityId);
     boolean existsByNameAndCity(String name, City city);
-
     List<Stadium> findByNameContainingOrCityNameContaining(String query, String query1);
 }

@@ -25,12 +25,14 @@ public class CsvCoachImporter implements DataImporter {
             CoachRequest coachRequest = new CoachRequest();
             coachRequest.setFirstName(record.get("first_name"));
             coachRequest.setLastName(record.get("last_name"));
-            coachRequest.setDateOfBirth(record.get("date_of_birth"));
+            String dateOfBirth = record.get("date_of_birth").trim();
+            coachRequest.setDateOfBirth(dateOfBirth.isEmpty() ? null : dateOfBirth);
             coachRequest.setNickname(record.get("nickname"));
             coachRequest.setCountryName(record.get("country_name"));
 
             coachRequests.add(coachRequest);
         }
+
 
         return coachRequests;
     }

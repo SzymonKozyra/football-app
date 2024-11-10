@@ -51,7 +51,8 @@ const AddCoachForm = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
-                    alert('Coach added successfully');
+                    // Uzyskaj wiadomość z odpowiedzi i wyświetl jako alert
+                    alert(response.data); // Zawiera wiadomość "Coach added successfully"
                     setFirstName('');
                     setLastName('');
                     setDateOfBirth('');
@@ -59,8 +60,10 @@ const AddCoachForm = () => {
                     setSelectedCountry('');
                 })
                 .catch(error => {
-                    console.error('Error adding coach:', error);
-                    alert('Failed to add coach');
+                    // Sprawdź, czy wiadomość jest w `error.response`
+                    const errorMessage = error.response && error.response.data ? error.response.data : 'Failed to add coach';
+                    console.error('Error adding coach:', errorMessage);
+                    alert(errorMessage); // Wyświetl wiadomość błędu z backendu
                 });
         } else {
             const formData = new FormData();
@@ -71,13 +74,13 @@ const AddCoachForm = () => {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Coaches imported successfully');
+                    alert(response.data); // Display the backend message here
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
                     console.error('Error importing coaches:', error);
-                    alert('Failed to import coaches');
+                    alert(error.response?.data || 'Failed to import coaches');
                 });
         }
     };
@@ -141,7 +144,6 @@ const AddCoachForm = () => {
                                 value={dateOfBirth}
                                 onChange={e => setDateOfBirth(e.target.value)}
                                 max={getTodayDate()}
-                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formNickname" className="mb-3">
@@ -212,22 +214,23 @@ const AddCoachForm = () => {
     "firstName": "John",
     "lastName": "Doe",
     "dateOfBirth": "1980-05-15",
-    "nickname": "The One",
-    "countryName": "China"
+    "nickname": "Jodo",
+    "countryName": "United States"
   },
   {
-    "firstName": "Kamil",
-    "lastName": "Nowak",
+    "firstName": "Ricardo",
+    "lastName": "da Silva",
     "dateOfBirth": "1950-12-14",
     "nickname": "",
-    "countryName": "Poland"
+    "countryName": "Brazil"
   }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`CityName,CountryName
-AnotherCity,AnotherCountry`}
+                            {`first_name,last_name,date_of_birth,nickname,country_name
+John,Doe,1980-05-15,Jodo,United States
+Ricardo,da Silva, 1950-12-14,,Brazil`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

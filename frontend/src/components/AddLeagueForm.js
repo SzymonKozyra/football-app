@@ -53,14 +53,19 @@ const AddLeagueForm = () => {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Leagues imported successfully');
+                    const { message, duplicates } = response.data;
+                    alert(message);
+                    if (duplicates && duplicates.length > 0) {
+                        console.log("Skipped duplicate records at positions:", duplicates);
+                    }
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
                     console.error('Error importing leagues:', error);
-                    alert('Failed to import leagues');
+                    alert(error.response?.data || 'Failed to import leagues');
                 });
+
         }
     };
 
@@ -160,20 +165,20 @@ const AddLeagueForm = () => {
                         <pre>
                             {`[
     {
-        "name": "LeagueName",
-        "countryName": "CountryName"
+        "name": "Premier League",
+        "countryName": "England"
     },
     {
-        "name": "AnotherLeague",
-        "countryName": "AnotherCountry"
+        "name": "La Liga",
+        "countryName": "Spain"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
                             {`name,countryName
-LeagueName1,CountryName1
-AnotherLeague2,AnotherCountry`}
+Premier League,England
+La Liga,Spain`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

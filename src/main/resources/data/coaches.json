@@ -1,23 +1,16 @@
 [
   {
-    "firstName": "Sa",
-    "lastName": "Ass",
-    "dateOfBirth": "1980-05-15",
-    "nickname": "",
-    "countryName": "Poland"
+    "firstName": "John",
+    "lastName": "Aa",
+    "dateOfBirth": "",
+    "nickname": "Jodo",
+    "countryName": "United States"
   },
   {
-    "firstName": "Kamil",
-    "lastName": "Grabara",
-    "dateOfBirth": "1980-05-15",
-    "nickname": "",
-    "countryName": "Poland"
-  },
-  {
-    "firstName": "Leon",
-    "lastName": "Ass",
-    "dateOfBirth": "1981-05-15",
-    "nickname": "",
-    "countryName": "Poland"
+  "firstName": "Ricardo",
+  "lastName": "da Silva",
+  "dateOfBirth": "",
+  "nickname": "",
+  "countryName": "Brazil"
   }
 ]

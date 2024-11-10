@@ -1,27 +1,16 @@
 package pl.pollub.footballapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.pollub.footballapp.exception.DuplicateStadiumsException;
-import pl.pollub.footballapp.model.City;
-import pl.pollub.footballapp.model.Country;
-import pl.pollub.footballapp.model.Stadium;
-import pl.pollub.footballapp.repository.CityRepository;
-import pl.pollub.footballapp.repository.CountryRepository;
-import pl.pollub.footballapp.repository.StadiumRepository;
-import pl.pollub.footballapp.requests.StadiumRequest;
-
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.pollub.footballapp.service.importer.ImporterFactory;
-import pl.pollub.footballapp.service.importer.DataImporter;
-
+import pl.pollub.footballapp.model.Stadium;
+import pl.pollub.footballapp.requests.StadiumRequest;
+import pl.pollub.footballapp.service.StadiumService;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/stadiums")
@@ -29,136 +18,33 @@ import java.util.*;
 public class StadiumController {
 
     @Autowired
-    private StadiumRepository stadiumRepository;
-
-    @Autowired
-    private CityRepository cityRepository;
-
-    @Autowired
-    private CountryRepository countryRepository;
-
-    @Autowired
-    private ImporterFactory importerFactory;
-
-
+    private StadiumService stadiumService;
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addStadium(@RequestBody StadiumRequest stadiumRequest) {
-        // Znajdź kraj na podstawie nazwy
-        Country country = countryRepository.findByName(stadiumRequest.getCountryName())
-                .orElseThrow(() -> new RuntimeException("Country not found"));
-
-        // Znajdź miasto na podstawie nazwy i kraju
-        City city = cityRepository.findByNameAndCountryName(stadiumRequest.getCityName(), stadiumRequest.getCountryName())
-                .orElseThrow(() -> new RuntimeException("City not found"));
-
-        // Sprawdź, czy stadion już istnieje
-        boolean stadiumExists = stadiumRepository.existsByNameAndCity(stadiumRequest.getName(), city);
-        if (stadiumExists) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Stadium already exists.");
-        }
-
-        // Stwórz nowy stadion
-        Stadium stadium = new Stadium();
-        stadium.setName(stadiumRequest.getName());
-
-        if (stadiumRequest.getCapacity() > 0) {
-            stadium.setCapacity(stadiumRequest.getCapacity());
-        } else {
-            throw new IllegalArgumentException("Capacity must be greater than 0");
-        }
-
-        stadium.setCity(city);  // Przypisz miasto do stadionu
-
-        stadiumRepository.save(stadium);  // Zapisz stadion w bazie danych
-        return ResponseEntity.ok("Stadium added successfully");
+        return stadiumService.addStadium(stadiumRequest);
     }
 
     @PostMapping("/import")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> importStadiums(@RequestParam("file") MultipartFile file, @RequestParam("type") String fileType) {
         try {
-            DataImporter importer = importerFactory.getImporter(fileType);
-            List<StadiumRequest> stadiumRequests = importer.importData(file.getInputStream());
-
-            List<StadiumRequest> duplicates = new ArrayList<>();  // For tracking duplicates
-
-            for (StadiumRequest stadiumRequest : stadiumRequests) {
-                Optional<Country> countryOptional = countryRepository.findByName(stadiumRequest.getCountryName());
-                if (countryOptional.isEmpty()) {
-                    throw new IllegalArgumentException("Country not found: " + stadiumRequest.getCountryName());
-                }
-
-                Country country = countryOptional.get();
-
-                Optional<City> cityOptional = cityRepository.findByNameAndCountryName(stadiumRequest.getCityName(), stadiumRequest.getCountryName());
-                if (cityOptional.isEmpty()) {
-                    throw new IllegalArgumentException("City not found: " + stadiumRequest.getCityName() + " in country " + country.getName());
-                }
-
-                City city = cityOptional.get();
-
-                boolean stadiumExists = stadiumRepository.existsByNameAndCity(stadiumRequest.getName(), city);
-                if (stadiumExists) {
-                    duplicates.add(stadiumRequest); // Add to the duplicates list
-                    continue;  // Skip adding this stadium
-                }
-
-                Stadium stadium = new Stadium();
-                stadium.setName(stadiumRequest.getName());
-                if (stadiumRequest.getCapacity() > 0) {
-                    stadium.setCapacity(stadiumRequest.getCapacity());
-                } else {
-                    throw new IllegalArgumentException("Capacity must be greater than 0");
-                }
-
-                stadium.setCity(city);  // Associate the city with the stadium
-
-                stadiumRepository.save(stadium);  // Save the stadium to the database
-
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Stadiums imported with duplicates.");
-            response.put("duplicates", duplicates);  // Add the list of duplicates to the response
-
-            return ResponseEntity.ok(response);
-
+            return stadiumService.importStadiums(file, fileType);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error importing stadiums: " + e.getMessage());
-        } catch (DuplicateStadiumsException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Some stadiums were not imported due to duplicates.");
-            response.put("duplicates", e.getDuplicateStadiums());  // Add the list of duplicates to the response
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(500).body("Error importing stadiums: " + e.getMessage());
         }
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Stadium>> searchStadiums(@RequestParam("query") String query) {
-        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query);
-        return ResponseEntity.ok(stadiums);
+        return stadiumService.searchStadiums(query);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> updateStadium(@PathVariable Long id, @RequestBody StadiumRequest updatedStadiumRequest) {
-        Stadium stadium = stadiumRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Stadium not found"));
-
-        City city = cityRepository.findByNameAndCountryName(updatedStadiumRequest.getCityName(), updatedStadiumRequest.getCountryName())
-                .orElseThrow(() -> new RuntimeException("City not found"));
-
-        stadium.setName(updatedStadiumRequest.getName());
-        stadium.setCapacity(updatedStadiumRequest.getCapacity());
-        stadium.setCity(city);
-
-        stadiumRepository.save(stadium);
-        return ResponseEntity.ok("Stadium updated successfully");
+        return stadiumService.updateStadium(id, updatedStadiumRequest);
     }
-
 }

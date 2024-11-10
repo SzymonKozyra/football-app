@@ -10,7 +10,8 @@ const AddRefereeForm = () => {
     const [lastName, setLastName] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [file, setFile] = useState(null);
-    const [importMode, setImportMode] = useState(false);
+    const [fileType, setFileType] = useState('');
+    const [manualEntry, setManualEntry] = useState(true);
 
     const getTodayDate = () => {
         const today = new Date();
@@ -32,50 +33,53 @@ const AddRefereeForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        if (!importMode) {
+        if (manualEntry) {
             const refereeData = {
                 firstName,
                 lastName,
                 dateOfBirth,
-                countryName: selectedCountry, // Używamy countryName zamiast countryId
+                countryName: selectedCountry,
             };
 
             axios.post('http://localhost:8080/api/referees/add', refereeData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
-                    alert('Referee added successfully');
+                    alert(response.data); // Display the backend message
                     setFirstName('');
                     setLastName('');
                     setDateOfBirth('');
                     setSelectedCountry('');
                 })
                 .catch(error => {
-                    console.error('Error adding referee:', error);
-                    alert('Failed to add referee');
+                    const errorMessage = error.response && error.response.data ? error.response.data : 'Failed to add referee';
+                    console.error('Error adding referee:', errorMessage);
+                    alert(errorMessage);
                 });
         } else {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('type', file.type.includes('json') ? 'json' : 'csv');
+            formData.append('type', fileType);
 
             axios.post('http://localhost:8080/api/referees/import', formData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Referees imported successfully');
+                    alert(response.data); // Display the backend message
                     setFile(null);
+                    setFileType('');
                 })
                 .catch(error => {
-                    console.error('Error importing referees:', error);
-                    alert('Failed to import referees');
+                    const errorMessage = error.response?.data || 'Failed to import referees';
+                    console.error('Error importing referees:', errorMessage);
+                    alert(errorMessage);
                 });
         }
     };
 
     return (
         <Container className="mt-5">
-            <h1 className="text-center mb-4">{importMode ? 'Import Referees' : 'Add Referee'}</h1>
+            <h1 className="text-center mb-4">{manualEntry ? 'Add Referee' : 'Import Referees'}</h1>
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">
@@ -83,19 +87,19 @@ const AddRefereeForm = () => {
                             type="radio"
                             name="entryType"
                             defaultValue="manual"
-                            onChange={(value) => setImportMode(value === 'import')}
+                            onChange={(value) => setManualEntry(value === 'manual')}
                         >
                             <ToggleButton
                                 id="manual-entry"
                                 value="manual"
-                                variant={!importMode ? 'primary' : 'outline-primary'}
+                                variant={manualEntry ? 'primary' : 'outline-primary'}
                             >
                                 Manual Entry
                             </ToggleButton>
                             <ToggleButton
                                 id="import-file"
                                 value="import"
-                                variant={importMode ? 'primary' : 'outline-primary'}
+                                variant={!manualEntry ? 'primary' : 'outline-primary'}
                             >
                                 Import from File
                             </ToggleButton>
@@ -103,14 +107,15 @@ const AddRefereeForm = () => {
                     </Col>
                 </Row>
 
-                {!importMode ? (
+                {manualEntry ? (
                     <>
                         <Form.Group controlId="formFirstName" className="mb-3">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                onChange={e => setFirstName(e.target.value)}
+                                placeholder="Enter first name"
                                 required
                             />
                         </Form.Group>
@@ -119,7 +124,8 @@ const AddRefereeForm = () => {
                             <Form.Control
                                 type="text"
                                 value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
+                                onChange={e => setLastName(e.target.value)}
+                                placeholder="Enter last name"
                                 required
                             />
                         </Form.Group>
@@ -129,8 +135,7 @@ const AddRefereeForm = () => {
                                 type="date"
                                 max={getTodayDate()}
                                 value={dateOfBirth}
-                                onChange={(e) => setDateOfBirth(e.target.value)}
-                                required
+                                onChange={e => setDateOfBirth(e.target.value)}
                             />
                         </Form.Group>
                         <Form.Group controlId="formCountry" className="mb-3">
@@ -150,19 +155,33 @@ const AddRefereeForm = () => {
                         </Form.Group>
                     </>
                 ) : (
-                    <Form.Group controlId="formFile" className="mb-3">
-                        <Form.Label>Import File</Form.Label>
-                        <Form.Control
-                            type="file"
-                            accept=".json,.csv"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            required
-                        />
-                    </Form.Group>
+                    <>
+                        <Form.Group controlId="formFileType" className="mb-3">
+                            <Form.Label>File Type</Form.Label>
+                            <Form.Select
+                                value={fileType}
+                                onChange={(e) => setFileType(e.target.value)}
+                                required
+                            >
+                                <option value="">Select file type</option>
+                                <option value="json">JSON</option>
+                                <option value="csv">CSV</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formFile" className="mb-3">
+                            <Form.Label>Import Referees (CSV or JSON)</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept=".csv,.json"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                    </>
                 )}
 
                 <Button variant="primary" type="submit" className="w-100 mt-3">
-                    {importMode ? 'Import Referees' : 'Add Referee'}
+                    {manualEntry ? 'Add Referee' : 'Import Referees'}
                 </Button>
             </Form>
 
@@ -173,25 +192,25 @@ const AddRefereeForm = () => {
                         <h5>JSON Template</h5>
                         <pre>
                             {`[
-    {
-        "first_name": "FirstName",
-        "last_name": "LastName",
-        "date_of_birth": "1975-08-12",
-        "country_name": "CountryName"
-    },
-    {
-        "first_name": "AnotherFirstName",
-        "last_name": "AnotherLastName",
-        "date_of_birth": "1969-05-23",
-        "country_name": "CountryName"
-    }
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1980-05-15",
+    "countryName": "United States"
+  },
+  {
+    "firstName": "Ricardo",
+    "lastName": "da Silva",
+    "dateOfBirth": "1950-12-14",
+    "countryName": "Brazil"
+  }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
                             {`first_name,last_name,date_of_birth,country_name
-FirstName1,LastName1,1975-08-12,CountryName1
-FirstName2,LastName2,1969-05-23,CountryName2`}
+John,Doe,1980-05-15,United States
+Ricardo,da Silva,1950-12-14,Brazil`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

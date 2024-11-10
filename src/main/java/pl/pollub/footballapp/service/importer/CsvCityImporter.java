@@ -1,5 +1,8 @@
 package pl.pollub.footballapp.service.importer;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.model.City;
@@ -28,59 +31,20 @@ public class CsvCityImporter implements DataImporter {
     @Override
     public List<CityRequest> importData(InputStream inputStream) throws IOException {
         List<CityRequest> cityRequests = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
 
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
+        // Create a CSVParser with headers from the first line
+        CSVParser parser = new CSVParser(new InputStreamReader(inputStream), CSVFormat.DEFAULT.withHeader());
 
-                if (data.length != 2) {
-                    System.out.println("Invalid line format: " + line);
-                    continue;
-                }
+        for (CSVRecord record : parser) {
+            CityRequest cityRequest = new CityRequest();
+            cityRequest.setName(record.get("name"));
+            cityRequest.setCountryName(record.get("countryName"));
 
-                String cityName = data[0].trim();
-                String countryName = data[1].trim();
-
-                try {
-                    Optional<Country> countryOpt = countryRepository.findByName(countryName);
-                    if (countryOpt.isPresent()) {
-                        Country country = countryOpt.get();
-
-                        // Check if the city already exists in the database
-                        Optional<City> existingCity = cityRepository.findByNameAndCountry(cityName, country);
-                        if (existingCity.isPresent()) {
-                            System.out.println("City already exists in the database: " + cityName + " in " + countryName);
-                            continue;  // Skip adding this city if it already exists in the database
-                        }
-
-                        // Check if the city is already added in this import session (avoid file duplicates)
-                        boolean isDuplicateInFile = cityRequests.stream()
-                                .anyMatch(request -> request.getName().equals(cityName) && request.getCountryName().equals(countryName));
-
-                        if (isDuplicateInFile) {
-                            System.out.println("Duplicate city in file: " + cityName + " in " + countryName);
-                            continue;  // Skip adding this city if it's a duplicate within the file
-                        }
-
-                        // Add to the city requests list
-                        CityRequest cityRequest = new CityRequest();
-                        cityRequest.setName(cityName);
-                        cityRequest.setCountryName(countryName);
-                        cityRequests.add(cityRequest);
-
-                        // Save the city to the database
-                        City city = new City(cityName, country);
-                        cityRepository.save(city);
-                    } else {
-                        System.err.println("Country not found: " + countryName);
-                    }
-                } catch (NullPointerException e) {
-                    System.out.println("Country repository is not initialized.");
-                    continue;
-                }
-            }
+            cityRequests.add(cityRequest);
         }
+
+        parser.close();  // Close the parser after use
         return cityRequests;
     }
+
 }

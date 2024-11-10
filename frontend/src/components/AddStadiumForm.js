@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
-import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddStadiumForm = () => {
     const [countries, setCountries] = useState([]);
@@ -12,7 +12,7 @@ const AddStadiumForm = () => {
     const [stadiumCapacity, setStadiumCapacity] = useState('');
     const [fileType, setFileType] = useState('');
     const [file, setFile] = useState(null);
-    const [manualEntry, setManualEntry] = useState(true); // Default to manual entry
+    const [manualEntry, setManualEntry] = useState(true);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')
@@ -24,7 +24,7 @@ const AddStadiumForm = () => {
         const countryName = e.target.value;
         setSelectedCountry(countryName);
 
-        axios.get(`http://localhost:8080/api/cities/by-country-name/${countryName}`)
+        axios.get(`http://localhost:8080/api/cities/by-country/${countryName}`)
             .then(response => setCities(response.data))
             .catch(error => console.error("Error fetching cities:", error));
     };
@@ -35,11 +35,6 @@ const AddStadiumForm = () => {
         const token = localStorage.getItem('jwtToken');
         if (!token) {
             console.error('Authorization token is missing');
-            return;
-        }
-
-        if (manualEntry && stadiumCapacity <= 0) {
-            alert('Stadium capacity must be greater than 0');
             return;
         }
 
@@ -74,13 +69,17 @@ const AddStadiumForm = () => {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Stadiums imported successfully');
+                    const { message, duplicates } = response.data;
+                    alert(message);
+                    if (duplicates && duplicates.length > 0) {
+                        console.log("Skipped duplicate records at positions:", duplicates);
+                    }
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
                     console.error('Error importing stadiums:', error);
-                    alert('Failed to import stadiums');
+                    alert(error.response?.data || 'Failed to import stadiums');
                 });
         }
     };
@@ -119,7 +118,11 @@ const AddStadiumForm = () => {
                     <>
                         <Form.Group controlId="formCountry" className="mb-3">
                             <Form.Label>Country</Form.Label>
-                            <Form.Select value={selectedCountry} onChange={handleCountryChange} required>
+                            <Form.Select
+                                value={selectedCountry}
+                                onChange={handleCountryChange}
+                                required
+                            >
                                 <option value="">Select a country</option>
                                 {countries.map(country => (
                                     <option key={country.id} value={country.name}>
@@ -130,11 +133,12 @@ const AddStadiumForm = () => {
                         </Form.Group>
 
                         <Form.Group controlId="formCity" className="mb-3">
-                            <Form.Label>City</Form.Label>
+                            <Form.Label>City Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 value={selectedCity}
                                 onChange={(e) => setSelectedCity(e.target.value)}
+                                placeholder="Enter city name"
                                 required
                             />
                         </Form.Group>
@@ -145,6 +149,7 @@ const AddStadiumForm = () => {
                                 type="text"
                                 value={stadiumName}
                                 onChange={(e) => setStadiumName(e.target.value)}
+                                placeholder="Enter stadium name"
                                 required
                             />
                         </Form.Group>
@@ -155,6 +160,7 @@ const AddStadiumForm = () => {
                                 type="number"
                                 value={stadiumCapacity}
                                 onChange={(e) => setStadiumCapacity(e.target.value)}
+                                placeholder="Enter stadium capacity"
                                 required
                                 min="1"
                             />
@@ -188,6 +194,7 @@ const AddStadiumForm = () => {
                 </Button>
             </Form>
 
+            {/* Template Section */}
             <Accordion className="mt-4">
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>File Format Templates</Accordion.Header>
@@ -196,22 +203,24 @@ const AddStadiumForm = () => {
                         <pre>
                             {`[
     {
-        "name": "StadiumName",
-        "capacity": 50000,
-        "city_name": "CityName"
+        "name": "Stadium Name",
+        "cityName": "City Name",
+        "countryName": "Country Name",
+        "capacity": 50000
     },
     {
-        "name": "AnotherStadium",
-        "capacity": 30000,
-        "city_name": "AnotherCityName"
+        "name": "Another Stadium",
+        "cityName": "Another City",
+        "countryName": "Another Country",
+        "capacity": 30000
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`name,capacity,city_name
-StadiumName1,50000,CityName1
-AnotherStadium,30000,CityName2`}
+                            {`name,cityName,countryName,capacity
+Stadium Name,City Name,Country Name,50000
+Another Stadium,Another City,Another Country,30000`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

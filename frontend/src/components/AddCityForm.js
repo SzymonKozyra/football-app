@@ -53,13 +53,17 @@ const AddCityForm = () => {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Cities imported successfully');
+                    const { message, duplicates } = response.data;
+                    alert(message);
+                    if (duplicates && duplicates.length > 0) {
+                        console.log("Skipped duplicate records at positions:", duplicates);
+                    }
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
                     console.error('Error importing cities:', error);
-                    alert('Failed to import cities');
+                    alert(error.response?.data || 'Failed to import leagues');
                 });
         }
     };
@@ -164,19 +168,20 @@ const AddCityForm = () => {
                         <pre>
                             {`[
     {
-        "name": "CityName",
-        "countryName": "CountryName"
+        "name": "Manchester",
+        "countryName": "England"
     },
     {
-        "name": "AnotherCity",
-        "countryName": "AnotherCountry"
+        "name": "New York",
+        "countryName": "United States"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`first_name,last_name,date_of_birth,nickname,country_name
-John,Doe,1980-02-02,,Poland`}
+                            {`name,countryName
+Manchester,England
+New York,United States`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

@@ -6,7 +6,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.requests.RefereeRequest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,19 +17,20 @@ public class CsvRefereeImporter implements DataImporter {
 
     @Override
     public List<RefereeRequest> importData(InputStream inputStream) throws IOException {
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream));
-        CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
-
         List<RefereeRequest> refereeRequests = new ArrayList<>();
-        for (CSVRecord record : csvParser) {
-            RefereeRequest request = new RefereeRequest(
-                    record.get("firstName"),
-                    record.get("lastName"),
-                    record.get("dateOfBirth"),
-                    record.get("countryName")
-            );
-            refereeRequests.add(request);
+        CSVParser parser = new CSVParser(new InputStreamReader(inputStream), CSVFormat.DEFAULT.withHeader());
+
+        for (CSVRecord record : parser) {
+            RefereeRequest refereeRequest = new RefereeRequest();
+            refereeRequest.setFirstName(record.get("firstName"));
+            refereeRequest.setLastName(record.get("lastName"));
+            String dateOfBirth = record.get("dateOfBirth").trim();
+            refereeRequest.setDateOfBirth(dateOfBirth.isEmpty() ? null : dateOfBirth);
+            refereeRequest.setCountryName(record.get("countryName"));
+
+            refereeRequests.add(refereeRequest);
         }
+
         return refereeRequests;
     }
 }

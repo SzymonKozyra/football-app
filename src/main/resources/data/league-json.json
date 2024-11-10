@@ -1,10 +1,18 @@
 [
   {
-    "name": "Premierowa liga",
+    "name": "1. Liga",
     "countryName": "Poland"
   },
   {
     "name": "La Liga",
     "countryName": "Spain"
+  },
+  {
+    "name": "Bundesliga",
+    "countryName": "Germany"
+  },
+  {
+    "name": "Bundesliga 2",
+    "countryName": "Germany"
   }
 ]
