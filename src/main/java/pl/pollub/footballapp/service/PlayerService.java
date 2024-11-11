@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+
 @Service
 public class PlayerService {
 
@@ -27,10 +30,10 @@ public class PlayerService {
     @Autowired
     private PositionRepository positionRepository;
 
-    public void addPlayer(PlayerRequest playerRequest) {
-        Player player = createPlayerFromRequest(playerRequest);
-        playerRepository.save(player);
-    }
+//    public void addPlayer(PlayerRequest playerRequest) {
+//        Player player = createPlayerFromRequest(playerRequest);
+//        playerRepository.save(player);
+//    }
 
     public void updatePlayer(Long id, PlayerRequest playerRequest) {
         Player existingPlayer = playerRepository.findById(id)
@@ -43,6 +46,17 @@ public class PlayerService {
 
     public List<Player> searchPlayers(String query) {
         return playerRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+    }
+
+    public void addPlayer(PlayerRequest playerRequest) {
+        Player player = createPlayerFromRequest(playerRequest);
+        player = playerRepository.save(player); // Zapisujemy, aby uzyskać ID
+
+        if (playerRequest.getPicture() != null) {
+            String photoUrl = "/img/player/player" + player.getId() + ".jpg";
+            player.setPicture(photoUrl);
+            playerRepository.save(player); // Ponownie zapisujemy z ustawioną ścieżką obrazu
+        }
     }
 
     public String addPlayers(List<PlayerRequest> playerRequests) {
@@ -81,7 +95,6 @@ public class PlayerService {
         player.setLastName(playerRequest.getLastName());
         player.setDateOfBirth(playerRequest.getDateOfBirth());
         player.setNickname(playerRequest.getNickname());
-        player.setPicture(playerRequest.getPicture());
         player.setValue(playerRequest.getValue() != null ? playerRequest.getValue() : BigDecimal.ZERO);
 
         Country country = countryRepository.findById(playerRequest.getCountryId())
@@ -103,4 +116,19 @@ public class PlayerService {
             throw new IllegalArgumentException("Position ID is required.");
         }
     }
+
+    public Long addPlayerAndGetId(PlayerRequest playerRequest) {
+        Player player = createPlayerFromRequest(playerRequest);
+        player = playerRepository.save(player);  // Zapisujemy, aby wygenerować ID
+        return player.getId();  // Zwracamy ID gracza
+    }
+
+    public void updatePlayerPhotoPath(Long playerId, String photoPath) {
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+        player.setPicture(photoPath);
+        playerRepository.save(player);
+    }
+
+
 }

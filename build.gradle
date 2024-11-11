@@ -38,6 +38,10 @@ dependencies {
 
 	implementation 'org.apache.commons:commons-csv:1.9.0'
 
+	// image resizing
+	implementation 'net.coobird:thumbnailator:0.4.14'
+
+
 
 }
 

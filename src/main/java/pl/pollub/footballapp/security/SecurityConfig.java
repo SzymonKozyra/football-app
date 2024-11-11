@@ -40,6 +40,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/coach-contracts/**").hasRole("MODERATOR")
                         .requestMatchers("/api/positions/**").permitAll()
+                        .requestMatchers("/assets/img/player/**").permitAll()
+                        .requestMatchers("/api/players/**").permitAll()
+                        .requestMatchers("/img/player/**").permitAll()
+
 
                         //.requestMatchers("/api").permitAll()
                         .anyRequest().authenticated()  // Secure all other endpoints

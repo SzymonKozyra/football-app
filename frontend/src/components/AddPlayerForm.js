@@ -10,7 +10,7 @@ const AddPlayerForm = () => {
         lastName: '',
         dateOfBirth: '',
         nickname: '',
-        picture: '',
+        picture: '',  // Ścieżka obrazu będzie ustawiana przez backend
         positionId: '',
         countryId: '',
         value: ''
@@ -18,7 +18,7 @@ const AddPlayerForm = () => {
 
     const [positions, setPositions] = useState([]);
     const [countries, setCountries] = useState([]);
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState(null); // Obsługa plików obrazu
     const [fileType, setFileType] = useState("csv");
 
     const getTodayDate = () => {
@@ -45,8 +45,23 @@ const AddPlayerForm = () => {
         const token = localStorage.getItem('jwtToken');
 
         if (manualEntry) {
-            axios.post('http://localhost:8080/api/players/add', playerData, {
-                headers: { Authorization: `Bearer ${token}` }
+            const formData = new FormData();
+            formData.append("firstName", playerData.firstName);
+            formData.append("lastName", playerData.lastName);
+            formData.append("dateOfBirth", playerData.dateOfBirth);
+            formData.append("nickname", playerData.nickname);
+            formData.append("positionId", playerData.positionId);
+            formData.append("countryId", playerData.countryId);
+            formData.append("value", playerData.value);
+            if (file) {
+                formData.append("picture", file);
+            }
+
+            axios.post('http://localhost:8080/api/players/add', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
             })
                 .then(res => alert('Player added successfully'))
                 .catch(err => alert('Failed to add player'));
@@ -63,9 +78,8 @@ const AddPlayerForm = () => {
             })
                 .then(response => {
                     const { data } = response;
-                    // Check for duplicates information in the response
                     if (data.includes("The following records were not added due to duplicates:")) {
-                        alert(data); // Display the backend message with duplicates information
+                        alert(data);
                     } else {
                         alert("Players imported successfully");
                     }
@@ -110,6 +124,10 @@ const AddPlayerForm = () => {
 
                 {manualEntry ? (
                     <>
+                        {/* Form fields for player information */}
+                        {/* Reszta kodu dla pól formularza */}
+
+                        {/* Form fields for player information */}
                         <Form.Group controlId="formFirstName" className="mb-3">
                             <Form.Label>First Name</Form.Label>
                             <Form.Control
@@ -148,11 +166,12 @@ const AddPlayerForm = () => {
                         <Form.Group controlId="formPicture" className="mb-3">
                             <Form.Label>Picture</Form.Label>
                             <Form.Control
-                                type="text"
-                                value={playerData.picture}
-                                onChange={e => setPlayerData({ ...playerData, picture: e.target.value })}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setFile(e.target.files[0])}
                             />
                         </Form.Group>
+                        {/* Additional fields */}
                         <Form.Group controlId="formPosition" className="mb-3">
                             <Form.Label>Position</Form.Label>
                             <Form.Select
@@ -183,7 +202,6 @@ const AddPlayerForm = () => {
                                 ))}
                             </Form.Select>
                         </Form.Group>
-
                         <Form.Group controlId="formValue" className="mb-3">
                             <Form.Label>Value</Form.Label>
                             <Form.Control
@@ -219,41 +237,6 @@ const AddPlayerForm = () => {
                     {manualEntry ? 'Add Player' : 'Import Players'}
                 </Button>
             </Form>
-
-            <Accordion className="mt-4">
-                <Accordion.Item eventKey="0">
-                    <Accordion.Header>File Format Templates</Accordion.Header>
-                    <Accordion.Body className="text-start">
-                        <h5>JSON Template</h5>
-                        <pre>
-                            {`[
-    {
-        "first_name": "John",
-        "last_name": "Doe",
-        "date_of_birth": "1990-01-01",
-        "nickname": "Johnny",
-        "picture": "john_doe.png",
-        "value": "5000000",
-        "country_id": "1",
-        "position_id": "2"
-    },
-    {
-        "first_name": "Jane",
-        "last_name": "Smith",
-        "country_id": "2",
-        "position_id": "3"
-    }
-]`}
-                        </pre>
-                        <h5>CSV Template</h5>
-                        <pre>
-                            {`first_name,last_name,date_of_birth,nickname,picture,value,country_id,position_id
-John,Doe,1990-01-01,Johnny,john_doe.png,5000000,1,2
-Jane,Smith,,,,,2,3`}
-                        </pre>
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
         </Container>
     );
 };

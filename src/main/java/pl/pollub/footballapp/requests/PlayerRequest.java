@@ -13,6 +13,16 @@ public class PlayerRequest {
     private String picture;
     private Long positionId; // Foreign key, referencing Position entity
     private Long countryId;  // Foreign key, referencing Country entity
+
+    public PlayerRequest(String firstName, String lastName, String dateOfBirth, String nickname, Long positionId, Long countryId, BigDecimal value) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = LocalDate.parse(dateOfBirth);
+        this.nickname = nickname;
+        this.positionId = positionId;
+        this.countryId = countryId;
+        this.value = value;
+    }
 //    private Long clubId;     // Foreign key, referencing Team entity (only if the team is a club)
 //    private Long nationalTeamId; // Foreign key, referencing Team entity (only if the team is a national team)
 

@@ -1,1 +1,2 @@
 czy nazwy tabel w liczbie mnogiej?
+upload plików, gdzie zapisywac?
