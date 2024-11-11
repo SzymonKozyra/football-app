@@ -7,7 +7,7 @@ import '../App.css';
 const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [teams, setTeams] = useState([]);
-    const [selectedTeam, setSelectedTeam] = useState(null);
+    const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [editData, setEditData] = useState({
         id: '',
         name: '',
@@ -31,7 +31,7 @@ const TeamSearchAndEditForm = () => {
     };
 
     const handleEditClick = (team) => {
-        setSelectedTeam(team);
+        setSelectedTeamId(team.id);
         setEditData({
             id: team.id,
             name: team.name,
@@ -44,12 +44,12 @@ const TeamSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        axios.put(`http://localhost:8080/api/teams/${selectedTeam.id}`, editData, {
+        axios.put(`http://localhost:8080/api/teams/${selectedTeamId}`, editData, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 alert('Team updated successfully');
-                setSelectedTeam(null);
+                setSelectedTeamId(null);
             })
             .catch(error => {
                 console.error('Error updating team:', error);
@@ -77,73 +77,76 @@ const TeamSearchAndEditForm = () => {
                     <h3 className="text-center mb-3">Teams found:</h3>
                     <Container>
                         {teams.map(team => (
-                            <Card key={team.id} className="mb-3 shadow-sm">
-                                <Card.Body>
-                                    <Row className="align-items-center">
-                                        <Col xs="auto">
-                                            <img
-                                                src={`/assets/teams/${team.picture}`}
-                                                alt={team.name}
-                                                className="team-picture"
-                                            />
-                                        </Col>
-                                        <Col style={{ textAlign: 'left' }}>
-                                            <div>
-                                                <strong>ID:</strong> {team.id}<br />
-                                                <strong>Name:</strong> {team.name}<br />
-                                                <strong>Type:</strong> {team.isClub ? "Club" : "National Team"}<br />
-                                                <strong>League:</strong> {team.league ? team.league.name : 'No League'}
-                                            </div>
-                                        </Col>
-                                        <Col xs="auto" className="d-flex justify-content-end">
-                                            <Button variant="outline-primary" onClick={() => handleEditClick(team)}>
-                                                Edit
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                </Card.Body>
-                            </Card>
+                            <React.Fragment key={team.id}>
+                                <Card className="mb-3 shadow-sm">
+                                    <Card.Body>
+                                        <Row className="align-items-center">
+                                            <Col xs="auto">
+                                                <img
+                                                    src={`/assets/teams/${team.picture}`}
+                                                    alt={team.name}
+                                                    className="team-picture"
+                                                />
+                                            </Col>
+                                            <Col style={{ textAlign: 'left' }}>
+                                                <div>
+                                                    <strong>ID:</strong> {team.id}<br />
+                                                    <strong>Name:</strong> {team.name}<br />
+                                                    <strong>Type:</strong> {team.isClub ? "Club" : "National Team"}<br />
+                                                    <strong>League:</strong> {team.league ? team.league.name : 'No League'}
+                                                </div>
+                                            </Col>
+                                            <Col xs="auto" className="d-flex justify-content-end">
+                                                <Button variant="outline-primary" onClick={() => handleEditClick(team)}>
+                                                    Edit
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Card>
+
+                                {/* Display edit form below the selected team */}
+                                {selectedTeamId === team.id && (
+                                    <div className="p-4 border rounded shadow-sm bg-light mb-3">
+                                        <h3 className="text-center mb-4">Edit Team: {team.name}</h3>
+                                        <Form onSubmit={handleEditSubmit}>
+                                            <Form.Group controlId="formTeamName" className="mb-3">
+                                                <Form.Label>Team Name</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={editData.name}
+                                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formPicture" className="mb-3">
+                                                <Form.Label>Picture</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={editData.picture}
+                                                    onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
+                                                />
+                                                <img
+                                                    src={`/assets/teams/${editData.picture}`}
+                                                    alt={editData.name}
+                                                    className="team-picture mt-2"
+                                                    style={{ width: '100px', height: '100px', objectFit: 'contain' }}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formLeagueId" className="mb-3">
+                                                <Form.Label>League ID</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={editData.leagueId}
+                                                    onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                        </Form>
+                                    </div>
+                                )}
+                            </React.Fragment>
                         ))}
                     </Container>
-                </div>
-            )}
-
-            {selectedTeam && (
-                <div className="p-4 border rounded shadow-sm bg-light">
-                    <h3 className="text-center mb-4">Edit Team: {selectedTeam.name}</h3>
-                    <Form onSubmit={handleEditSubmit}>
-                        <Form.Group controlId="formTeamName" className="mb-3">
-                            <Form.Label>Team Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.name}
-                                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formPicture" className="mb-3">
-                            <Form.Label>Picture</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.picture}
-                                onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
-                            />
-                            <img
-                                src={`/assets/teams/${editData.picture}`}
-                                alt={editData.name}
-                                className="team-picture mt-2"
-                                style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formLeagueId" className="mb-3">
-                            <Form.Label>League ID</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={editData.leagueId}
-                                onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
-                    </Form>
                 </div>
             )}
         </Container>

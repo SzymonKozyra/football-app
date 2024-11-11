@@ -3,13 +3,13 @@ import AddAdminOrModerator from '../components/AddAdminOrModerator';
 import AdminPanel from '../components/AdminPanel';
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
-const AdminView = ({ setIsLoggedIn }) => {
+const AdminView = ({ setIsLoggedIn, handleLogout }) => {
     const [selectedComponent, setSelectedComponent] = useState(null);
 
     const renderSelectedComponent = () => {
         switch (selectedComponent) {
             case 'AddUserRole': return <AddAdminOrModerator />;
-            case 'AdminPanel': return <AdminPanel setIsLoggedIn={setIsLoggedIn} />;
+            case 'AdminPanel': return <AdminPanel setIsLoggedIn={setIsLoggedIn} handleLogout={handleLogout}/>;
             default: return <p>Please select an option from the sidebar.</p>;
         }
     };

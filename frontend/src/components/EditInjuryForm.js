@@ -37,9 +37,7 @@ const EditInjuryForm = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => setFilteredPlayers(response.data))
-                .catch(error => {
-                    console.error('Error fetching players:', error);
-                });
+                .catch(error => console.error('Error fetching players:', error));
         } else {
             setFilteredPlayers([]);
         }
@@ -63,14 +61,12 @@ const EditInjuryForm = () => {
                     setInjuries(response.data);
                     setNoInjuriesMessage(response.data.length === 0 ? `No injuries found.` : '');
                 })
-                .catch(error => {
-                    console.error('Error fetching injuries:', error);
-                });
+                .catch(error => console.error('Error fetching injuries:', error));
         }
     };
 
     const handleInjurySelect = (injury) => {
-        setSelectedInjury(injury);
+        setSelectedInjury(injury.id);
         setInjuryType(injury.type);
         setInjuryStartDate(injury.startDate);
         setInjuryEndDate(injury.endDate);
@@ -80,7 +76,7 @@ const EditInjuryForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        if (!token || !selectedInjury) {
+        if (!token || selectedInjury === null) {
             console.error('Authorization token or injury not selected');
             return;
         }
@@ -92,16 +88,14 @@ const EditInjuryForm = () => {
             endDate: injuryEndDate
         };
 
-        axios.put(`http://localhost:8080/api/injuries/${selectedInjury.id}`, injuryData, {
+        axios.put(`http://localhost:8080/api/injuries/${selectedInjury}`, injuryData, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {
                 alert('Injury updated successfully');
                 resetForm();
             })
-            .catch(error => {
-                console.error('Error updating injury:', error);
-            });
+            .catch(error => console.error('Error updating injury:', error));
     };
 
     return (
@@ -142,59 +136,62 @@ const EditInjuryForm = () => {
                     <Container>
                         {injuries.length > 0 ? (
                             injuries.map(injury => (
-                                <Card key={injury.id} className="mb-3 shadow-sm">
-                                    <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
-                                        <div>
-                                            <strong>ID:</strong> {injury.id}<br />
-                                            <strong>Type:</strong> {injury.type}<br />
-                                            <strong>Start Date:</strong> {injury.startDate}<br />
-                                            <strong>End Date:</strong> {injury.endDate || 'Present'}
+                                <React.Fragment key={injury.id}>
+                                    <Card className="mb-3 shadow-sm">
+                                        <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
+                                            <div>
+                                                <strong>ID:</strong> {injury.id}<br />
+                                                <strong>Type:</strong> {injury.type}<br />
+                                                <strong>Start Date:</strong> {injury.startDate}<br />
+                                                <strong>End Date:</strong> {injury.endDate || 'Present'}
+                                            </div>
+                                            <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)}>Edit</Button>
+                                        </Card.Body>
+                                    </Card>
+
+                                    {/* Display edit form below the selected injury */}
+                                    {selectedInjury === injury.id && (
+                                        <div className="p-4 border rounded shadow-sm bg-light mb-3">
+                                            <h3 className="text-center mb-4">Edit Injury</h3>
+                                            <Form onSubmit={handleSubmit}>
+                                                <Form.Group controlId="formInjuryType" className="mb-3">
+                                                    <Form.Label>Injury Type</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        value={injuryType}
+                                                        onChange={(e) => setInjuryType(e.target.value)}
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group controlId="formInjuryStartDate" className="mb-3">
+                                                    <Form.Label>Start Date</Form.Label>
+                                                    <Form.Control
+                                                        type="date"
+                                                        max={getTodayDate()}
+                                                        value={injuryStartDate}
+                                                        onChange={(e) => setInjuryStartDate(e.target.value)}
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group controlId="formInjuryEndDate" className="mb-3">
+                                                    <Form.Label>End Date</Form.Label>
+                                                    <Form.Control
+                                                        type="date"
+                                                        min={injuryStartDate}
+                                                        value={injuryEndDate}
+                                                        onChange={(e) => setInjuryEndDate(e.target.value)}
+                                                    />
+                                                </Form.Group>
+                                                <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                            </Form>
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)}>Edit</Button>
-                                    </Card.Body>
-                                </Card>
+                                    )}
+                                </React.Fragment>
                             ))
                         ) : (
                             <p className="text-center">{noInjuriesMessage}</p>
                         )}
                     </Container>
-                </div>
-            )}
-
-            {selectedInjury && (
-                <div className="p-4 border rounded shadow-sm bg-light mt-4">
-                    <h3 className="text-center mb-4">Edit Injury</h3>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="formInjuryType" className="mb-3">
-                            <Form.Label>Injury Type</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={injuryType}
-                                onChange={(e) => setInjuryType(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formInjuryStartDate" className="mb-3">
-                            <Form.Label>Start Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                max={getTodayDate()}
-                                value={injuryStartDate}
-                                onChange={(e) => setInjuryStartDate(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formInjuryEndDate" className="mb-3">
-                            <Form.Label>End Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                min={injuryStartDate}
-                                value={injuryEndDate}
-                                onChange={(e) => setInjuryEndDate(e.target.value)}
-                            />
-                        </Form.Group>
-                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
-                    </Form>
                 </div>
             )}
         </Container>

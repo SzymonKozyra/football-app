@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../App.css';
+import { Form, Button, Container, ListGroup } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddPlayerContractForm = () => {
     const [startDate, setStartDate] = useState('');
@@ -22,8 +23,8 @@ const AddPlayerContractForm = () => {
             axios.get(`http://localhost:8080/api/players/search?query=${playerSearchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            .then(response => setFilteredPlayers(response.data))
-            .catch(error => console.error('Error fetching players:', error));
+                .then(response => setFilteredPlayers(response.data))
+                .catch(error => console.error('Error fetching players:', error));
         } else {
             setFilteredPlayers([]);
         }
@@ -35,11 +36,10 @@ const AddPlayerContractForm = () => {
             axios.get(`http://localhost:8080/api/teams/search?query=${teamSearchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            .then(response => setFilteredTeams(response.data))
-            .catch(error => {
-                console.error('Error fetching teams:', error);
-                console.error('Error details:', error.response); // Wyświetli szczegóły błędu z odpowiedzi
-            });
+                .then(response => setFilteredTeams(response.data))
+                .catch(error => {
+                    console.error('Error fetching teams:', error);
+                });
         } else {
             setFilteredTeams([]);
         }
@@ -64,9 +64,7 @@ const AddPlayerContractForm = () => {
             startDate,
             endDate,
             salary,
-            ///////////
             transferFee: transferType === 'TRANSFER' ? transferFee : null,
-            //////////////
             transferType,
             playerId: selectedPlayer ? selectedPlayer.id : null,
             teamId: selectedTeam ? selectedTeam.id : null
@@ -75,28 +73,23 @@ const AddPlayerContractForm = () => {
         axios.post('http://localhost:8080/api/player-contracts/add', contractData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(response => {
-            alert('Player contract added successfully');
-            // Resetowanie formularza po pomyślnym dodaniu
-            setStartDate('');
-            setEndDate('');
-            setSalary('');
-            setTransferFee('');
-            setTransferType('')
-            setSelectedPlayer(null);
-            setPlayerSearchQuery('');
-            setSelectedTeam(null);
-            setTeamSearchQuery('');
-            setError(null);
-        })
-        .catch(error => {
-            console.error('Error adding contract:', error);
-            if (error.response && error.response.status === 400) {
-                setError(error.response.data); // Ustawienie komunikatu błędu z serwera
-            } else {
-                setError('Wystąpił błąd podczas dodawania kontraktu');
-            }
-        });
+            .then(response => {
+                alert('Player contract added successfully');
+                setStartDate('');
+                setEndDate('');
+                setSalary('');
+                setTransferFee('');
+                setTransferType('');
+                setSelectedPlayer(null);
+                setPlayerSearchQuery('');
+                setSelectedTeam(null);
+                setTeamSearchQuery('');
+                setError(null);
+            })
+            .catch(error => {
+                console.error('Error adding contract:', error);
+                setError('An error occurred while adding the contract');
+            });
     };
 
     const getTodayDate = () => {
@@ -105,115 +98,118 @@ const AddPlayerContractForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>Add Player Contract</h1>
+        <Container className="mt-5">
+            <h1 className="text-center mb-4">Add Player Contract</h1>
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+                <Form.Group controlId="formPlayerSearch" className="mb-3">
+                    <Form.Label>Search Player</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={playerSearchQuery}
+                        onChange={(e) => setPlayerSearchQuery(e.target.value)}
+                        placeholder="Search for a player"
+                    />
+                    {filteredPlayers.length > 0 && (
+                        <ListGroup className="mt-2">
+                            {filteredPlayers.map((player) => (
+                                <ListGroup.Item
+                                    key={player.id}
+                                    onClick={() => handlePlayerSelect(player)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {player.firstName} {player.lastName} ({player.nickname})
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    )}
+                </Form.Group>
 
-            <div>
-                <label>Search Player</label>
-                <input
-                    type="text"
-                    value={playerSearchQuery}
-                    onChange={(e) => setPlayerSearchQuery(e.target.value)}
-                    placeholder="Search for a player"
-                />
-                {filteredPlayers.length > 0 && (
-                    <ul style={{ listStyleType: 'none', padding: 0 }}>
-                        {filteredPlayers.map((player) => (
-                            <li
-                                key={player.id}
-                                onClick={() => handlePlayerSelect(player)}
-                                style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}
-                            >
-                                {player.firstName} {player.lastName} ({player.nickname})
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+                <Form.Group controlId="formTeamSearch" className="mb-3">
+                    <Form.Label>Search Team</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={teamSearchQuery}
+                        onChange={(e) => setTeamSearchQuery(e.target.value)}
+                        placeholder="Search for a team"
+                    />
+                    {filteredTeams.length > 0 && (
+                        <ListGroup className="mt-2">
+                            {filteredTeams.map((team) => (
+                                <ListGroup.Item
+                                    key={team.id}
+                                    onClick={() => handleTeamSelect(team)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {team.name}
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    )}
+                </Form.Group>
 
-            <div>
-                <label>Search Team</label>
-                <input
-                    type="text"
-                    value={teamSearchQuery}
-                    onChange={(e) => setTeamSearchQuery(e.target.value)}
-                    placeholder="Search for a team"
-                />
-                {filteredTeams.length > 0 && (
-                    <ul style={{ listStyleType: 'none', padding: 0 }}>
-                        {filteredTeams.map((team) => (
-                            <li
-                                key={team.id}
-                                onClick={() => handleTeamSelect(team)}
-                                style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}
-                            >
-                                {team.name}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+                <Form.Group controlId="formStartDate" className="mb-3">
+                    <Form.Label>Start Date</Form.Label>
+                    <Form.Control
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        max={getTodayDate()}
+                        required
+                    />
+                </Form.Group>
 
-            <div>
-                <label>Start Date</label>
-                <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    max={getTodayDate()}
-                    required
-                />
-            </div>
+                <Form.Group controlId="formEndDate" className="mb-3">
+                    <Form.Label>End Date (optional)</Form.Label>
+                    <Form.Control
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        min={startDate}
+                    />
+                </Form.Group>
 
-            <div>
-                <label>End Date (optional)</label>
-                <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    min={startDate}
-                />
-            </div>
-
-            <div>
-                <label>Salary</label>
-                <input
-                    type="number"
-                    value={salary}
-                    onChange={(e) => setSalary(e.target.value)}
-                    min="0"
-                    required
-                />
-            </div>
-
-            <div>
-                <label>Typ transferu</label>
-                <select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
-                    <option value="">Wybierz typ transferu</option>
-                    <option value="LOAN">Wypożyczenie</option>
-                    <option value="TRANSFER">Transfer</option>
-                    <option value="END_LOAN">Koniec wypożyczenia</option>
-                </select>
-            </div>
-
-            {transferType === 'TRANSFER' && (
-                <div>
-                    <label>Kwota transferu</label>
-                    <input
+                <Form.Group controlId="formSalary" className="mb-3">
+                    <Form.Label>Salary</Form.Label>
+                    <Form.Control
                         type="number"
-                        value={transferFee}
-                        onChange={(e) => setTransferFee(e.target.value)}
+                        value={salary}
+                        onChange={(e) => setSalary(e.target.value)}
                         min="0"
                         required
                     />
-                </div>
-            )}
+                </Form.Group>
 
+                <Form.Group controlId="formTransferType" className="mb-3">
+                    <Form.Label>Transfer Type</Form.Label>
+                    <Form.Select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
+                        <option value="">Select Transfer Type</option>
+                        <option value="LOAN">Loan</option>
+                        <option value="TRANSFER">Transfer</option>
+                        <option value="END_LOAN">End of Loan</option>
+                    </Form.Select>
+                </Form.Group>
 
-            <button type="submit">Dodaj Kontrakt</button>
-        </form>
+                {transferType === 'TRANSFER' && (
+                    <Form.Group controlId="formTransferFee" className="mb-3">
+                        <Form.Label>Transfer Fee</Form.Label>
+                        <Form.Control
+                            type="number"
+                            value={transferFee}
+                            onChange={(e) => setTransferFee(e.target.value)}
+                            min="0"
+                            required
+                        />
+                    </Form.Group>
+                )}
+
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+
+                <Button variant="primary" type="submit" className="w-100">
+                    Add Contract
+                </Button>
+            </Form>
+        </Container>
     );
 };
 

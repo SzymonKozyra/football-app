@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Form, ListGroup, Card, Button, Alert } from 'react-bootstrap';
+import { Container, Form, ListGroup, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditPlayerContractForm = () => {
@@ -9,15 +9,14 @@ const EditPlayerContractForm = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [selectedSuggestionId, setSelectedSuggestionId] = useState(null);
     const [contractList, setContractList] = useState([]);
-    const [selectedContract, setSelectedContract] = useState(null);
+    const [selectedContractId, setSelectedContractId] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [salary, setSalary] = useState('');
     const [transferFee, setTransferFee] = useState('');
     const [transferType, setTransferType] = useState('');
-    const [noContractsMessage, setNoContractsMessage] = useState(''); // Message when no contracts are found
+    const [noContractsMessage, setNoContractsMessage] = useState('');
 
-    // Load suggestions as the user types
     useEffect(() => {
         if (searchQuery) {
             const token = localStorage.getItem('jwtToken');
@@ -31,21 +30,19 @@ const EditPlayerContractForm = () => {
                 .then(response => setSuggestions(response.data))
                 .catch(error => {
                     console.error('Error fetching suggestions:', error);
-                    setNoContractsMessage(`Failed to load suggestions.`);
+                    setNoContractsMessage('Failed to load suggestions.');
                 });
         } else {
             setSuggestions([]);
         }
     }, [searchQuery, searchType]);
 
-    // Set selected suggestion ID and populate input on suggestion click
     const handleSelectSuggestion = (item) => {
         setSearchQuery(searchType === 'player' ? `${item.firstName} ${item.lastName}` : item.name);
         setSelectedSuggestionId(item.id);
-        setSuggestions([]);  // Clear suggestions after selecting one
+        setSuggestions([]);
     };
 
-    // Final search on "Search" button click, using the selected suggestion ID
     const handleSearch = () => {
         if (!selectedSuggestionId) {
             setNoContractsMessage('No matching results. Please select from suggestions.');
@@ -56,7 +53,7 @@ const EditPlayerContractForm = () => {
             ? fetchContractsByPlayer(selectedSuggestionId)
             : fetchContractsByTeam(selectedSuggestionId);
 
-        setNoContractsMessage(''); // Clear message when a search is performed
+        setNoContractsMessage('');
     };
 
     const fetchContractsByPlayer = (playerId) => {
@@ -66,11 +63,11 @@ const EditPlayerContractForm = () => {
         })
             .then(response => {
                 setContractList(response.data);
-                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : '');
             })
             .catch(error => {
                 console.error('Error fetching player contracts:', error);
-                setNoContractsMessage(`Failed to load player contracts.`);
+                setNoContractsMessage('Failed to load player contracts.');
             });
     };
 
@@ -81,16 +78,16 @@ const EditPlayerContractForm = () => {
         })
             .then(response => {
                 setContractList(response.data);
-                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : ''); // Set message if no contracts are found
+                setNoContractsMessage(response.data.length === 0 ? 'No contracts found.' : '');
             })
             .catch(error => {
                 console.error('Error fetching team contracts:', error);
-                setNoContractsMessage(`Failed to load team contracts.`);
+                setNoContractsMessage('Failed to load team contracts.');
             });
     };
 
     const handleContractSelect = (contract) => {
-        setSelectedContract(contract);
+        setSelectedContractId(contract.id);
         setStartDate(contract.startDate);
         setEndDate(contract.endDate);
         setSalary(contract.salary);
@@ -110,17 +107,17 @@ const EditPlayerContractForm = () => {
             transferType
         };
 
-        axios.put(`http://localhost:8080/api/player-contracts/${selectedContract.id}`, updatedContractData, {
+        axios.put(`http://localhost:8080/api/player-contracts/${selectedContractId}`, updatedContractData, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {
                 alert('Player contract updated successfully');
-                setSelectedContract(null);
+                setSelectedContractId(null);
                 setContractList([]);
             })
             .catch(error => {
                 console.error('Error updating contract:', error);
-                setNoContractsMessage(`An error occurred while updating the contract.`);
+                setNoContractsMessage('An error occurred while updating the contract.');
             });
     };
 
@@ -129,7 +126,7 @@ const EditPlayerContractForm = () => {
         setSearchQuery('');
         setSuggestions([]);
         setContractList([]);
-        setSelectedContract(null);
+        setSelectedContractId(null);
         setSelectedSuggestionId(null);
     };
 
@@ -172,87 +169,89 @@ const EditPlayerContractForm = () => {
                     <h3 className="text-center mb-3">Contracts found:</h3>
                     <Container>
                         {contractList.map(contract => (
-                            <Card key={contract.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
-                                    <div>
-                                        <strong>Player:</strong> {contract.player.firstName} {contract.player.lastName}<br />
-                                        <strong>Team:</strong> {contract.team.name}<br />
-                                        <strong>Start Date:</strong> {contract.startDate}<br />
-                                        <strong>End Date:</strong> {contract.endDate}<br />
-                                        <strong>Salary:</strong> {contract.salary}<br />
-                                        <strong>Transfer Type:</strong> {contract.transferType}<br />
-                                        {contract.transferType === "TRANSFER" && (
-                                            <>
-                                                <strong>Transfer Fee:</strong> {contract.transferFee}
-                                            </>
-                                        )}
+                            <React.Fragment key={contract.id}>
+                                <Card className="mb-3 shadow-sm">
+                                    <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
+                                        <div>
+                                            <strong>Player:</strong> {contract.player.firstName} {contract.player.lastName}<br />
+                                            <strong>Team:</strong> {contract.team.name}<br />
+                                            <strong>Start Date:</strong> {contract.startDate}<br />
+                                            <strong>End Date:</strong> {contract.endDate}<br />
+                                            <strong>Salary:</strong> {contract.salary}<br />
+                                            <strong>Transfer Type:</strong> {contract.transferType}<br />
+                                            {contract.transferType === "TRANSFER" && (
+                                                <>
+                                                    <strong>Transfer Fee:</strong> {contract.transferFee}
+                                                </>
+                                            )}
+                                        </div>
+                                        <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
+                                    </Card.Body>
+                                </Card>
+
+                                {selectedContractId === contract.id && (
+                                    <div className="p-4 border rounded shadow-sm bg-light mb-3">
+                                        <h3 className="text-center mb-4">Edit Contract</h3>
+                                        <Form onSubmit={handleEditSubmit}>
+                                            <Form.Group controlId="formStartDate" className="mb-3">
+                                                <Form.Label>Start Date</Form.Label>
+                                                <Form.Control
+                                                    type="date"
+                                                    value={startDate}
+                                                    onChange={(e) => setStartDate(e.target.value)}
+                                                    required
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formEndDate" className="mb-3">
+                                                <Form.Label>End Date</Form.Label>
+                                                <Form.Control
+                                                    type="date"
+                                                    value={endDate}
+                                                    onChange={(e) => setEndDate(e.target.value)}
+                                                    min={startDate}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formSalary" className="mb-3">
+                                                <Form.Label>Salary</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={salary}
+                                                    onChange={(e) => setSalary(e.target.value)}
+                                                    min="0"
+                                                    required
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formTransferType" className="mb-3">
+                                                <Form.Label>Transfer Type</Form.Label>
+                                                <Form.Select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
+                                                    <option value="">Select transfer type</option>
+                                                    <option value="LOAN">Loan</option>
+                                                    <option value="TRANSFER">Transfer</option>
+                                                    <option value="END_LOAN">End of Loan</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                            {transferType === "TRANSFER" && (
+                                                <Form.Group controlId="formTransferFee" className="mb-3">
+                                                    <Form.Label>Transfer Fee</Form.Label>
+                                                    <Form.Control
+                                                        type="number"
+                                                        value={transferFee}
+                                                        onChange={(e) => setTransferFee(e.target.value)}
+                                                        min="0"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            )}
+                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                        </Form>
                                     </div>
-                                    <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
-                                </Card.Body>
-                            </Card>
+                                )}
+                            </React.Fragment>
                         ))}
                     </Container>
                 </div>
             ) : (
-                <p className="text-center">{noContractsMessage}</p> // Display message if no contracts found
-            )}
-
-            {selectedContract && (
-                <div className="p-4 border rounded shadow-sm bg-light">
-                    <h3 className="text-center mb-4">Edit Contract</h3>
-                    <Form onSubmit={handleEditSubmit}>
-                        <Form.Group controlId="formStartDate" className="mb-3">
-                            <Form.Label>Start Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formEndDate" className="mb-3">
-                            <Form.Label>End Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                min={startDate}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formSalary" className="mb-3">
-                            <Form.Label>Salary</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={salary}
-                                onChange={(e) => setSalary(e.target.value)}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formTransferType" className="mb-3">
-                            <Form.Label>Transfer Type</Form.Label>
-                            <Form.Select value={transferType} onChange={(e) => setTransferType(e.target.value)} required>
-                                <option value="">Select transfer type</option>
-                                <option value="LOAN">Loan</option>
-                                <option value="TRANSFER">Transfer</option>
-                                <option value="END_LOAN">End of Loan</option>
-                            </Form.Select>
-                        </Form.Group>
-                        {transferType === "TRANSFER" && (
-                            <Form.Group controlId="formTransferFee" className="mb-3">
-                                <Form.Label>Transfer Fee</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={transferFee}
-                                    onChange={(e) => setTransferFee(e.target.value)}
-                                    min="0"
-                                    required
-                                />
-                            </Form.Group>
-                        )}
-                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
-                    </Form>
-                </div>
+                <p className="text-center">{noContractsMessage}</p>
             )}
         </Container>
     );

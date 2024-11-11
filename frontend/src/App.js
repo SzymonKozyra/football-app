@@ -3,7 +3,6 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Modal.css';
 
-
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
@@ -114,7 +113,10 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-        localStorage.setItem('logoutOrDeleteAccMessage', 'Successfully logged out');
+        localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out');
+        setTimeout(() => {
+            setMessage('');
+        }, 2000);
         navigate('/');
         window.scrollTo(0, 0);
         window.location.reload();
@@ -187,7 +189,7 @@ function App() {
             {message && <div className="alert-message">{message}</div>}
 
             <div className="main-content">
-                {currentMode === 'admin' && <AdminView />}
+                {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
                 {currentMode === 'moderator' && <ModeratorView />}
                 {currentMode === 'user' && <UserView />}
             </div>
@@ -219,7 +221,7 @@ function App() {
                         path="/admin-panel"
                         element={
                             isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
-                                <AdminPanel setIsLoggedIn={setIsLoggedIn} />
+                                <AdminPanel/>
                             ) : (
                                 <Navigate to="/" replace />
                             )

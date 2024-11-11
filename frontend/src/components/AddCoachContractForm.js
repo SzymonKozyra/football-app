@@ -25,7 +25,7 @@ const AddCoachContractForm = () => {
                 .then(response => setFilteredCoaches(response.data))
                 .catch(error => {
                     console.error('Error fetching coaches:', error);
-                    setError('Failed to load coaches.');
+                    alert('Failed to load coaches.');
                 });
         } else {
             setFilteredCoaches([]);
@@ -41,7 +41,7 @@ const AddCoachContractForm = () => {
                 .then(response => setFilteredTeams(response.data))
                 .catch(error => {
                     console.error('Error fetching teams:', error);
-                    setError('Failed to load teams.');
+                    alert('Failed to load teams.');
                 });
         } else {
             setFilteredTeams([]);
@@ -97,7 +97,6 @@ const AddCoachContractForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Coach Contract</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Form.Group controlId="formCoachSearch" className="mb-3">
@@ -188,6 +187,8 @@ const AddCoachContractForm = () => {
                         required
                     />
                 </Form.Group>
+
+                {error && <p style={{ color: 'red' }}>{error}</p>}
 
                 <Button variant="primary" type="submit" className="w-100">
                     Add Contract

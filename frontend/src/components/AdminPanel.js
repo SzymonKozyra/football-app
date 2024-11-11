@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NewPasswordModal from './NewPasswordModal';
-import { useNavigate } from 'react-router-dom';
 import { Table, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const AdminPanel = ({ setIsLoggedIn }) => {
+const AdminPanel = ({ handleLogout }) => {
     const [users, setUsers] = useState([]);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
-    const navigate = useNavigate();
-    const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('');
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -32,43 +27,29 @@ const AdminPanel = ({ setIsLoggedIn }) => {
     const handleDelete = async (email) => {
         const loggedInEmail = localStorage.getItem('email');
 
-        if (window.confirm(`Do you really want to delete "${email}" account?`)) {
-            try {
+        if (email !== loggedInEmail) {
+            if (window.confirm(`Do you really want to delete "${email}" account?`)) {
+                try {
+                    await axios.delete(`http://localhost:8080/api/admin/delete-user/${email}`, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
+                    });
+                        setUsers(users.filter((user) => user.email !== email));
+                        alert(`User deleted successfully`);
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Failed to delete user');
+                }
+            }
+        } else {
+            if (window.confirm(`Do you really want to delete YOUR account?`)) {
                 await axios.delete(`http://localhost:8080/api/admin/delete-user/${email}`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
                 });
-
-                if (email === loggedInEmail) {
-                    // If the admin is deleting their own account, set the message and log them out after a short delay
-                    localStorage.removeItem('jwtToken');
-                    setIsLoggedIn(false);
-                    localStorage.setItem('logoutOrDeleteAccMessage', 'Your account has been deleted.');
-                    setMessageType('success');
-
-                    // Set a delay before navigating to home and reloading the page
-                    setTimeout(() => {
-                        navigate('/');
-                        window.scrollTo(0, 0);
-                        window.location.reload();
-                    }, 3000); // 3-second delay
-                } else {
-                    // Update the user list and show success message
-                    setUsers(users.filter((user) => user.email !== email));
-                    setMessage(`User deleted successfully`);
-                    setMessageType('success');
-
-                    // Clear the message after a short delay
-                    setTimeout(() => {
-                        setMessage('');
-                    }, 2000);
-                }
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                setAlert({ show: true, message: 'Failed to delete user', variant: 'danger' });
+                alert('Your account has been deleted.');
+                handleLogout();
             }
         }
     };
-
 
     const openPasswordModal = (user) => {
         setSelectedUser(user);
@@ -87,28 +68,17 @@ const AdminPanel = ({ setIsLoggedIn }) => {
                     },
                 }
             );
-            setMessage('Password changed successfully');
-            setMessageType('success');
-            setTimeout(() => {
-                setMessage('');
-            }, 2000);
+            alert('Password changed successfully');
             setIsPasswordModalOpen(false);
         } catch (error) {
             console.error('Error changing password:', error);
-            setAlert({ show: true, message: 'Failed to change password', variant: 'danger' });
+            alert('Failed to change password');
         }
     };
 
     return (
         <div className="container my-2">
             <h2 className="text-center mb-4">Admin Panel - User Management</h2>
-
-            {/*{alert.show && (*/}
-            {/*    <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>*/}
-            {/*        {alert.message}*/}
-            {/*    </Alert>*/}
-            {/*)}*/}
-            {message && <Alert variant={messageType}>{message}</Alert>}
 
             <Table striped bordered hover responsive className="text-center mb-2">
                 <thead>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
@@ -6,6 +6,14 @@ const NewPasswordModal = ({ isOpen, onClose, onSubmit }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
+
+    useEffect(() => {
+        if (isOpen) {
+            setPassword('');
+            setConfirmPassword('');
+            setMessage('');
+        }
+    }, [isOpen]);
 
     const handlePasswordReset = (e) => {
         e.preventDefault();

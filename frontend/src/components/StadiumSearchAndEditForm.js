@@ -7,7 +7,7 @@ const StadiumSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [stadiums, setStadiums] = useState([]);
     const [countries, setCountries] = useState([]);
-    const [selectedStadium, setSelectedStadium] = useState(null);
+    const [selectedStadiumId, setSelectedStadiumId] = useState(null);
     const [editData, setEditData] = useState({
         name: '',
         capacity: '',
@@ -35,7 +35,7 @@ const StadiumSearchAndEditForm = () => {
     };
 
     const handleEditClick = (stadium) => {
-        setSelectedStadium(stadium);
+        setSelectedStadiumId(stadium.id);
         setEditData({
             name: stadium.name,
             capacity: stadium.capacity,
@@ -56,12 +56,12 @@ const StadiumSearchAndEditForm = () => {
             countryId
         };
 
-        axios.put(`http://localhost:8080/api/stadiums/${selectedStadium.id}`, updatedData, {
+        axios.put(`http://localhost:8080/api/stadiums/${selectedStadiumId}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 alert('Stadium updated successfully');
-                setSelectedStadium(null);
+                setSelectedStadiumId(null);
             })
             .catch(error => {
                 console.error('Error updating stadium:', error);
@@ -89,67 +89,70 @@ const StadiumSearchAndEditForm = () => {
                     <h3 className="text-center mb-3">Stadiums found:</h3>
                     <Container>
                         {stadiums.map(stadium => (
-                            <Card key={stadium.id} className="mb-3 shadow-sm">
-                                <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
-                                    <div>
-                                        <strong>ID:</strong> {stadium.id}<br />
-                                        <strong>Name:</strong> {stadium.name}<br />
-                                        <strong>Capacity:</strong> {stadium.capacity}<br />
-                                        <strong>City:</strong> {stadium.city.name}<br />
-                                        <strong>Country:</strong> {stadium.city.country.name}
+                            <React.Fragment key={stadium.id}>
+                                <Card className="mb-3 shadow-sm">
+                                    <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
+                                        <div>
+                                            <strong>ID:</strong> {stadium.id}<br />
+                                            <strong>Name:</strong> {stadium.name}<br />
+                                            <strong>Capacity:</strong> {stadium.capacity}<br />
+                                            <strong>City:</strong> {stadium.city.name}<br />
+                                            <strong>Country:</strong> {stadium.city.country.name}
+                                        </div>
+                                        <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                    </Card.Body>
+                                </Card>
+
+                                {/* Display edit form below the selected stadium */}
+                                {selectedStadiumId === stadium.id && (
+                                    <div className="p-4 border rounded shadow-sm bg-light mb-3">
+                                        <h3 className="text-center mb-4">Edit Stadium: {stadium.name}</h3>
+                                        <Form onSubmit={handleEditSubmit}>
+                                            <Form.Group controlId="formStadiumName" className="mb-3">
+                                                <Form.Label>Name</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={editData.name}
+                                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formCapacity" className="mb-3">
+                                                <Form.Label>Capacity</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    value={editData.capacity}
+                                                    onChange={(e) => setEditData({ ...editData, capacity: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formCityName" className="mb-3">
+                                                <Form.Label>City</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={editData.cityName}
+                                                    onChange={(e) => setEditData({ ...editData, cityName: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group controlId="formCountry" className="mb-3">
+                                                <Form.Label>Country</Form.Label>
+                                                <Form.Select
+                                                    value={editData.countryName}
+                                                    onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
+                                                >
+                                                    <option value="">Select Country</option>
+                                                    {countries.map(country => (
+                                                        <option key={country.id} value={country.name}>
+                                                            {country.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                        </Form>
                                     </div>
-                                    <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
-                                </Card.Body>
-                            </Card>
+                                )}
+                            </React.Fragment>
                         ))}
                     </Container>
-                </div>
-            )}
-
-            {selectedStadium && (
-                <div className="p-4 border rounded shadow-sm bg-light">
-                    <h3 className="text-center mb-4">Edit Stadium: {selectedStadium.name}</h3>
-                    <Form onSubmit={handleEditSubmit}>
-                        <Form.Group controlId="formStadiumName" className="mb-3">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.name}
-                                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCapacity" className="mb-3">
-                            <Form.Label>Capacity</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={editData.capacity}
-                                onChange={(e) => setEditData({ ...editData, capacity: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCityName" className="mb-3">
-                            <Form.Label>City</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={editData.cityName}
-                                onChange={(e) => setEditData({ ...editData, cityName: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCountry" className="mb-3">
-                            <Form.Label>Country</Form.Label>
-                            <Form.Select
-                                value={editData.countryName}
-                                onChange={(e) => setEditData({ ...editData, countryName: e.target.value })}
-                            >
-                                <option value="">Select Country</option>
-                                {countries.map(country => (
-                                    <option key={country.id} value={country.name}>
-                                        {country.name}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
-                    </Form>
                 </div>
             )}
         </Container>
