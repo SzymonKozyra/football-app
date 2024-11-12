@@ -35,6 +35,8 @@ import AddPlayerContractForm from "./components/AddPlayerContractForm";
 import EditPlayerContractForm from "./components/EditPlayerContractForm";
 import AddInjuryForm from "./components/AddInjuryForm";
 import EditInjuryForm from "./components/EditInjuryForm";
+import AddTournamentForm from "./components/AddTournamentForm";
+import TournamentSearchAndEditForm from "./components/TournamentSearchAndEditForm";
 
 
 
