@@ -103,7 +103,9 @@ public class TeamService {
     }
 
     public List<Team> searchTeams(String query) {
-        return teamRepository.findByNameContaining(query, Sort.by(Sort.Direction.ASC, "id"));
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        return teamRepository.findByNameContaining(normalizedQuery, sortById);
     }
 
     public String addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {

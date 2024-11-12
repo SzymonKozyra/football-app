@@ -9,6 +9,7 @@ const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [teams, setTeams] = useState([]);
     const [selectedTeamId, setSelectedTeamId] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         id: '',
         name: '',
@@ -50,6 +51,7 @@ const TeamSearchAndEditForm = () => {
         })
             .then(response => {
                 setTeams(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
             .catch(error => {
                 console.error('Error fetching teams:', error);
@@ -88,7 +90,7 @@ const TeamSearchAndEditForm = () => {
                 'Content-Type': 'multipart/form-data'
             }
         })
-            .then(response => {
+            .then(() => {
                 alert('Team updated successfully');
                 setSelectedTeamId(null);
             })
@@ -113,7 +115,7 @@ const TeamSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {teams.length > 0 && (
+            {teams.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Teams found:</h3>
                     <Container>
@@ -150,7 +152,6 @@ const TeamSearchAndEditForm = () => {
                                     </Card.Body>
                                 </Card>
 
-                                {/* Edit form for selected team */}
                                 {selectedTeamId === team.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Team: {team.name}</h3>
@@ -207,6 +208,8 @@ const TeamSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

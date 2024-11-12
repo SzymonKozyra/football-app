@@ -130,8 +130,11 @@ public class CoachService {
 
         return ResponseEntity.ok(message);
     }
+
     public ResponseEntity<List<Coach>> searchCoaches(String query) {
-        List<Coach> coaches = coachRepository.findByFirstNameContainingOrLastNameContaining(query, query, Sort.by(Sort.Direction.ASC, "id"));
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Coach> coaches = coachRepository.findByFullNameOrNicknameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(coaches);
     }
 

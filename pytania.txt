@@ -1,2 +1,9 @@
 czy nazwy tabel w liczbie mnogiej?
+
 upload plików, gdzie zapisywac?
+
+statystyki piłkarza do meczu jak zrobić połączenie (np. jak zmiany zawodników obsługiwać i wyświetlać)?
+
+co można usunąć z projektu?
+
+podanie o zmiane tematu 

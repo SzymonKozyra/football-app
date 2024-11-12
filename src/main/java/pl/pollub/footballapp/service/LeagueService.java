@@ -88,7 +88,9 @@ public class LeagueService {
     }
 
     public ResponseEntity<List<League>> searchLeagues(String query) {
-        List<League> leagues = leagueRepository.findByNameContaining(query, Sort.by(Sort.Direction.ASC, "id"));
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<League> leagues = leagueRepository.findByNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(leagues);
     }
 

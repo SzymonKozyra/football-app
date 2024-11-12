@@ -123,7 +123,9 @@ public class RefereeService {
     }
 
     public ResponseEntity<List<Referee>> searchReferees(String query) {
-        List<Referee> referees = refereeRepository.findByFirstNameContainingOrLastNameContaining(query, query, Sort.by(Sort.Direction.ASC, "id"));
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Referee> referees = refereeRepository.findByFullNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(referees);
     }
 

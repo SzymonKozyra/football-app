@@ -9,6 +9,7 @@ const LeagueSearchAndEditForm = () => {
     const [leagues, setLeagues] = useState([]);
     const [countries, setCountries] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         name: '',
         countryName: ''
@@ -18,12 +19,8 @@ const LeagueSearchAndEditForm = () => {
         axios.get('http://localhost:8080/api/countries', {
             headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
         })
-            .then(response => {
-                setCountries(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching countries:', error);
-            });
+            .then(response => setCountries(response.data))
+            .catch(error => console.error('Error fetching countries:', error));
     }, []);
 
     const handleSearch = (e) => {
@@ -35,10 +32,9 @@ const LeagueSearchAndEditForm = () => {
         })
             .then(response => {
                 setLeagues(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
-            .catch(error => {
-                console.error('Error fetching leagues:', error);
-            });
+            .catch(error => console.error('Error fetching leagues:', error));
     };
 
     const handleEditClick = (league) => {
@@ -64,7 +60,7 @@ const LeagueSearchAndEditForm = () => {
         axios.put(`http://localhost:8080/api/leagues/${selectedLeague}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
+            .then(() => {
                 alert('League updated successfully');
                 setSelectedLeague(null);
             })
@@ -89,7 +85,7 @@ const LeagueSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {leagues.length > 0 && (
+            {leagues.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Leagues found:</h3>
                     <Container>
@@ -99,7 +95,6 @@ const LeagueSearchAndEditForm = () => {
                                     <Card.Body>
                                         <Row className="align-items-center">
                                             <Col xs="auto">
-                                                {/* Display country flag */}
                                                 <div style={{
                                                     display: 'inline-block',
                                                     backgroundColor: '#f0f0f0',
@@ -111,7 +106,6 @@ const LeagueSearchAndEditForm = () => {
                                                         src={`/assets/flags/${league.country.code}.svg`}
                                                         alt={league.country.name}
                                                         className="league-picture"
-                                                        style={{ width: '40px', height: 'auto' }}
                                                     />
                                                 </div>
                                             </Col>
@@ -131,7 +125,6 @@ const LeagueSearchAndEditForm = () => {
                                     </Card.Body>
                                 </Card>
 
-                                {/* Display edit form below the selected league */}
                                 {selectedLeague === league.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit League: {league.name}</h3>
@@ -166,6 +159,8 @@ const LeagueSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

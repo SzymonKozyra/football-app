@@ -70,8 +70,10 @@ public class PlayerService {
 
     public List<Player> searchPlayers(String query) {
         Sort sortById = Sort.by(Sort.Direction.ASC, "id");
-        return playerRepository.findByFirstNameContainingOrLastNameContaining(query, query, sortById);
+        String normalizedQuery = query.trim().toLowerCase();
+        return playerRepository.findByFullNameContaining(normalizedQuery, sortById);
     }
+
 
     public void addPlayer(PlayerRequest playerRequest) {
         Player player = createPlayerFromRequest(playerRequest);

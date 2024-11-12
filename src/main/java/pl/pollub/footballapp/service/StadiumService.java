@@ -105,7 +105,9 @@ public class StadiumService {
     }
 
     public ResponseEntity<List<Stadium>> searchStadiums(String query) {
-        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query, Sort.by(Sort.Direction.ASC, "id"));
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(stadiums);
     }
 

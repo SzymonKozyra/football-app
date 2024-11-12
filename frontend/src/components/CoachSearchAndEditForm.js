@@ -9,6 +9,7 @@ const CoachSearchAndEditForm = () => {
     const [coaches, setCoaches] = useState([]);
     const [countries, setCountries] = useState([]);
     const [selectedCoach, setSelectedCoach] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         firstName: '',
         lastName: '',
@@ -19,12 +20,8 @@ const CoachSearchAndEditForm = () => {
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')
-            .then(response => {
-                setCountries(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching countries:', error);
-            });
+            .then(response => setCountries(response.data))
+            .catch(error => console.error('Error fetching countries:', error));
     }, []);
 
     const handleSearch = (e) => {
@@ -36,10 +33,9 @@ const CoachSearchAndEditForm = () => {
         })
             .then(response => {
                 setCoaches(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
-            .catch(error => {
-                console.error('Error fetching coaches:', error);
-            });
+            .catch(error => console.error('Error fetching coaches:', error));
     };
 
     const handleEditClick = (coach) => {
@@ -65,7 +61,7 @@ const CoachSearchAndEditForm = () => {
         axios.put(`http://localhost:8080/api/coaches/${selectedCoach}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
+            .then(() => {
                 alert('Coach updated successfully');
                 setSelectedCoach(null);
             })
@@ -81,7 +77,7 @@ const CoachSearchAndEditForm = () => {
             <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
                 <Form.Control
                     type="text"
-                    placeholder="Enter first or last name"
+                    placeholder="Enter coach name or nickname"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="me-2"
@@ -90,7 +86,7 @@ const CoachSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {coaches.length > 0 && (
+            {coaches.length > 0 ? (
                 <div>
                     <h3 className="text-center mb-3">Coaches found:</h3>
                     <Container>
@@ -166,6 +162,8 @@ const CoachSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

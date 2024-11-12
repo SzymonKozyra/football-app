@@ -8,6 +8,7 @@ const StadiumSearchAndEditForm = () => {
     const [stadiums, setStadiums] = useState([]);
     const [countries, setCountries] = useState([]);
     const [selectedStadiumId, setSelectedStadiumId] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         name: '',
         capacity: '',
@@ -30,7 +31,10 @@ const StadiumSearchAndEditForm = () => {
         axios.get(`http://localhost:8080/api/stadiums/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setStadiums(response.data))
+            .then(response => {
+                setStadiums(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
+            })
             .catch(error => console.error('Error fetching stadiums:', error));
     };
 
@@ -59,7 +63,7 @@ const StadiumSearchAndEditForm = () => {
         axios.put(`http://localhost:8080/api/stadiums/${selectedStadiumId}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
+            .then(() => {
                 alert('Stadium updated successfully');
                 setSelectedStadiumId(null);
             })
@@ -75,7 +79,7 @@ const StadiumSearchAndEditForm = () => {
             <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
                 <Form.Control
                     type="text"
-                    placeholder="Enter stadium name or city"
+                    placeholder="Enter stadium or city name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="me-2"
@@ -84,7 +88,7 @@ const StadiumSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {stadiums.length > 0 && (
+            {stadiums.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Stadiums found:</h3>
                     <Container>
@@ -103,7 +107,6 @@ const StadiumSearchAndEditForm = () => {
                                     </Card.Body>
                                 </Card>
 
-                                {/* Display edit form below the selected stadium */}
                                 {selectedStadiumId === stadium.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Stadium: {stadium.name}</h3>
@@ -154,6 +157,8 @@ const StadiumSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );
