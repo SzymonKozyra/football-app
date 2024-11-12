@@ -22,10 +22,11 @@ const TeamSearchAndEditForm = () => {
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
+    const [isEditingLeague, setIsEditingLeague] = useState(false); // Track if the user is editing the league
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
-        if (leagueSearchQuery && token) {
+        if (isEditingLeague && leagueSearchQuery && token) {
             axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -34,12 +35,13 @@ const TeamSearchAndEditForm = () => {
         } else {
             setFilteredLeagues([]);
         }
-    }, [leagueSearchQuery]);
+    }, [leagueSearchQuery, isEditingLeague]);
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
         setLeagueSearchQuery(league.name);
         setFilteredLeagues([]);
+        setIsEditingLeague(true); // Stop showing suggestions after selecting a league
     };
 
     const handleSearch = (e) => {
@@ -50,6 +52,7 @@ const TeamSearchAndEditForm = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
+                console.log(response.data); // Log the response to check `isClub` values
                 setTeams(response.data);
                 setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
@@ -65,9 +68,11 @@ const TeamSearchAndEditForm = () => {
             name: team.name,
             picture: team.picture,
             leagueId: team.league ? team.league.id : '',
-            isClub: team.isClub,
+            isClub: team.isClub, // Set the actual value of `isClub`
         });
         setSelectedLeague(team.league); // Set selected league to the current team league
+        setLeagueSearchQuery(team.league ? team.league.name : ''); // Set the search query to the league name
+        setIsEditingLeague(false); // Initially, do not show suggestions
         setPictureFile(null);
     };
 
@@ -100,6 +105,22 @@ const TeamSearchAndEditForm = () => {
             });
     };
 
+    const handleDelete = (teamId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/teams/${teamId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                alert('Team deleted successfully');
+                setTeams(teams.filter(team => team.id !== teamId));
+            })
+            .catch(error => {
+                console.error('Error deleting team:', error);
+                alert('Failed to delete team');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search Team</h1>
@@ -125,28 +146,20 @@ const TeamSearchAndEditForm = () => {
                                     <Card.Body>
                                         <Row className="align-items-center">
                                             <Col xs="auto">
-                                                <div style={{
-                                                    display: 'inline-block',
-                                                    backgroundColor: '#f0f0f0',
-                                                    padding: '6px',
-                                                    borderRadius: '4px',
-                                                    boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.2)'
-                                                }}>
-                                                    <TeamImage team={team} />
-                                                </div>
+                                                <TeamImage team={team} />
                                             </Col>
                                             <Col style={{ textAlign: 'left' }}>
                                                 <div>
                                                     <strong>ID:</strong> {team.id}<br />
                                                     <strong>Name:</strong> {team.name}<br />
-                                                    <strong>Type:</strong> {team.isClub ? "Club" : "National Team"}<br />
+                                                    {console.log(`Team: ${team.name}, isClub: ${team.isClub}`)}
+                                                    <strong>Type:</strong> {team.isClub === true ? "Club" : team.isClub === false ? "National Team" : "Unknown"}<br />
                                                     <strong>League:</strong> {team.league ? team.league.name : 'No League'}
                                                 </div>
                                             </Col>
                                             <Col xs="auto" className="d-flex justify-content-end">
-                                                <Button variant="outline-primary" onClick={() => handleEditClick(team)}>
-                                                    Edit
-                                                </Button>
+                                                <Button variant="outline-primary" onClick={() => handleEditClick(team)}>Edit</Button>
+                                                <Button variant="outline-danger" onClick={() => handleDelete(team.id)} className="ms-2">Delete</Button>
                                             </Col>
                                         </Row>
                                     </Card.Body>
@@ -169,10 +182,13 @@ const TeamSearchAndEditForm = () => {
                                                 <Form.Control
                                                     type="text"
                                                     value={leagueSearchQuery}
-                                                    onChange={(e) => setLeagueSearchQuery(e.target.value)}
+                                                    onChange={(e) => {
+                                                        setLeagueSearchQuery(e.target.value);
+                                                        setIsEditingLeague(true);
+                                                    }}
                                                     placeholder="Search for a league"
                                                 />
-                                                {filteredLeagues.length > 0 && (
+                                                {isEditingLeague && filteredLeagues.length > 0 && (
                                                     <ul>
                                                         {filteredLeagues.map((league) => (
                                                             <li key={league.id} onClick={() => handleLeagueSelect(league)}>

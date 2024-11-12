@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.model.League;
@@ -150,5 +151,14 @@ public class TeamService {
 
         teamRepository.save(team);
         return "Team updated successfully";
+    }
+
+    @Transactional
+
+    public void deleteTeamById(Long teamId) {
+        if (!teamRepository.existsById(teamId)) {
+            throw new IllegalArgumentException("Team not found with ID: " + teamId);
+        }
+        teamRepository.deleteById(teamId);
     }
 }

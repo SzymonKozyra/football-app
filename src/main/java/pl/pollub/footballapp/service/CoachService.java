@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.model.Country;
@@ -154,5 +155,12 @@ public class CoachService {
         coachRepository.save(coach);
 
         return ResponseEntity.ok("Coach updated successfully");
+    }
+
+    @Transactional
+    public void deleteCoachById(Long id) {
+        Coach coach = coachRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+        coachRepository.delete(coach);
     }
 }

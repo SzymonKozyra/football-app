@@ -96,4 +96,15 @@ public class TeamController {
         List<Team> teams = teamService.searchTeams(query);
         return ResponseEntity.ok(teams);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteTeam(@PathVariable Long id) {
+        try {
+            teamService.deleteTeamById(id);
+            return ResponseEntity.ok("Team deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting team: " + e.getMessage());
+        }
+    }
 }
