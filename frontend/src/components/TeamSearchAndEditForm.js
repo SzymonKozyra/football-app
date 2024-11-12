@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
+import TeamImage from "./TeamImage";
 
 const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -12,8 +13,33 @@ const TeamSearchAndEditForm = () => {
         id: '',
         name: '',
         picture: '',
-        leagueId: ''
+        leagueId: '',
+        isClub: true,
     });
+    const [pictureFile, setPictureFile] = useState(null);
+
+    const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
+    const [filteredLeagues, setFilteredLeagues] = useState([]);
+    const [selectedLeague, setSelectedLeague] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+        if (leagueSearchQuery && token) {
+            axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(response => setFilteredLeagues(response.data))
+                .catch(error => console.error('Error fetching leagues:', error));
+        } else {
+            setFilteredLeagues([]);
+        }
+    }, [leagueSearchQuery]);
+
+    const handleLeagueSelect = (league) => {
+        setSelectedLeague(league);
+        setLeagueSearchQuery(league.name);
+        setFilteredLeagues([]);
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -36,16 +62,31 @@ const TeamSearchAndEditForm = () => {
             id: team.id,
             name: team.name,
             picture: team.picture,
-            leagueId: team.league ? team.league.id : ''
+            leagueId: team.league ? team.league.id : '',
+            isClub: team.isClub,
         });
+        setSelectedLeague(team.league); // Set selected league to the current team league
+        setPictureFile(null);
     };
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        axios.put(`http://localhost:8080/api/teams/${selectedTeamId}`, editData, {
-            headers: { Authorization: `Bearer ${token}` }
+        const formData = new FormData();
+        formData.append('name', editData.name);
+        formData.append('leagueId', selectedLeague ? selectedLeague.id : editData.leagueId);
+        formData.append('isClub', editData.isClub);
+
+        if (pictureFile) {
+            formData.append('picture', pictureFile);
+        }
+
+        axios.put(`http://localhost:8080/api/teams/${selectedTeamId}`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
         })
             .then(response => {
                 alert('Team updated successfully');
@@ -82,11 +123,15 @@ const TeamSearchAndEditForm = () => {
                                     <Card.Body>
                                         <Row className="align-items-center">
                                             <Col xs="auto">
-                                                <img
-                                                    src={`/assets/teams/${team.picture}`}
-                                                    alt={team.name}
-                                                    className="team-picture"
-                                                />
+                                                <div style={{
+                                                    display: 'inline-block',
+                                                    backgroundColor: '#f0f0f0',
+                                                    padding: '6px',
+                                                    borderRadius: '4px',
+                                                    boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.2)'
+                                                }}>
+                                                    <TeamImage team={team} />
+                                                </div>
                                             </Col>
                                             <Col style={{ textAlign: 'left' }}>
                                                 <div>
@@ -105,7 +150,7 @@ const TeamSearchAndEditForm = () => {
                                     </Card.Body>
                                 </Card>
 
-                                {/* Display edit form below the selected team */}
+                                {/* Edit form for selected team */}
                                 {selectedTeamId === team.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Team: {team.name}</h3>
@@ -118,26 +163,40 @@ const TeamSearchAndEditForm = () => {
                                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                                                 />
                                             </Form.Group>
-                                            <Form.Group controlId="formPicture" className="mb-3">
-                                                <Form.Label>Picture</Form.Label>
+                                            <Form.Group controlId="formLeagueSearch" className="mb-3">
+                                                <Form.Label>Search League</Form.Label>
                                                 <Form.Control
                                                     type="text"
-                                                    value={editData.picture}
-                                                    onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
+                                                    value={leagueSearchQuery}
+                                                    onChange={(e) => setLeagueSearchQuery(e.target.value)}
+                                                    placeholder="Search for a league"
                                                 />
-                                                <img
-                                                    src={`/assets/teams/${editData.picture}`}
-                                                    alt={editData.name}
-                                                    className="team-picture mt-2"
-                                                    style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-                                                />
+                                                {filteredLeagues.length > 0 && (
+                                                    <ul>
+                                                        {filteredLeagues.map((league) => (
+                                                            <li key={league.id} onClick={() => handleLeagueSelect(league)}>
+                                                                {league.name}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
                                             </Form.Group>
-                                            <Form.Group controlId="formLeagueId" className="mb-3">
-                                                <Form.Label>League ID</Form.Label>
+                                            <Form.Group controlId="formIsClub" className="mb-3">
+                                                <Form.Label>Is Club?</Form.Label>
+                                                <Form.Select
+                                                    value={editData.isClub ? 'true' : 'false'}
+                                                    onChange={(e) => setEditData({ ...editData, isClub: e.target.value === 'true' })}
+                                                >
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                            <Form.Group controlId="formPicture" className="mb-3">
+                                                <Form.Label>Upload New Picture</Form.Label>
                                                 <Form.Control
-                                                    type="number"
-                                                    value={editData.leagueId}
-                                                    onChange={(e) => setEditData({ ...editData, leagueId: e.target.value })}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => setPictureFile(e.target.files[0])}
                                                 />
                                             </Form.Group>
                                             <Button variant="primary" type="submit" className="w-100">Save Changes</Button>

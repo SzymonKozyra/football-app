@@ -73,7 +73,7 @@ public class PlayerController {
 
             // Ustawiamy ścieżkę obrazu na podstawie uzyskanego ID
             if (picture != null) {
-                String photoPath = fileStorageService.saveImage(picture, "player_" + playerId);
+                String photoPath = fileStorageService.saveImage(picture, "player_" + playerId,"player");
                 playerService.updatePlayerPhotoPath(playerId, photoPath);
             }
 
@@ -84,14 +84,45 @@ public class PlayerController {
     }
 
 
+//    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<?> updatePlayer(@PathVariable Long id, @RequestBody PlayerRequest updatedPlayer) {
+//        try {
+//            playerService.updatePlayer(id, updatedPlayer);
+//            return ResponseEntity.ok("Player updated successfully");
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<?> updatePlayer(@PathVariable Long id, @RequestBody PlayerRequest updatedPlayer) {
+    public ResponseEntity<?> updatePlayer(
+            @PathVariable Long id,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("dateOfBirth") String dateOfBirth,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("positionId") Long positionId,
+            @RequestParam("countryId") Long countryId,
+            @RequestParam(value = "value", required = false) BigDecimal value,
+            @RequestParam(value = "picture", required = false) MultipartFile picture) {
         try {
-            playerService.updatePlayer(id, updatedPlayer);
+            PlayerRequest playerRequest = new PlayerRequest(firstName, lastName, dateOfBirth, nickname, positionId, countryId, value);
+
+            // Przetwarzaj plik zdjęcia, jeśli został przesłany
+            String photoPath = null;
+            if (picture != null) {
+                photoPath = fileStorageService.saveImage(picture, "player_" + id, "player");
+                playerRequest.setPicture(photoPath);
+            }
+
+            playerService.updatePlayer(id, playerRequest);
             return ResponseEntity.ok("Player updated successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error saving picture: " + e.getMessage());
         }
     }
 
@@ -120,7 +151,7 @@ public class PlayerController {
     public ResponseEntity<?> uploadPlayerPhoto(@PathVariable Long id, @RequestParam("photo") MultipartFile photo) {
         try {
             String filename = "player_" + id;
-            String filepath = fileStorageService.saveImage(photo, filename);
+            String filepath = fileStorageService.saveImage(photo, filename,"player");
             playerService.updatePlayerPhotoPath(id, filepath);
             return ResponseEntity.ok("Photo uploaded successfully.");
         } catch (IOException e) {

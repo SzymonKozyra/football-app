@@ -19,6 +19,12 @@ public class TeamRequest {
         this.isClub = isClub;
         this.leagueId = leagueId;
     }
+
+    public TeamRequest(String name, boolean isClub, Long leagueId) {
+        this.name = name;
+        this.isClub = isClub;
+        this.leagueId = leagueId;
+    }
     public TeamRequest() {
     }
 

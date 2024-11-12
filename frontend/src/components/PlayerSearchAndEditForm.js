@@ -15,11 +15,11 @@ const PlayerSearchAndEditForm = () => {
         lastName: '',
         dateOfBirth: '',
         nickname: '',
-        picture: '',
         positionId: '',
         countryId: '',
         value: ''
     });
+    const [pictureFile, setPictureFile] = useState(null); // State for the uploaded image file
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/positions', {
@@ -51,19 +51,36 @@ const PlayerSearchAndEditForm = () => {
             lastName: player.lastName,
             dateOfBirth: player.dateOfBirth,
             nickname: player.nickname,
-            picture: player.picture,
             positionId: player.position.id,
             countryId: player.country.id,
             value: player.value
         });
+        setPictureFile(null); // Reset picture file when opening a new edit form
     };
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
-        axios.put(`http://localhost:8080/api/players/${selectedPlayer.id}`, editData, {
-            headers: { Authorization: `Bearer ${token}` }
+        const formData = new FormData();
+        formData.append('firstName', editData.firstName);
+        formData.append('lastName', editData.lastName);
+        formData.append('dateOfBirth', editData.dateOfBirth);
+        formData.append('nickname', editData.nickname);
+        formData.append('positionId', editData.positionId);
+        formData.append('countryId', editData.countryId);
+        formData.append('value', editData.value);
+
+        // Append the picture file only if a new one was uploaded
+        if (pictureFile) {
+            formData.append('picture', pictureFile);
+        }
+
+        axios.put(`http://localhost:8080/api/players/${selectedPlayer.id}`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
         })
             .then(response => {
                 alert('Player updated successfully');
@@ -99,7 +116,6 @@ const PlayerSearchAndEditForm = () => {
                                 <Card.Body>
                                     <Row className="align-items-center">
                                         <Col xs="auto">
-                                            {/* Display player's picture */}
                                             <div style={{
                                                 display: 'inline-block',
                                                 backgroundColor: '#f0f0f0',
@@ -107,21 +123,7 @@ const PlayerSearchAndEditForm = () => {
                                                 borderRadius: '4px',
                                                 boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.2)'
                                             }}>
-                                                {/*<img*/}
-                                                {/*    src={player.picture}  // Użycie ścieżki względnej z katalogu public*/}
-                                                {/*    alt={player.firstName}*/}
-                                                {/*    className="player-picture"*/}
-                                                {/*    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}*/}
-                                                {/*/>*/}
-                                                {/*<img*/}
-                                                {/*    src={`http://localhost:8080/api/players/${player.id}/photo`}*/}
-                                                {/*    alt={player.firstName}*/}
-                                                {/*    className="player-picture"*/}
-                                                {/*    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}*/}
-                                                {/*/>*/}
                                                 <PlayerImage player={player} />
-
-
                                             </div>
                                         </Col>
                                         <Col style={{ textAlign: 'left' }}>
@@ -183,11 +185,11 @@ const PlayerSearchAndEditForm = () => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formPicture" className="mb-3">
-                            <Form.Label>Picture URL</Form.Label>
+                            <Form.Label>Upload Picture</Form.Label>
                             <Form.Control
-                                type="text"
-                                value={editData.picture}
-                                onChange={(e) => setEditData({ ...editData, picture: e.target.value })}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setPictureFile(e.target.files[0])}
                             />
                         </Form.Group>
                         <Form.Group controlId="formPosition" className="mb-3">

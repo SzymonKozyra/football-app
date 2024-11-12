@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class StadiumService {
     }
 
     public ResponseEntity<List<Stadium>> searchStadiums(String query) {
-        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query);
+        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query, Sort.by(Sort.Direction.ASC, "id"));
         return ResponseEntity.ok(stadiums);
     }
 

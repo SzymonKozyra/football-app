@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.pollub.footballapp.model.League;
 import pl.pollub.footballapp.model.Country;
@@ -11,7 +12,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     Optional<League> findByNameAndCountry(String name, Country country);
     boolean existsByNameAndCountry(String name, Country country);
 
-    List<League> findByNameContaining(String query);
+    List<League> findByNameContaining(String query, Sort sort);
 
     Optional<Object> findByName(String leagueName);
 }

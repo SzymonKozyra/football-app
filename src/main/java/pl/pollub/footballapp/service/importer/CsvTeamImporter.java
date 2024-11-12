@@ -36,9 +36,9 @@ public class CsvTeamImporter implements DataImporter {
         for (CSVRecord csvRecord : csvRecords) {
             TeamRequest teamRequest = new TeamRequest(
                     csvRecord.get("name"),
-                    csvRecord.get("picture"),
+                    null,  // Picture is optional, set to null
                     Boolean.parseBoolean(csvRecord.get("isClub")),
-                    Long.parseLong(csvRecord.get("leagueId")) // Pobieranie ID ligi
+                    Long.parseLong(csvRecord.get("leagueId"))  // Parsing leagueId
             );
             teamRequests.add(teamRequest);
         }

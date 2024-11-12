@@ -2,6 +2,7 @@ package pl.pollub.footballapp.service;
 
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -122,7 +123,7 @@ public class RefereeService {
     }
 
     public ResponseEntity<List<Referee>> searchReferees(String query) {
-        List<Referee> referees = refereeRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+        List<Referee> referees = refereeRepository.findByFirstNameContainingOrLastNameContaining(query, query, Sort.by(Sort.Direction.ASC, "id"));
         return ResponseEntity.ok(referees);
     }
 
