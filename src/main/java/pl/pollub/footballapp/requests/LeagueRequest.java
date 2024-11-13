@@ -3,13 +3,14 @@ package pl.pollub.footballapp.requests;
 public class LeagueRequest {
     private String name;
     private String countryName;
+    private String edition;
 
-    // Constructors, Getters, and Setters
     public LeagueRequest() {}
 
-    public LeagueRequest(String name, String countryName) {
+    public LeagueRequest(String name, String countryName, String edition) {
         this.name = name;
         this.countryName = countryName;
+        this.edition = edition;
     }
 
     public String getName() {
@@ -26,5 +27,13 @@ public class LeagueRequest {
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
     }
 }

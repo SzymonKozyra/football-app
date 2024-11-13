@@ -7,9 +7,11 @@ const AddLeagueForm = () => {
     const [countries, setCountries] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState('');
     const [leagueName, setLeagueName] = useState('');
+    const [edition, setEdition] = useState('');
     const [fileType, setFileType] = useState('');
     const [file, setFile] = useState(null);
     const [manualEntry, setManualEntry] = useState(true); // Default to manual entry
+    const [isEditionValid, setIsEditionValid] = useState(true);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')
@@ -20,6 +22,11 @@ const AddLeagueForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (!isEditionValid) {
+            alert('Edycja musi być w formacie liczba/liczba, np. 23/24');
+            return;
+        }
+
         const token = localStorage.getItem('jwtToken');
         if (!token) {
             console.error('Authorization token is missing');
@@ -29,7 +36,8 @@ const AddLeagueForm = () => {
         if (manualEntry) {
             const leagueData = {
                 name: leagueName,
-                countryName: selectedCountry
+                countryName: selectedCountry,
+                edition: edition
             };
 
             axios.post('http://localhost:8080/api/leagues/add', leagueData, {
@@ -39,6 +47,7 @@ const AddLeagueForm = () => {
                     alert('League added successfully');
                     setLeagueName('');
                     setSelectedCountry('');
+                    setEdition('');
                 })
                 .catch(error => {
                     console.error('Error adding league:', error);
@@ -67,6 +76,13 @@ const AddLeagueForm = () => {
                 });
 
         }
+    };
+
+    const handleEditionChange = (e) => {
+        const value = e.target.value;
+        setEdition(value);
+        const editionPattern = /^\d{2}\/\d{2}$/;
+        setIsEditionValid(editionPattern.test(value));
     };
 
     return (
@@ -126,6 +142,21 @@ const AddLeagueForm = () => {
                                 placeholder="Enter league name"
                                 required
                             />
+                        </Form.Group>
+
+                        <Form.Group controlId="formEdition" className="mb-3">
+                            <Form.Label>Edition (e.g., 23/24)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={edition}
+                                onChange={handleEditionChange}
+                                placeholder="Enter edition"
+                                isInvalid={!isEditionValid}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                Edycja musi być w formacie liczba/liczba, np. 23/24
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </>
                 ) : (

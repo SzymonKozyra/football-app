@@ -19,14 +19,15 @@ public class CsvLeagueImporter implements DataImporter {
         List<LeagueRequest> leagueRequests = new ArrayList<>();
 
         Iterable<CSVRecord> records = CSVFormat.DEFAULT
-                .withHeader("name", "countryName")
+                .withHeader("name", "countryName", "edition")
                 .withFirstRecordAsHeader()
                 .parse(new InputStreamReader(inputStream));
 
         for (CSVRecord record : records) {
             LeagueRequest leagueRequest = new LeagueRequest(
                     record.get("name"),
-                    record.get("countryName")
+                    record.get("countryName"),
+                    record.get("edition")
             );
             leagueRequests.add(leagueRequest);
         }

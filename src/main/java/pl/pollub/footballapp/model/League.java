@@ -10,6 +10,8 @@ public class League {
 
     private String name;
 
+    private String edition;
+
     @ManyToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
@@ -17,8 +19,9 @@ public class League {
     // Constructors, Getters, and Setters
     public League() {}
 
-    public League(String name, Country country) {
+    public League(String name, String edition, Country country) {
         this.name = name;
+        this.edition = edition;
         this.country = country;
     }
 
@@ -36,6 +39,14 @@ public class League {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
     }
 
     public Country getCountry() {

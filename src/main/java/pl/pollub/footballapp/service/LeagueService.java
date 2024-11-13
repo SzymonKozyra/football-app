@@ -39,6 +39,7 @@ public class LeagueService {
         League league = new League();
         league.setName(leagueRequest.getName());
         league.setCountry(country);
+        league.setEdition(leagueRequest.getEdition());
 
         leagueRepository.save(league);
         return ResponseEntity.ok("League added successfully");
@@ -70,7 +71,7 @@ public class LeagueService {
             League league = new League();
             league.setName(leagueRequest.getName());
             league.setCountry(country);
-
+            league.setEdition(leagueRequest.getEdition());
             leagueRepository.save(league);
         }
 
@@ -100,6 +101,7 @@ public class LeagueService {
 
         league.setName(updatedLeagueRequest.getName());
         league.setCountry(country);
+        league.setEdition(updatedLeagueRequest.getEdition());
 
         leagueRepository.save(league);
         return ResponseEntity.ok("League updated successfully");
