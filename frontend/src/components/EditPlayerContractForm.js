@@ -90,8 +90,8 @@ const EditPlayerContractForm = () => {
         setSelectedContractId(contract.id);
         setStartDate(contract.startDate);
         setEndDate(contract.endDate);
-        setSalary(contract.salary);
-        setTransferFee(contract.transferFee);
+        setSalary(contract.salary || ''); // Make salary optional
+        setTransferFee(contract.transferFee || '');
         setTransferType(contract.transferType);
     };
 
@@ -102,7 +102,7 @@ const EditPlayerContractForm = () => {
         const updatedContractData = {
             startDate,
             endDate,
-            salary,
+            salary: salary || null, // Make salary optional
             transferFee: transferType === "TRANSFER" ? transferFee : null,
             transferType
         };
@@ -113,11 +113,27 @@ const EditPlayerContractForm = () => {
             .then(() => {
                 alert('Player contract updated successfully');
                 setSelectedContractId(null);
-                setContractList([]);
+                handleSearch(); // Refresh the contract list after update
             })
             .catch(error => {
                 console.error('Error updating contract:', error);
                 setNoContractsMessage('An error occurred while updating the contract.');
+            });
+    };
+
+    const handleDeleteContract = (contractId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/player-contracts/${contractId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Contract deleted successfully');
+                setContractList(contractList.filter(contract => contract.id !== contractId)); // Update contract list after deletion
+            })
+            .catch(error => {
+                console.error('Error deleting contract:', error);
+                setNoContractsMessage('An error occurred while deleting the contract.');
             });
     };
 
@@ -177,15 +193,18 @@ const EditPlayerContractForm = () => {
                                             <strong>Team:</strong> {contract.team.name}<br />
                                             <strong>Start Date:</strong> {contract.startDate}<br />
                                             <strong>End Date:</strong> {contract.endDate}<br />
-                                            <strong>Salary:</strong> {contract.salary}<br />
+                                            <strong>Salary:</strong> {contract.salary || 'Not specified'}<br />
                                             <strong>Transfer Type:</strong> {contract.transferType}<br />
                                             {contract.transferType === "TRANSFER" && (
                                                 <>
-                                                    <strong>Transfer Fee:</strong> {contract.transferFee}
+                                                    <strong>Transfer Fee:</strong> {contract.transferFee || 'Not specified'}
                                                 </>
                                             )}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleContractSelect(contract)} className="me-2">Edit</Button>
+                                            <Button variant="outline-danger" onClick={() => handleDeleteContract(contract.id)}>Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
@@ -218,7 +237,6 @@ const EditPlayerContractForm = () => {
                                                     value={salary}
                                                     onChange={(e) => setSalary(e.target.value)}
                                                     min="0"
-                                                    required
                                                 />
                                             </Form.Group>
                                             <Form.Group controlId="formTransferType" className="mb-3">
@@ -238,7 +256,6 @@ const EditPlayerContractForm = () => {
                                                         value={transferFee}
                                                         onChange={(e) => setTransferFee(e.target.value)}
                                                         min="0"
-                                                        required
                                                     />
                                                 </Form.Group>
                                             )}

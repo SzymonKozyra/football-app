@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, ListGroup, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddPlayerContractForm = () => {
@@ -15,7 +15,7 @@ const AddPlayerContractForm = () => {
     const [teamSearchQuery, setTeamSearchQuery] = useState('');
     const [filteredTeams, setFilteredTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState(null);
-    const [error, setError] = useState(null);
+    const [alertMessage, setAlertMessage] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -37,9 +37,7 @@ const AddPlayerContractForm = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => setFilteredTeams(response.data))
-                .catch(error => {
-                    console.error('Error fetching teams:', error);
-                });
+                .catch(error => console.error('Error fetching teams:', error));
         } else {
             setFilteredTeams([]);
         }
@@ -63,7 +61,7 @@ const AddPlayerContractForm = () => {
         const contractData = {
             startDate,
             endDate,
-            salary,
+            salary: salary || null, // Make salary optional
             transferFee: transferType === 'TRANSFER' ? transferFee : null,
             transferType,
             playerId: selectedPlayer ? selectedPlayer.id : null,
@@ -84,11 +82,14 @@ const AddPlayerContractForm = () => {
                 setPlayerSearchQuery('');
                 setSelectedTeam(null);
                 setTeamSearchQuery('');
-                setError(null);
+                setAlertMessage(null);
             })
             .catch(error => {
-                console.error('Error adding contract:', error);
-                setError('An error occurred while adding the contract');
+                if (error.response && error.response.data) {
+                    setAlertMessage(error.response.data); // Display the backend's error message
+                } else {
+                    setAlertMessage('An error occurred while adding the contract');
+                }
             });
     };
 
@@ -100,8 +101,10 @@ const AddPlayerContractForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Player Contract</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
 
+                {/* Player Search */}
                 <Form.Group controlId="formPlayerSearch" className="mb-3">
                     <Form.Label>Search Player</Form.Label>
                     <Form.Control
@@ -125,6 +128,7 @@ const AddPlayerContractForm = () => {
                     )}
                 </Form.Group>
 
+                {/* Team Search */}
                 <Form.Group controlId="formTeamSearch" className="mb-3">
                     <Form.Label>Search Team</Form.Label>
                     <Form.Control
@@ -148,6 +152,7 @@ const AddPlayerContractForm = () => {
                     )}
                 </Form.Group>
 
+                {/* Other Fields */}
                 <Form.Group controlId="formStartDate" className="mb-3">
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control
@@ -170,13 +175,12 @@ const AddPlayerContractForm = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formSalary" className="mb-3">
-                    <Form.Label>Salary</Form.Label>
+                    <Form.Label>Salary (optional)</Form.Label>
                     <Form.Control
                         type="number"
                         value={salary}
                         onChange={(e) => setSalary(e.target.value)}
                         min="0"
-                        required
                     />
                 </Form.Group>
 
@@ -202,8 +206,6 @@ const AddPlayerContractForm = () => {
                         />
                     </Form.Group>
                 )}
-
-                {error && <p style={{ color: 'red' }}>{error}</p>}
 
                 <Button variant="primary" type="submit" className="w-100">
                     Add Contract
