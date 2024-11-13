@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,7 +89,9 @@ public class LeagueService {
     }
 
     public ResponseEntity<List<League>> searchLeagues(String query) {
-        List<League> leagues = leagueRepository.findByNameContaining(query);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<League> leagues = leagueRepository.findByNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(leagues);
     }
 
@@ -106,4 +109,13 @@ public class LeagueService {
         leagueRepository.save(league);
         return ResponseEntity.ok("League updated successfully");
     }
+    public ResponseEntity<?> deleteLeague(Long id) {
+        if (leagueRepository.existsById(id)) {
+            leagueRepository.deleteById(id);
+            return ResponseEntity.ok("League deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("League not found");
+        }
+    }
+
 }

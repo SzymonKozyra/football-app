@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/assets/img/player/**").permitAll()
                         .requestMatchers("/api/players/**").permitAll()
                         .requestMatchers("/img/player/**").permitAll()
+                        .requestMatchers("/img/team/**").permitAll()
 
 
                         //.requestMatchers("/api").permitAll()

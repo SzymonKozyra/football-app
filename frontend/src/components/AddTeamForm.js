@@ -5,14 +5,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddTeamForm = () => {
     const [teamName, setTeamName] = useState('');
-    const [picture, setPicture] = useState('');
     const [isClub, setIsClub] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
     const [manualEntry, setManualEntry] = useState(true);
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState(null);  // For importing teams
+    const [pictureFile, setPictureFile] = useState(null);  // For uploading picture in manual entry
     const [fileType, setFileType] = useState('');
 
     useEffect(() => {
@@ -27,7 +26,7 @@ const AddTeamForm = () => {
         } else {
             setFilteredLeagues([]);
         }
-    }, [searchQuery, leagueSearchQuery]);
+    }, [leagueSearchQuery]);
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
@@ -38,50 +37,51 @@ const AddTeamForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
-        if (!token) {
-            console.error('Authorization token is missing');
-            return;
-        }
 
         if (manualEntry) {
-            const teamData = {
-                name: teamName,
-                picture: picture,
-                isClub: isClub,
-                leagueId: selectedLeague ? selectedLeague.id : null
-            };
+            const formData = new FormData();
+            formData.append('name', teamName);
+            formData.append('isClub', isClub);
+            formData.append('leagueId', selectedLeague ? selectedLeague.id : null);
+            if (pictureFile) {
+                formData.append('picture', pictureFile);
+            }
 
-            axios.post('http://localhost:8080/api/teams/add', teamData, {
-                headers: { Authorization: `Bearer ${token}` }
+            axios.post('http://localhost:8080/api/teams/add', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             })
                 .then(response => {
-                    alert('Team added successfully');
+                    alert(response.data);  // Shows success message
+                    // Reset state here...
                     setTeamName('');
-                    setPicture('');
-                    setSearchQuery('');
-                    setSelectedLeague(null);
+                    setIsClub(true);
                     setLeagueSearchQuery('');
+                    setSelectedLeague(null);
+                    setPictureFile(null);
                 })
                 .catch(error => {
                     console.error('Error adding team:', error);
                     alert('Failed to add team');
                 });
         } else {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('type', fileType);
+            const importFormData = new FormData();
+            importFormData.append('file', file);
+            importFormData.append('type', fileType);
 
-            axios.post('http://localhost:8080/api/teams/import', formData, {
+            axios.post('http://localhost:8080/api/teams/import', importFormData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert('Teams imported successfully');
+                    alert(response.data);
                     setFile(null);
                     setFileType('');
                 })
                 .catch(error => {
                     console.error('Error importing teams:', error);
-                    alert('Failed to import teams');
+                    alert(error.response?.data || 'Failed to import teams');
                 });
         }
     };
@@ -98,18 +98,10 @@ const AddTeamForm = () => {
                             defaultValue="manual"
                             onChange={(value) => setManualEntry(value === 'manual')}
                         >
-                            <ToggleButton
-                                id="manual-entry"
-                                value="manual"
-                                variant={manualEntry ? 'primary' : 'outline-primary'}
-                            >
+                            <ToggleButton id="manual-entry" value="manual" variant={manualEntry ? 'primary' : 'outline-primary'}>
                                 Manual Entry
                             </ToggleButton>
-                            <ToggleButton
-                                id="import-file"
-                                value="import"
-                                variant={!manualEntry ? 'primary' : 'outline-primary'}
-                            >
+                            <ToggleButton id="import-file" value="import" variant={!manualEntry ? 'primary' : 'outline-primary'}>
                                 Import from File
                             </ToggleButton>
                         </ToggleButtonGroup>
@@ -129,14 +121,12 @@ const AddTeamForm = () => {
                             />
                         </Form.Group>
 
-                        <Form.Group controlId="formPicture" className="mb-3">
-                            <Form.Label>Picture</Form.Label>
+                        <Form.Group controlId="formPictureFile" className="mb-3">
+                            <Form.Label>Upload Team Picture</Form.Label>
                             <Form.Control
-                                type="text"
-                                placeholder="Enter picture filename"
-                                value={picture}
-                                onChange={(e) => setPicture(e.target.value)}
-                                required
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setPictureFile(e.target.files[0])}
                             />
                         </Form.Group>
 
@@ -207,23 +197,21 @@ const AddTeamForm = () => {
         "name": "TeamName",
         "is_club": true,
         "picture": "pictureFileName",
-        "value": "5000000",
-        "league_id": 0
+        "league_id": 1
     },
     {
         "name": "AnotherTeam",
         "is_club": false,
         "picture": "anotherPictureFileName",
-        "value": "3000000",
-        "league_id": 1
+        "league_id": 2
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`name,is_club,picture,value,league_id
-TeamName1,true,pictureFileName,5000000,0,0
-AnotherTeam,false,anotherPictureFileName,3000000,1,1`}
+                            {`name,is_club,picture,league_id
+TeamName1,true,pictureFileName,1
+AnotherTeam,false,anotherPictureFileName,2`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

@@ -1,16 +1,12 @@
 [
   {
     "name": "Team3",
-    "picture": "team1.png",
     "isClub": true,
-    "coachId": 7,
     "leagueId": 5
   },
   {
     "name": "Team4",
-    "picture": "team2.png",
     "isClub": false,
-    "coachId": 6,
     "leagueId": 1
   }
 ]

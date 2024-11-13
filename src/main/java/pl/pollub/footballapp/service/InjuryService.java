@@ -119,4 +119,12 @@ public class InjuryService {
         injuryRepository.save(injury);
         return ResponseEntity.ok("Injury updated successfully");
     }
+
+    public ResponseEntity<?> deleteInjury(Long injuryId) {
+        if (!injuryRepository.existsById(injuryId)) {
+            return ResponseEntity.status(404).body("Injury not found");
+        }
+        injuryRepository.deleteById(injuryId);
+        return ResponseEntity.ok("Injury deleted successfully");
+    }
 }

@@ -107,10 +107,25 @@ const EditCoachContractForm = () => {
             .then(() => {
                 alert('Coach contract updated successfully');
                 setSelectedContractId(null);
-                setContractList([]);
+                handleSearch(); // Refresh contracts after update
             })
             .catch(error => {
                 console.error('Error updating contract:', error);
+            });
+    };
+
+    const handleDeleteContract = (contractId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/coach-contracts/${contractId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Contract deleted successfully');
+                setContractList(contractList.filter(contract => contract.id !== contractId)); // Update contract list
+            })
+            .catch(error => {
+                console.error('Error deleting contract:', error);
             });
     };
 
@@ -170,11 +185,14 @@ const EditCoachContractForm = () => {
                                             <strong>Coach:</strong> {contract.coach.firstName} {contract.coach.lastName}<br />
                                             <strong>Team:</strong> {contract.team.name}<br />
                                             <strong>Start Date:</strong> {contract.startDate}<br />
-                                            <strong>End Date:</strong> {contract.endDate}<br />
-                                            <strong>Salary:</strong> {contract.salary}<br />
-                                            <strong>Transfer Fee:</strong> {contract.transferFee}
+                                            <strong>End Date:</strong> {contract.endDate || 'N/A'}<br />
+                                            <strong>Salary:</strong> {contract.salary !== null ? `$${contract.salary}` : 'Unknown'}<br />
+                                            <strong>Transfer Fee:</strong> {contract.transferFee !== null ? `$${contract.transferFee}` : 'Unknown'}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleContractSelect(contract)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleContractSelect(contract)} className="me-2">Edit</Button>
+                                            <Button variant="outline-danger" onClick={() => handleDeleteContract(contract.id)}>Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
@@ -204,17 +222,16 @@ const EditCoachContractForm = () => {
                                                 <Form.Label>Salary</Form.Label>
                                                 <Form.Control
                                                     type="number"
-                                                    value={salary}
+                                                    value={salary || ''}
                                                     onChange={(e) => setSalary(e.target.value)}
                                                     min="0"
-                                                    required
                                                 />
                                             </Form.Group>
                                             <Form.Group controlId="formTransferFee" className="mb-3">
                                                 <Form.Label>Transfer Fee</Form.Label>
                                                 <Form.Control
                                                     type="number"
-                                                    value={transferFee}
+                                                    value={transferFee || ''}
                                                     onChange={(e) => setTransferFee(e.target.value)}
                                                     min="0"
                                                 />
@@ -234,4 +251,4 @@ const EditCoachContractForm = () => {
     );
 };
 
-export default EditCoachContractForm;
+export default EditCoachContractForm

@@ -46,4 +46,15 @@ public class CoachController {
     public ResponseEntity<?> updateCoach(@PathVariable Long id, @RequestBody CoachRequest coachRequest) {
         return coachService.updateCoach(id, coachRequest);
     }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteCoach(@PathVariable Long id) {
+        try {
+            coachService.deleteCoachById(id);
+            return ResponseEntity.ok("Coach deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting coach: " + e.getMessage());
+        }
+    }
+
 }

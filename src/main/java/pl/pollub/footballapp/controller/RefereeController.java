@@ -47,4 +47,10 @@ public class RefereeController {
     public ResponseEntity<?> updateReferee(@PathVariable Long id, @RequestBody RefereeRequest updatedRequest) {
         return refereeService.updateReferee(id, updatedRequest);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteReferee(@PathVariable Long id) {
+        return refereeService.deleteReferee(id);
+    }
 }

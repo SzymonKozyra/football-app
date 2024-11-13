@@ -8,6 +8,7 @@ const RefereeSearchAndEditForm = () => {
     const [referees, setReferees] = useState([]);
     const [countries, setCountries] = useState([]);
     const [selectedReferee, setSelectedReferee] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         firstName: '',
         lastName: '',
@@ -30,7 +31,10 @@ const RefereeSearchAndEditForm = () => {
         axios.get(`http://localhost:8080/api/referees/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setReferees(response.data))
+            .then(response => {
+                setReferees(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
+            })
             .catch(error => console.error('Error fetching referees:', error));
     };
 
@@ -56,7 +60,7 @@ const RefereeSearchAndEditForm = () => {
         axios.put(`http://localhost:8080/api/referees/${selectedReferee}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
+            .then(() => {
                 alert('Referee updated successfully');
                 setSelectedReferee(null);
             })
@@ -66,13 +70,29 @@ const RefereeSearchAndEditForm = () => {
             });
     };
 
+    const handleDelete = (refereeId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/referees/${refereeId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Referee deleted successfully');
+                setReferees(referees.filter(referee => referee.id !== refereeId));
+            })
+            .catch(error => {
+                console.error('Error deleting referee:', error);
+                alert('Failed to delete referee');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search Referee</h1>
             <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
                 <Form.Control
                     type="text"
-                    placeholder="Enter first or last name"
+                    placeholder="Enter referee name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="me-2"
@@ -81,7 +101,7 @@ const RefereeSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {referees.length > 0 && (
+            {referees.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Referees found:</h3>
                     <Container>
@@ -95,11 +115,13 @@ const RefereeSearchAndEditForm = () => {
                                             <strong>Date of Birth:</strong> {referee.dateOfBirth}<br />
                                             <strong>Country:</strong> {referee.country.name}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleEditClick(referee)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(referee)}>Edit</Button>
+                                            <Button variant="outline-danger" onClick={() => handleDelete(referee.id)} className="ms-2">Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
-                                {/* Display edit form below the selected referee */}
                                 {selectedReferee === referee.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Referee: {referee.firstName} {referee.lastName}</h3>
@@ -150,6 +172,8 @@ const RefereeSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

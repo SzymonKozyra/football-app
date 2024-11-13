@@ -1,6 +1,8 @@
 package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.model.Player;
 import pl.pollub.footballapp.model.Country;
@@ -35,18 +37,44 @@ public class PlayerService {
 //        playerRepository.save(player);
 //    }
 
+//    public void updatePlayer(Long id, PlayerRequest playerRequest) {
+//        Player existingPlayer = playerRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Player not found"));
+//
+//        Player updatedPlayer = createPlayerFromRequest(playerRequest);
+//        updatedPlayer.setId(existingPlayer.getId()); // retain existing ID
+//        playerRepository.save(updatedPlayer);
+//    }
+
     public void updatePlayer(Long id, PlayerRequest playerRequest) {
         Player existingPlayer = playerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        Player updatedPlayer = createPlayerFromRequest(playerRequest);
-        updatedPlayer.setId(existingPlayer.getId()); // retain existing ID
-        playerRepository.save(updatedPlayer);
+        // Aktualizuj dane gracza na podstawie PlayerRequest
+        existingPlayer.setFirstName(playerRequest.getFirstName());
+        existingPlayer.setLastName(playerRequest.getLastName());
+        existingPlayer.setDateOfBirth(playerRequest.getDateOfBirth());
+        existingPlayer.setNickname(playerRequest.getNickname());
+        existingPlayer.setPosition(positionRepository.findById(playerRequest.getPositionId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Position ID.")));
+        existingPlayer.setCountry(countryRepository.findById(playerRequest.getCountryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Country ID.")));
+        existingPlayer.setValue(playerRequest.getValue());
+
+        // Zaktualizuj ścieżkę zdjęcia, jeśli jest nowa
+        if (playerRequest.getPicture() != null) {
+            existingPlayer.setPicture(playerRequest.getPicture());
+        }
+
+        playerRepository.save(existingPlayer);
     }
 
     public List<Player> searchPlayers(String query) {
-        return playerRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        return playerRepository.findByFullNameContaining(normalizedQuery, sortById);
     }
+
 
     public void addPlayer(PlayerRequest playerRequest) {
         Player player = createPlayerFromRequest(playerRequest);
@@ -128,6 +156,15 @@ public class PlayerService {
                 .orElseThrow(() -> new RuntimeException("Player not found"));
         player.setPicture(photoPath);
         playerRepository.save(player);
+    }
+
+    public ResponseEntity<?> deletePlayer(Long id) {
+        if (playerRepository.existsById(id)) {
+            playerRepository.deleteById(id);
+            return ResponseEntity.ok("Player deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Player not found");
+        }
     }
 
 

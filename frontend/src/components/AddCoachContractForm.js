@@ -173,7 +173,6 @@ const AddCoachContractForm = () => {
                         value={salary}
                         onChange={(e) => setSalary(e.target.value)}
                         min="0"
-                        required
                     />
                 </Form.Group>
 
@@ -184,7 +183,6 @@ const AddCoachContractForm = () => {
                         value={transferFee}
                         onChange={(e) => setTransferFee(e.target.value)}
                         min="0"
-                        required
                     />
                 </Form.Group>
 

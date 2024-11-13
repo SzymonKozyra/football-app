@@ -8,6 +8,7 @@ const StadiumSearchAndEditForm = () => {
     const [stadiums, setStadiums] = useState([]);
     const [countries, setCountries] = useState([]);
     const [selectedStadiumId, setSelectedStadiumId] = useState(null);
+    const [noResultsMessage, setNoResultsMessage] = useState('');
     const [editData, setEditData] = useState({
         name: '',
         capacity: '',
@@ -30,7 +31,10 @@ const StadiumSearchAndEditForm = () => {
         axios.get(`http://localhost:8080/api/stadiums/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => setStadiums(response.data))
+            .then(response => {
+                setStadiums(response.data);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
+            })
             .catch(error => console.error('Error fetching stadiums:', error));
     };
 
@@ -59,7 +63,7 @@ const StadiumSearchAndEditForm = () => {
         axios.put(`http://localhost:8080/api/stadiums/${selectedStadiumId}`, updatedData, {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(response => {
+            .then(() => {
                 alert('Stadium updated successfully');
                 setSelectedStadiumId(null);
             })
@@ -69,13 +73,29 @@ const StadiumSearchAndEditForm = () => {
             });
     };
 
+    const handleDeleteStadium = (stadiumId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/stadiums/${stadiumId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Stadium deleted successfully');
+                setStadiums(stadiums.filter(stadium => stadium.id !== stadiumId));
+            })
+            .catch(error => {
+                console.error('Error deleting stadium:', error);
+                alert('Failed to delete stadium');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search Stadium</h1>
             <Form onSubmit={handleSearch} className="d-flex justify-content-center mb-4">
                 <Form.Control
                     type="text"
-                    placeholder="Enter stadium name or city"
+                    placeholder="Enter stadium or city name"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="me-2"
@@ -84,7 +104,7 @@ const StadiumSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {stadiums.length > 0 && (
+            {stadiums.length > 0 ? (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Stadiums found:</h3>
                     <Container>
@@ -99,11 +119,13 @@ const StadiumSearchAndEditForm = () => {
                                             <strong>City:</strong> {stadium.city.name}<br />
                                             <strong>Country:</strong> {stadium.city.country.name}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                            <Button variant="outline-danger" className="ms-2" onClick={() => handleDeleteStadium(stadium.id)}>Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
-                                {/* Display edit form below the selected stadium */}
                                 {selectedStadiumId === stadium.id && (
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Stadium: {stadium.name}</h3>
@@ -146,7 +168,8 @@ const StadiumSearchAndEditForm = () => {
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
-                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                            <Button variant="primary" type="submit" className="
+                                            w-100">Save Changes</Button>
                                         </Form>
                                     </div>
                                 )}
@@ -154,6 +177,8 @@ const StadiumSearchAndEditForm = () => {
                         ))}
                     </Container>
                 </div>
+            ) : (
+                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

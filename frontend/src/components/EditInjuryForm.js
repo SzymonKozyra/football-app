@@ -94,8 +94,25 @@ const EditInjuryForm = () => {
             .then(() => {
                 alert('Injury updated successfully');
                 resetForm();
+                handleSearch(); // Refresh the injuries list after update
             })
             .catch(error => console.error('Error updating injury:', error));
+    };
+
+    const handleDelete = (injuryId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/injuries/${injuryId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Injury deleted successfully');
+                setInjuries(injuries.filter(injury => injury.id !== injuryId)); // Update the list after deletion
+            })
+            .catch(error => {
+                console.error('Error deleting injury:', error);
+                alert('Failed to delete injury');
+            });
     };
 
     return (
@@ -145,7 +162,10 @@ const EditInjuryForm = () => {
                                                 <strong>Start Date:</strong> {injury.startDate}<br />
                                                 <strong>End Date:</strong> {injury.endDate || 'Present'}
                                             </div>
-                                            <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)}>Edit</Button>
+                                            <div>
+                                                <Button variant="outline-primary" onClick={() => handleInjurySelect(injury)} className="me-2">Edit</Button>
+                                                <Button variant="outline-danger" onClick={() => handleDelete(injury.id)}>Delete</Button>
+                                            </div>
                                         </Card.Body>
                                     </Card>
 

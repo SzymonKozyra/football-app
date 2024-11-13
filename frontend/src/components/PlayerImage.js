@@ -41,7 +41,7 @@ const PlayerImage = ({ player }) => {
             src={imageUrl}
             alt={`${player.firstName} ${player.lastName}`}
             className="player-picture"
-            style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '4px' }}
+            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
         />
     );
 };

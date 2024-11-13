@@ -47,4 +47,11 @@ public class LeagueController {
     public ResponseEntity<?> updateLeague(@PathVariable Long id, @RequestBody LeagueRequest updatedLeagueRequest) {
         return leagueService.updateLeague(id, updatedLeagueRequest);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteLeague(@PathVariable Long id) {
+        return leagueService.deleteLeague(id);
+    }
+
 }

@@ -2,6 +2,7 @@ package pl.pollub.footballapp.service;
 
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -122,7 +123,9 @@ public class RefereeService {
     }
 
     public ResponseEntity<List<Referee>> searchReferees(String query) {
-        List<Referee> referees = refereeRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Referee> referees = refereeRepository.findByFullNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(referees);
     }
 
@@ -140,5 +143,14 @@ public class RefereeService {
 
         refereeRepository.save(referee);
         return ResponseEntity.ok("Referee updated successfully");
+    }
+
+    public ResponseEntity<?> deleteReferee(Long id) {
+        if (refereeRepository.existsById(id)) {
+            refereeRepository.deleteById(id);
+            return ResponseEntity.ok("Referee deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Referee not found");
+        }
     }
 }

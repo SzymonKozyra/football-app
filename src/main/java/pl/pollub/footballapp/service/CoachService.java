@@ -2,8 +2,10 @@ package pl.pollub.footballapp.service;
 
 import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.model.Country;
@@ -129,8 +131,11 @@ public class CoachService {
 
         return ResponseEntity.ok(message);
     }
+
     public ResponseEntity<List<Coach>> searchCoaches(String query) {
-        List<Coach> coaches = coachRepository.findByFirstNameContainingOrLastNameContaining(query, query);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Coach> coaches = coachRepository.findByFullNameOrNicknameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(coaches);
     }
 
@@ -150,5 +155,12 @@ public class CoachService {
         coachRepository.save(coach);
 
         return ResponseEntity.ok("Coach updated successfully");
+    }
+
+    @Transactional
+    public void deleteCoachById(Long id) {
+        Coach coach = coachRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+        coachRepository.delete(coach);
     }
 }

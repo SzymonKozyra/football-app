@@ -47,4 +47,10 @@ public class StadiumController {
     public ResponseEntity<?> updateStadium(@PathVariable Long id, @RequestBody StadiumRequest updatedStadiumRequest) {
         return stadiumService.updateStadium(id, updatedStadiumRequest);
     }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteStadium(@PathVariable Long id) {
+        return stadiumService.deleteStadium(id);
+    }
+
 }

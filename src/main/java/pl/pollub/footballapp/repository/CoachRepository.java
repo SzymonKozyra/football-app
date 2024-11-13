@@ -1,6 +1,9 @@
 package pl.pollub.footballapp.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import pl.pollub.footballapp.model.Coach;
 import pl.pollub.footballapp.model.Country;
 
@@ -11,7 +14,8 @@ import java.util.Optional;
 public interface CoachRepository extends JpaRepository<Coach, Long> {
     boolean existsByFirstNameAndLastNameAndCountry(String firstName, String lastName, Country country);
 
-    List<Coach> findByFirstNameContainingOrLastNameContaining(String query, String query1);
+    @Query("SELECT c FROM Coach c WHERE LOWER(CONCAT(c.firstName, ' ', c.lastName)) LIKE %:query% OR LOWER(c.nickname) LIKE %:query%")
+    List<Coach> findByFullNameOrNicknameContaining(@Param("query") String query, Sort sort);
 
     boolean existsByFirstNameAndLastNameAndDateOfBirthAndCountry(String firstName, String lastName, LocalDate parse, Country country);
 

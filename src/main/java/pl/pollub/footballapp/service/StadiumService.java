@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,9 @@ public class StadiumService {
     }
 
     public ResponseEntity<List<Stadium>> searchStadiums(String query) {
-        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(query, query);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        String normalizedQuery = query.trim().toLowerCase();
+        List<Stadium> stadiums = stadiumRepository.findByNameContainingOrCityNameContaining(normalizedQuery, sortById);
         return ResponseEntity.ok(stadiums);
     }
 
@@ -122,4 +125,13 @@ public class StadiumService {
         stadiumRepository.save(stadium);
         return ResponseEntity.ok("Stadium updated successfully");
     }
+    public ResponseEntity<?> deleteStadium(Long id) {
+        if (stadiumRepository.existsById(id)) {
+            stadiumRepository.deleteById(id);
+            return ResponseEntity.ok("Stadium deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Stadium not found");
+        }
+    }
+
 }
