@@ -186,4 +186,10 @@ public class PlayerController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deletePlayer(@PathVariable Long id) {
+        return playerService.deletePlayer(id);
+    }
 }

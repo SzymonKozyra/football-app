@@ -19,7 +19,7 @@ const PlayerSearchAndEditForm = () => {
         countryId: '',
         value: ''
     });
-    const [pictureFile, setPictureFile] = useState(null); // State for the uploaded image file
+    const [pictureFile, setPictureFile] = useState(null);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/positions', {
@@ -55,7 +55,7 @@ const PlayerSearchAndEditForm = () => {
             countryId: player.country.id,
             value: player.value
         });
-        setPictureFile(null); // Reset picture file when opening a new edit form
+        setPictureFile(null);
     };
 
     const handleEditSubmit = (e) => {
@@ -71,7 +71,6 @@ const PlayerSearchAndEditForm = () => {
         formData.append('countryId', editData.countryId);
         formData.append('value', editData.value);
 
-        // Append the picture file only if a new one was uploaded
         if (pictureFile) {
             formData.append('picture', pictureFile);
         }
@@ -89,6 +88,22 @@ const PlayerSearchAndEditForm = () => {
             .catch(error => {
                 console.error('Error updating player:', error);
                 alert('Failed to update player');
+            });
+    };
+
+    const handleDeletePlayer = (playerId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/players/${playerId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Player deleted successfully');
+                setPlayers(players.filter(player => player.id !== playerId));
+            })
+            .catch(error => {
+                console.error('Error deleting player:', error);
+                alert('Failed to delete player');
             });
     };
 
@@ -139,6 +154,7 @@ const PlayerSearchAndEditForm = () => {
                                         </Col>
                                         <Col xs="auto" className="d-flex justify-content-end">
                                             <Button variant="outline-primary" onClick={() => handleEditClick(player)}>Edit</Button>
+                                            <Button variant="outline-danger" onClick={() => handleDeletePlayer(player.id)} className="ms-2">Delete</Button>
                                         </Col>
                                     </Row>
                                 </Card.Body>

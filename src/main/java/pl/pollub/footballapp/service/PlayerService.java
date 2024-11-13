@@ -2,6 +2,7 @@ package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.model.Player;
 import pl.pollub.footballapp.model.Country;
@@ -155,6 +156,15 @@ public class PlayerService {
                 .orElseThrow(() -> new RuntimeException("Player not found"));
         player.setPicture(photoPath);
         playerRepository.save(player);
+    }
+
+    public ResponseEntity<?> deletePlayer(Long id) {
+        if (playerRepository.existsById(id)) {
+            playerRepository.deleteById(id);
+            return ResponseEntity.ok("Player deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Player not found");
+        }
     }
 
 

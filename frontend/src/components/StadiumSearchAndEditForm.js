@@ -73,6 +73,22 @@ const StadiumSearchAndEditForm = () => {
             });
     };
 
+    const handleDeleteStadium = (stadiumId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/stadiums/${stadiumId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Stadium deleted successfully');
+                setStadiums(stadiums.filter(stadium => stadium.id !== stadiumId));
+            })
+            .catch(error => {
+                console.error('Error deleting stadium:', error);
+                alert('Failed to delete stadium');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search Stadium</h1>
@@ -103,7 +119,10 @@ const StadiumSearchAndEditForm = () => {
                                             <strong>City:</strong> {stadium.city.name}<br />
                                             <strong>Country:</strong> {stadium.city.country.name}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(stadium)}>Edit</Button>
+                                            <Button variant="outline-danger" className="ms-2" onClick={() => handleDeleteStadium(stadium.id)}>Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
@@ -149,7 +168,8 @@ const StadiumSearchAndEditForm = () => {
                                                     ))}
                                                 </Form.Select>
                                             </Form.Group>
-                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                            <Button variant="primary" type="submit" className="
+                                            w-100">Save Changes</Button>
                                         </Form>
                                     </div>
                                 )}

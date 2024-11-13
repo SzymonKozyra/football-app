@@ -125,4 +125,13 @@ public class StadiumService {
         stadiumRepository.save(stadium);
         return ResponseEntity.ok("Stadium updated successfully");
     }
+    public ResponseEntity<?> deleteStadium(Long id) {
+        if (stadiumRepository.existsById(id)) {
+            stadiumRepository.deleteById(id);
+            return ResponseEntity.ok("Stadium deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Stadium not found");
+        }
+    }
+
 }

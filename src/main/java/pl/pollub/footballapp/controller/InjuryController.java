@@ -41,4 +41,10 @@ public class InjuryController {
     public ResponseEntity<?> importInjuries(@RequestParam("file") MultipartFile file, @RequestParam("type") String fileType) throws IOException {
         return injuryService.importInjuries(file, fileType);
     }
+
+    @DeleteMapping("/{injuryId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> deleteInjury(@PathVariable Long injuryId) {
+        return injuryService.deleteInjury(injuryId);
+    }
 }

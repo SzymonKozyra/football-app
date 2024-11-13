@@ -28,7 +28,6 @@ public class CoachContract {
     @JoinColumn(name = "coach_id", nullable = false)
     private Coach coach;
 
-    @Column(nullable = false)
     private Double salary;
 
     private Double transferFee;
@@ -87,7 +86,7 @@ public class CoachContract {
         this.coach = coach;
     }
 
-    public double getSalary() {
+    public Double getSalary() {
         return salary;
     }
 
@@ -95,7 +94,7 @@ public class CoachContract {
         this.salary = salary;
     }
 
-    public double getTransferFee() {
+    public Double getTransferFee() {
         return transferFee;
     }
 

@@ -144,4 +144,13 @@ public class RefereeService {
         refereeRepository.save(referee);
         return ResponseEntity.ok("Referee updated successfully");
     }
+
+    public ResponseEntity<?> deleteReferee(Long id) {
+        if (refereeRepository.existsById(id)) {
+            refereeRepository.deleteById(id);
+            return ResponseEntity.ok("Referee deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("Referee not found");
+        }
+    }
 }

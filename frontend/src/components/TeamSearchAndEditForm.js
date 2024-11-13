@@ -68,13 +68,14 @@ const TeamSearchAndEditForm = () => {
             name: team.name,
             picture: team.picture,
             leagueId: team.league ? team.league.id : '',
-            isClub: team.isClub, // Set the actual value of `isClub`
+            isClub: team.club, // Map `club` from backend to `isClub`
         });
         setSelectedLeague(team.league); // Set selected league to the current team league
         setLeagueSearchQuery(team.league ? team.league.name : ''); // Set the search query to the league name
         setIsEditingLeague(false); // Initially, do not show suggestions
         setPictureFile(null);
     };
+
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
@@ -153,7 +154,7 @@ const TeamSearchAndEditForm = () => {
                                                     <strong>ID:</strong> {team.id}<br />
                                                     <strong>Name:</strong> {team.name}<br />
                                                     {console.log(`Team: ${team.name}, isClub: ${team.isClub}`)}
-                                                    <strong>Type:</strong> {team.isClub === true ? "Club" : team.isClub === false ? "National Team" : "Unknown"}<br />
+                                                    <strong>Type:</strong> {team.club ? "Club" : "National Team"}<br/>
                                                     <strong>League:</strong> {team.league ? team.league.name : 'No League'}
                                                 </div>
                                             </Col>

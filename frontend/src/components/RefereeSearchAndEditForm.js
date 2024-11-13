@@ -70,6 +70,22 @@ const RefereeSearchAndEditForm = () => {
             });
     };
 
+    const handleDelete = (refereeId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/referees/${refereeId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('Referee deleted successfully');
+                setReferees(referees.filter(referee => referee.id !== refereeId));
+            })
+            .catch(error => {
+                console.error('Error deleting referee:', error);
+                alert('Failed to delete referee');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search Referee</h1>
@@ -99,7 +115,10 @@ const RefereeSearchAndEditForm = () => {
                                             <strong>Date of Birth:</strong> {referee.dateOfBirth}<br />
                                             <strong>Country:</strong> {referee.country.name}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleEditClick(referee)}>Edit</Button>
+                                        <div>
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(referee)}>Edit</Button>
+                                            <Button variant="outline-danger" onClick={() => handleDelete(referee.id)} className="ms-2">Delete</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 

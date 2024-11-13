@@ -107,4 +107,13 @@ public class LeagueService {
         leagueRepository.save(league);
         return ResponseEntity.ok("League updated successfully");
     }
+    public ResponseEntity<?> deleteLeague(Long id) {
+        if (leagueRepository.existsById(id)) {
+            leagueRepository.deleteById(id);
+            return ResponseEntity.ok("League deleted successfully");
+        } else {
+            return ResponseEntity.status(404).body("League not found");
+        }
+    }
+
 }

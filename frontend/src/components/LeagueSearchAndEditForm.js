@@ -70,6 +70,22 @@ const LeagueSearchAndEditForm = () => {
             });
     };
 
+    const handleDeleteLeague = (leagueId) => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.delete(`http://localhost:8080/api/leagues/${leagueId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(() => {
+                alert('League deleted successfully');
+                setLeagues(leagues.filter(league => league.id !== leagueId));
+            })
+            .catch(error => {
+                console.error('Error deleting league:', error);
+                alert('Failed to delete league');
+            });
+    };
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search League</h1>
@@ -117,9 +133,8 @@ const LeagueSearchAndEditForm = () => {
                                                 </div>
                                             </Col>
                                             <Col xs="auto" className="d-flex justify-content-end">
-                                                <Button variant="outline-primary" onClick={() => handleEditClick(league)}>
-                                                    Edit
-                                                </Button>
+                                                <Button variant="outline-primary" onClick={() => handleEditClick(league)}>Edit</Button>
+                                                <Button variant="outline-danger" className="ms-2" onClick={() => handleDeleteLeague(league.id)}>Delete</Button>
                                             </Col>
                                         </Row>
                                     </Card.Body>
