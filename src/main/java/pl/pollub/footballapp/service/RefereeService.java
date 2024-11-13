@@ -153,4 +153,8 @@ public class RefereeService {
             return ResponseEntity.status(404).body("Referee not found");
         }
     }
+
+    public List<Referee> getAllReferees() {
+        return refereeRepository.findAll();
+    }
 }

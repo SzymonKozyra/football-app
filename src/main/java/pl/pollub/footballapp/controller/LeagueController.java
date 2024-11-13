@@ -41,6 +41,19 @@ public class LeagueController {
     public ResponseEntity<List<League>> searchLeagues(@RequestParam("query") String query) {
         return leagueService.searchLeagues(query);
     }
+//    @GetMapping("/search")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<List<League>> searchLeagues(@RequestParam(required = false) String query) {
+//        List<League> leagues;
+//        if (query == null || query.isEmpty()) {
+//            leagues = leagueService.getAllLeagues();  // Zwraca wszystkie ligi, jeśli query jest puste
+//        } else {
+//            leagues = (List<League>) leagueService.searchLeagues(query);
+//            //leagues = leagueService.searchLeagues(query);
+//        }
+//        return ResponseEntity.ok(leagues);
+//    }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")

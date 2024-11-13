@@ -41,6 +41,19 @@ public class StadiumController {
     public ResponseEntity<List<Stadium>> searchStadiums(@RequestParam("query") String query) {
         return stadiumService.searchStadiums(query);
     }
+//    @GetMapping("/search")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<List<Stadium>> searchStadiums(@RequestParam(required = false) String query) {
+//        List<Stadium> stadiums;
+//        if (query == null || query.isEmpty()) {
+//            stadiums = stadiumService.getAllStadiums();  // Zwraca wszystkie stadiony, jeśli query jest puste
+//        } else {
+//            stadiums = (List<Stadium>) stadiumService.searchStadiums(query);
+//            //stadiums = stadiumService.searchStadiums(query);
+//        }
+//        return ResponseEntity.ok(stadiums);
+//    }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")

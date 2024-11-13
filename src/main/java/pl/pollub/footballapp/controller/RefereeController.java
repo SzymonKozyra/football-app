@@ -41,6 +41,19 @@ public class RefereeController {
     public ResponseEntity<List<Referee>> searchReferees(@RequestParam("query") String query) {
         return refereeService.searchReferees(query);
     }
+//    @GetMapping("/search")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<List<Referee>> searchReferees(@RequestParam(required = false) String query) {
+//        List<Referee> referees;
+//        if (query == null || query.isEmpty()) {
+//            referees = refereeService.getAllReferees();
+//        } else {
+//            referees = (List<Referee>) refereeService.searchReferees(query);
+//            //referees = refereeService.searchReferees(query);
+//        }
+//        return ResponseEntity.ok(referees);
+//    }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")

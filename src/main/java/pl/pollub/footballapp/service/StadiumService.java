@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.pollub.footballapp.exception.DuplicateStadiumsException;
 import pl.pollub.footballapp.model.City;
 import pl.pollub.footballapp.model.Country;
 import pl.pollub.footballapp.model.Stadium;
@@ -134,4 +133,7 @@ public class StadiumService {
         }
     }
 
+    public List<Stadium> getAllStadiums() {
+        return stadiumRepository.findAll();
+    }
 }
