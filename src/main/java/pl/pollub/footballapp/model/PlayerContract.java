@@ -27,7 +27,6 @@ public class PlayerContract {
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 
-    @Column(nullable = false)
     private Double salary;
 
     private Double transferFee;
