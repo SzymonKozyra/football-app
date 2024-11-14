@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
-import '../Modal.css';
 
 const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData, onOpenPasswordReset }) => {
     const [email, setEmail] = useState('');

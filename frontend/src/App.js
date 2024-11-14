@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Modal.css';
-
+import { Alert } from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
@@ -15,7 +14,7 @@ import AddLeagueForm from './components/AddLeagueForm';
 //import AddCoachesTransferForm from './components/AddCoachesTransferForm';
 import AddCoachForm from './components/AddCoachForm';
 import RegisterAdminForm from './components/RegisterAdminForm';
-import './components/Navbar.css';
+import './App.css';
 import CountryList from './components/CountryList';
 import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
 import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
@@ -35,13 +34,11 @@ import AddPlayerContractForm from "./components/AddPlayerContractForm";
 import EditPlayerContractForm from "./components/EditPlayerContractForm";
 import AddInjuryForm from "./components/AddInjuryForm";
 import EditInjuryForm from "./components/EditInjuryForm";
+
 //import AddTournamentForm from "./components/AddTournamentForm";
 //import TournamentSearchAndEditForm from "./components/TournamentSearchAndEditForm";
 import AddMatchForm from "./components/AddMatchForm";
 import EditMatchForm from "./components/EditMatchForm";
-
-
-
 import AdminView from './views/AdminView';
 import ModeratorView from './views/ModeratorView';
 import UserView from './views/UserView';
@@ -61,6 +58,7 @@ function App() {
     const [loginData, setLoginData] = useState({ email: '', role: '' });
     const [token, setToken] = useState('');
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
     const [adminExists, setAdminExists] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -158,6 +156,7 @@ function App() {
         const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
         if (logoutOrDeleteAccMessage) {
             setMessage(logoutOrDeleteAccMessage);
+            setMessageType('success');
             localStorage.removeItem('logoutOrDeleteAccMessage');
             setTimeout(() => {
                 setMessage('');
@@ -176,21 +175,24 @@ function App() {
 
     return (
         <div className="App">
-            <Navbar
-                isLoggedIn={isLoggedIn}
-                loginData={loginData}
-                onLogout={handleLogout}
-                setIsLoggedIn={setIsLoggedIn}
-                setMessage={setMessage}
-                onOpenLogin={() => toggleModal('isLoginOpen')}
-                onOpenRegistration={() => toggleModal('isRegistrationOpen')}
-                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-                openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
-                openAddAdminModal={() => toggleModal('isAddAdminOpen')}
-                onModeSwitch={handleModeSwitch} // Pass handleModeSwitch to Navbar
-                currentMode={currentMode}
-            />
-            {message && <div className="alert-message">{message}</div>}
+            <div className="navbar">
+                <Navbar
+                    isLoggedIn={isLoggedIn}
+                    loginData={loginData}
+                    onLogout={handleLogout}
+                    setIsLoggedIn={setIsLoggedIn}
+                    setMessage={setMessage}
+                    onOpenLogin={() => toggleModal('isLoginOpen')}
+                    onOpenRegistration={() => toggleModal('isRegistrationOpen')}
+                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
+                    openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
+                    openAddAdminModal={() => toggleModal('isAddAdminOpen')}
+                    onModeSwitch={handleModeSwitch} // Pass handleModeSwitch to Navbar
+                    currentMode={currentMode}
+                />
+            </div>
+
+            {message && (<Alert variant={messageType} className="mb-3">{message}</Alert>)}
 
             <div className="main-content">
                 {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}

@@ -11,51 +11,7 @@
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-}
-
-.navbar-left {
-    display: flex;
-    align-items: center;
-}
-
-.navbar-logo {
-    margin-right: 1rem;
-}
-
-.logo-image {
-    width: 50px;
-    height: auto;
-    display: block;
-}
-
-.navbar-title {
-    font-size: 1.5rem;
-    color: black;
-    font-weight: bold;
-}
-
-.navbar-menu {
-    display: flex;
-    gap: 1rem;
-    margin-left: auto;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-}
-
-.navbar-btn {
-    background-color: transparent;
-    color: black;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: color 0.3s ease;
-    padding: 0.5rem 0.75rem; /* Dodano trochę więcej miejsca wewnątrz */
-}
-
-.navbar-btn:hover {
-    color: #555;
+    height: 80px;
 }
 
 .navbar a {
@@ -63,31 +19,58 @@
     color: black;
 }
 
-.navbar a:hover {
-    color: #555;
+.navbar-logo{
+    font-size: 30px;
+    display: flex;
+    align-items: center;
 }
 
-/* Margines górny dla treści, aby nie była zakrywana przez pasek */
-.main-content {
-    margin-top: 80px; /* Pasek ma wysokość około 80px, więc dodajemy margines */
+.navbar-logo img {
+    height: 65px;
+    width: auto;
+    margin-right: 10px;
 }
 
-.navbar-email {
-    font-size: 1rem;
-    color: black;
-    margin-right: 1rem;
-    padding: 0.5rem 0.75rem;
+.navbar-btn {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 1rem;
+    margin-left: 10px;
 }
 
-.alert-message {
-    padding: 1rem;
-    background-color: #4caf50;
-    color: white;
-    margin: 80px 0 1rem 0;
-    border-radius: 5px;
-    text-align: center;
-    font-weight: bold;
-    position: relative;
-    z-index: 999;
+.btn-switchMode {
+    background-color: transparent;
+    border: none;
+    text-transform: none;
+    letter-spacing: 0em;
+    margin-right: 15px;
 }
 
+.role{
+    color: #cfcf00;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 1rem;
+    margin-left: 10px;
+}
+
+.dropdown-menu {
+    width: auto;
+    min-width: 146px;
+}
+
+.dropdown-menu .dropdown-item {
+    font-size: 14px;
+}
+
+.dropdown-menu .passwordButton:hover {
+    background-color: white;
+    color: #007bff;
+}
+.dropdown-menu .deleteButton:hover {
+    background-color: white;
+    color: red;
+}
+.dropdown-menu .logoutButton:hover {
+    background-color: white;
+    color: #acacac;
+}

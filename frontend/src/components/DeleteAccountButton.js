@@ -1,8 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import {Navigate, useNavigate} from 'react-router-dom';
+import { DropdownItem } from 'reactstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Navbar.css'
 
-const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
+const DeleteAccountButton = ({ setIsLoggedIn }) => {
 
     const navigate = useNavigate();
 
@@ -22,15 +25,13 @@ const DeleteAccountButton = ({ setIsLoggedIn, setMessage }) => {
                 window.scrollTo(0, 0);
                 window.location.reload();
             } catch (error) {
-                setMessage('There was a problem deleting the account.');
+                alert('There was a problem deleting the account.');
             }
         }
     };
 
     return (
-        <div>
-            <button onClick={handleDeleteAccount} className="navbar-btn">Delete account</button>
-        </div>
+        <DropdownItem onClick={handleDeleteAccount} className="deleteButton">Delete account</DropdownItem>
     );
 };
 

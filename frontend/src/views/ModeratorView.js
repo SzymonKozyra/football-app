@@ -21,9 +21,12 @@ import AddInjuryForm from '../components/AddInjuryForm';
 import EditInjuryForm from '../components/EditInjuryForm';
 //import AddTournamentForm from '../components/AddTournamentForm';
 //import TournamentSearchAndEditForm from '../components/TournamentSearchAndEditForm';
+<<<<<<< Updated upstream
 import AddMatchForm from '../components/AddMatchForm';
 import EditMatchForm from '../components/EditMatchForm';
 
+=======
+>>>>>>> Stashed changes
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
 const ModeratorView = () => {
@@ -55,6 +58,7 @@ const ModeratorView = () => {
 //            case 'EditTournaments': return <TournamentSearchAndEditForm />;
             case 'AddMatch': return <AddMatchForm />;
             case 'EditMatches': return <EditMatchForm />;
+
             default: return <p>Please select an option from the sidebar.</p>;
         }
     };

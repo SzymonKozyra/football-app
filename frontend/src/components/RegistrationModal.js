@@ -105,7 +105,7 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
                         Register
                     </Button>
                 </Form>
-                <p className="text-center text-primary mt-3">
+                <p className="text-center mt-3" style={{color: 'black'}}>
                     Already have an account?{' '}
                     <a
                         href="#"

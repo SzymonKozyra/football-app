@@ -1,5 +1,8 @@
 .App {
-  text-align: center;
+    padding-top: calc(80px);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .App-logo {
@@ -37,12 +40,6 @@
   }
 }
 
-.main-content {
-    padding-top: 20px; /* Możesz zwiększyć wartość */
-}
-
-
-/* General Styling for the Form Containers */
 .form-container {
     max-width: 600px;
     margin: 30px auto;
@@ -143,11 +140,28 @@
     margin-top: 10px;
 }
 
-/* Styling for team images */
 .team-picture, .player-picture, .league-picture, .coach-picture {
     width: 100px;
     height: 100px;
     object-fit: contain;
 }
+
+.navbar {
+    flex-shrink: 0;
+}
+
+.alert {
+    /*margin-top: 10px;*/
+    /*width: fit-content;*/
+    /*left: 50%;*/
+    /*transform: translateX(-50%);*/
+    /*position: absolute;*/
+    z-index: 1050;
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
 
 

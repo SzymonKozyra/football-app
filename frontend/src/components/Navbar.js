@@ -3,8 +3,9 @@ import DeleteAccountButton from './DeleteAccountButton';
 import React, { useState } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './Navbar.css';
 
-const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, openAddAdminModal, currentMode, setCurrentMode, onModeSwitch }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, openAddAdminModal, currentMode, setCurrentMode, onModeSwitch }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
@@ -19,31 +20,36 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
-                <Link to="/" className="navbar-brand">
-                    <img src="/logo.png" alt="Logo" style={{ width: '30px', marginRight: '10px' }} />
+                <Link to="/" className="navbar-logo">
+                    <img src="/logo.png" alt="Logo" />
                     Football Application
                 </Link>
                 <div className="d-flex align-items-center">
                     {isLoggedIn && (loginData.role === 'ROLE_ADMIN' || loginData.role === 'ROLE_MODERATOR') && (
-                        <button onClick={onModeSwitch} className="btn btn-outline-secondary me-2">
-                            {currentMode === 'user' ? `Switch to ${loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MOD'} View` : 'Switch to USER View'}
-                        </button>
+                        <>
+                            <span className="role">Role: {loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MODERATOR'}</span>
+                            <button onClick={onModeSwitch} className="btn btn-outline-secondary btn-switchMode navbar-btn">
+                                {currentMode === 'user' ? `Switch to ${loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MOD'} View` : 'Switch to USER View'}
+                            </button>
+                        </>
                     )}
                     {isLoggedIn ? (
                         <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-                            <DropdownToggle caret className="btn btn-outline-primary">
+                            <DropdownToggle caret className="btn btn-dark navbar-btn">
                                 {loginData.email}
                             </DropdownToggle>
                             <DropdownMenu end>
-                                <DropdownItem onClick={onOpenPasswordReset}>Change Password</DropdownItem>
+                                <DropdownItem onClick={onOpenPasswordReset} className="passwordButton">Change Password</DropdownItem>
                                 <DropdownItem divider />
-                                <DropdownItem onClick={onLogout} className="text-danger">Logout</DropdownItem>
+                                <DeleteAccountButton setIsLoggedIn={setIsLoggedIn}/>
+                                <DropdownItem divider />
+                                <DropdownItem onClick={onLogout} className="logoutButton">Logout</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     ) : (
                         <>
-                            <button onClick={onOpenLogin} className="btn btn-outline-primary me-2">Login</button>
-                            <button onClick={onOpenRegistration} className="btn btn-outline-success">Register</button>
+                            <button onClick={onOpenLogin} className="btn btn-primary me-2 navbar-btn">Login</button>
+                            <button onClick={onOpenRegistration} className="btn btn-dark navbar-btn">Register</button>
                             {/*<button onClick={onOpenPasswordReset} className="navbar-btn">Password reset</button>*/}
 
                         </>
@@ -55,50 +61,3 @@ const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistrati
 };
 
 export default Navbar;
-
-
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import DeleteAccountButton from './DeleteAccountButton';
-//
-// const Navbar = ({ isLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, openAddAdminModal, setIsLoggedIn, setMessage }) => {
-//     return (
-//         <nav className="navbar">
-//             <div className="navbar-left">
-//                 <Link to="/" className="navbar-logo">
-//                     <img src="/logo.png" alt="Logo" className="logo-image" />
-//                 </Link>
-//                 <span className="navbar-title">Football Application</span>
-//             </div>
-//             <div className="navbar-menu">
-//                 {!isLoggedIn ? (
-//                     <>
-//                         <button onClick={onOpenLogin} className="navbar-btn">Login</button>
-//                         <button onClick={onOpenRegistration} className="navbar-btn">Register</button>
-//                         <button onClick={onOpenPasswordReset} className="navbar-btn">Password reset</button>
-//                     </>
-//                 ) : (
-//                     <>
-//                         <span className="navbar-email">{loginData.email}</span>
-//                         {loginData.role === 'ROLE_ADMIN' && (
-//                             <>
-//                                 <button onClick={openAddAdminModal} className="navbar-btn">Add admin</button>
-//                                 <button onClick={openAddModeratorModal} className="navbar-btn">Add moderator</button>
-//                                 <Link to="/admin-panel">
-//                                     <button className="navbar-btn">Administration panel</button>
-//                                 </Link>
-//                             </>
-//                         )}
-//                         <button onClick={onLogout} className="navbar-btn">Logout</button>
-//                         <DeleteAccountButton
-//                             setIsLoggedIn={setIsLoggedIn}
-//                             setMessage={setMessage}
-//                         />
-//                     </>
-//                 )}
-//             </div>
-//         </nav>
-//     );
-// };
-//
-// export default Navbar;
