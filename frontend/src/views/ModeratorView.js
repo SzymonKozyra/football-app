@@ -19,8 +19,11 @@ import AddPlayerContractForm from "../components/AddPlayerContractForm";
 import EditPlayerContractForm from "../components/EditPlayerContractForm";
 import AddInjuryForm from '../components/AddInjuryForm';
 import EditInjuryForm from '../components/EditInjuryForm';
-import AddTournamentForm from '../components/AddTournamentForm';
-import TournamentSearchAndEditForm from '../components/TournamentSearchAndEditForm';
+//import AddTournamentForm from '../components/AddTournamentForm';
+//import TournamentSearchAndEditForm from '../components/TournamentSearchAndEditForm';
+import AddMatchForm from '../components/AddMatchForm';
+import EditMatchForm from '../components/EditMatchForm';
+
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
 const ModeratorView = () => {
@@ -48,8 +51,10 @@ const ModeratorView = () => {
             case 'EditCoachContracts': return <EditCoachContractForm />;
             case 'AddPlayerContract': return <AddPlayerContractForm />;
             case 'EditPlayerContracts': return <EditPlayerContractForm />;
-            case 'AddTournament': return <AddTournamentForm />;
-            case 'EditTournaments': return <TournamentSearchAndEditForm />;
+//            case 'AddTournament': return <AddTournamentForm />;
+//            case 'EditTournaments': return <TournamentSearchAndEditForm />;
+            case 'AddMatch': return <AddMatchForm />;
+            case 'EditMatches': return <EditMatchForm />;
             default: return <p>Please select an option from the sidebar.</p>;
         }
     };
@@ -75,7 +80,7 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddCoachContract')}>Add Coach Contract</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayerContract')}>Add Player Contract</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddTournament')}>Add Tournament</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddMatch')}>Add Match</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>
@@ -93,7 +98,7 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditInjuries')}>Edit Injuries</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditCoachContracts')}>Edit Coach Contracts</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayerContracts')}>Edit Player Contracts</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditTournaments')}>Edit Tournaments</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditMatches')}>Edit Matches</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>
