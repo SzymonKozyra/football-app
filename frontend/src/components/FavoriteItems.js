@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css'; // Bootstrap Icons
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -26,6 +27,9 @@ const FavoriteItems = () => {
                 })
                 .then(response => setUserId(response.data.id))
                 .catch(error => console.error('Error fetching user ID:', error));
+        }else{
+            console.error("JWT token is missing.");
+            return;
         }
     }, [token]);
 
@@ -48,55 +52,60 @@ const FavoriteItems = () => {
             axios.get(`${BASE_URL}/api/favorites/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-                .then(response => setFavorites(response.data))
+                .then(response => {
+                    console.log("Favorites fetched:", response.data); // Log danych ulubionych
+                    setFavorites(response.data);
+                })
                 .catch(error => console.error('Error fetching favorites:', error));
         }
     }, [userId, token]);
 
-    const addFavorite = (type, item) => {
+    const toggleFavorite = async (type, item) => {
+        console.log("Toggling favorite:", type, item);
+
+        if (!userId || !item || !item.id) {
+            console.error("Invalid userId or item.");
+            return;
+        }
+
+        // Convert plural type like "teams" to singular form "team" for endpoint map
+        const singularType = type.slice(0, -1);
+
+        const isFavorite = favorites[singularType]?.some(fav => fav[singularType]?.id === item.id);
+
         const endpointMap = {
-            team: `${BASE_URL}/api/favorite-teams/add`,
-            league: `${BASE_URL}/api/favorite-leagues/add`,
-            match: `${BASE_URL}/api/favorite-matches/add`
+            team: isFavorite ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
+            league: isFavorite ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
+            match: isFavorite ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
         };
 
-        if (userId) {
-            const dataMap = {
-                team: { teamId: item.id, userId: userId },
-                league: { leagueId: item.id, userId: userId },
-                match: { matchId: item.id, userId: userId }
-            };
+        const dataMap = {
+            team: { teamId: item.id, userId },
+            league: { leagueId: item.id, userId },
+            match: { matchId: item.id, userId }
+        };
 
-            axios.post(endpointMap[type], dataMap[type], {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(() => refetchFavorites())
-                .catch(error => console.error(`Error adding ${type} to favorites:`, error));
+        console.log("Endpoint:", endpointMap[singularType]);
+        console.log("Data:", dataMap[singularType]);
+
+        try {
+            if (isFavorite) {
+                await axios.delete(endpointMap[singularType], {
+                    data: dataMap[singularType],
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                await axios.post(endpointMap[singularType], dataMap[singularType], {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+            refetchFavorites();
+        } catch (error) {
+            console.error(`Error toggling favorite ${type}:`, error);
+            refetchFavorites();
         }
     };
 
-    const removeFavorite = (type, item) => {
-        const endpointMap = {
-            team: `${BASE_URL}/api/favorite-teams/remove`,
-            league: `${BASE_URL}/api/favorite-leagues/remove`,
-            match: `${BASE_URL}/api/favorite-matches/remove`
-        };
-
-        if (userId) {
-            const dataMap = {
-                team: { teamId: item.id, userId: userId },
-                league: { leagueId: item.id, userId: userId },
-                match: { matchId: item.id, userId: userId }
-            };
-
-            axios.delete(endpointMap[type], {
-                data: dataMap[type],
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(() => refetchFavorites())
-                .catch(error => console.error(`Error removing ${type} from favorites:`, error));
-        }
-    };
 
     const refetchFavorites = () => {
         axios.get(`${BASE_URL}/api/favorites/${userId}`, {
@@ -104,6 +113,10 @@ const FavoriteItems = () => {
         })
             .then(response => setFavorites(response.data))
             .catch(error => console.error('Error fetching updated favorites:', error));
+    };
+
+    const isFavorite = (type, id) => {
+        return favorites[type].some(fav => fav[`${type.slice(0, -1)}`].id === id);
     };
 
     return (
@@ -116,9 +129,11 @@ const FavoriteItems = () => {
                         {teams.map(team => (
                             <li key={team.id} className="list-group-item d-flex justify-content-between align-items-center">
                                 {team.name}
-                                <button className="btn btn-sm btn-primary" onClick={() => addFavorite('team', team)}>
-                                    Add to Favorites
-                                </button>
+                                <i
+                                    className={`bi ${isFavorite('teams', team.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => toggleFavorite('teams', team)}
+                                ></i>
                             </li>
                         ))}
                     </ul>
@@ -129,9 +144,11 @@ const FavoriteItems = () => {
                         {leagues.map(league => (
                             <li key={league.id} className="list-group-item d-flex justify-content-between align-items-center">
                                 {league.name}
-                                <button className="btn btn-sm btn-primary" onClick={() => addFavorite('league', league)}>
-                                    Add to Favorites
-                                </button>
+                                <i
+                                    className={`bi ${isFavorite('leagues', league.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => toggleFavorite('leagues', league)}
+                                ></i>
                             </li>
                         ))}
                     </ul>
@@ -142,52 +159,11 @@ const FavoriteItems = () => {
                         {matches.map(match => (
                             <li key={match.id} className="list-group-item d-flex justify-content-between align-items-center">
                                 Match ID: {match.id}
-                                <button className="btn btn-sm btn-primary" onClick={() => addFavorite('match', match)}>
-                                    Add to Favorites
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-
-            <h2 className="text-center my-4">Favorites</h2>
-            <div className="row">
-                <div className="col-md-4">
-                    <h3>Favorite Teams</h3>
-                    <ul className="list-group">
-                        {favorites.teams.map(fav => (
-                            <li key={fav.team.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                {fav.team.name}
-                                <button className="btn btn-sm btn-danger" onClick={() => removeFavorite('team', fav.team)}>
-                                    Remove
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-                <div className="col-md-4">
-                    <h3>Favorite Leagues</h3>
-                    <ul className="list-group">
-                        {favorites.leagues.map(fav => (
-                            <li key={fav.league.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                {fav.league.name}
-                                <button className="btn btn-sm btn-danger" onClick={() => removeFavorite('league', fav.league)}>
-                                    Remove
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-                <div className="col-md-4">
-                    <h3>Favorite Matches</h3>
-                    <ul className="list-group">
-                        {favorites.matches.map(fav => (
-                            <li key={fav.match.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                Match ID: {fav.match.id}
-                                <button className="btn btn-sm btn-danger" onClick={() => removeFavorite('match', fav.match)}>
-                                    Remove
-                                </button>
+                                <i
+                                    className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => toggleFavorite('matches', match)}
+                                ></i>
                             </li>
                         ))}
                     </ul>
