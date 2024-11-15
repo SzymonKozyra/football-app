@@ -9,6 +9,7 @@ import pl.pollub.footballapp.model.User;
 import pl.pollub.footballapp.repository.FavoriteTeamRepository;
 import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.repository.UserRepository;
+import java.util.Optional;
 
 @Service
 public class FavoriteTeamService {
@@ -27,10 +28,26 @@ public class FavoriteTeamService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
 
+        // Sprawdzenie, czy ulubiona drużyna już istnieje
+        Optional<FavoriteTeam> existingFavorite = favoriteTeamRepository.findByUserAndTeam(user, team);
+        if (existingFavorite.isPresent()) {
+            throw new RuntimeException("Team is already in favorites");
+        }
+
         FavoriteTeam favoriteTeam = new FavoriteTeam();
         favoriteTeam.setUser(user);
         favoriteTeam.setTeam(team);
 
         return favoriteTeamRepository.save(favoriteTeam);
+    }
+
+    public void removeFavoriteTeam(Long userId, Long teamId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
+
+        FavoriteTeam favoriteTeam = favoriteTeamRepository.findByUserAndTeam(user, team)
+                .orElseThrow(() -> new RuntimeException("Favorite team not found"));
+
+        favoriteTeamRepository.delete(favoriteTeam);
     }
 }

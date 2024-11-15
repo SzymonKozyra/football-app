@@ -23,4 +23,14 @@ public class FavoriteTeamController {
 
         return ResponseEntity.ok("Team added to favorites");
     }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> removeFavoriteTeam(@RequestBody Map<String, Long> payload) {
+        Long userId = payload.get("userId");
+        Long teamId = payload.get("teamId");
+
+        favoriteTeamService.removeFavoriteTeam(userId, teamId);
+
+        return ResponseEntity.ok("Team removed from favorites");
+    }
 }
