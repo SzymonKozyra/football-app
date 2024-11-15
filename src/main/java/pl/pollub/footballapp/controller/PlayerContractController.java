@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.footballapp.model.Player;
 import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.requests.PlayerContractRequest;
 import pl.pollub.footballapp.service.PlayerContractService;
@@ -54,4 +55,11 @@ public class PlayerContractController {
         return ResponseEntity.ok("Player contract deleted successfully");
     }
 
+
+    @GetMapping("/active-players/{teamId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<List<Player>> getActivePlayersByTeam(@PathVariable Long teamId) {
+        List<Player> activePlayers = playerContractService.getActivePlayersByTeam(teamId);
+        return ResponseEntity.ok(activePlayers);
+    }
 }

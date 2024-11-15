@@ -1,7 +1,10 @@
 package pl.pollub.footballapp.model;
 
 import jakarta.persistence.*;
+import pl.pollub.footballapp.MatchStatus;
+
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Match {
@@ -21,7 +24,25 @@ public class Match {
     @ManyToOne
     private League league;
 
-    private int round;
+    private String round;
+
+    private int duration;
+
+    @Enumerated(EnumType.STRING)
+    private MatchStatus status;
+
+    @PrePersist
+    @PreUpdate
+    public void updateStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(dateTime)) {
+            this.status = MatchStatus.UPCOMING;
+        } else if (now.isBefore(dateTime.plus(duration, ChronoUnit.MINUTES))) {
+            this.status = MatchStatus.IN_PLAY;
+        } else {
+            this.status = MatchStatus.FINISHED;
+        }
+    }
 
     private double homePossession;
     private double awayPossession;
@@ -87,12 +108,28 @@ public class Match {
         this.league = league;
     }
 
-    public int getRound() {
+    public String getRound() {
         return round;
     }
 
-    public void setRound(int round) {
+    public void setRound(String  round) {
         this.round = round;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public MatchStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MatchStatus status) {
+        this.status = status;
     }
 
     public double getHomePossession() {

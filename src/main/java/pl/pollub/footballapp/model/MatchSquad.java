@@ -1,6 +1,8 @@
 package pl.pollub.footballapp.model;
 
 import jakarta.persistence.*;
+import pl.pollub.footballapp.MatchSquadType;
+
 import java.util.Objects;
 
 @Entity
@@ -67,9 +69,4 @@ public class MatchSquad {
     public int hashCode() {
         return Objects.hash(id);
     }
-}
-
-enum MatchSquadType {
-    HOME,
-    AWAY
 }

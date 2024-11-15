@@ -42,6 +42,8 @@ public class MatchService {
                     match.setStadium(updatedMatch.getStadium());
                     match.setLeague(updatedMatch.getLeague());
                     match.setRound(updatedMatch.getRound());
+                    match.setDuration(updatedMatch.getDuration());
+                    match.updateStatus();
                     match.setHomePossession(updatedMatch.getHomePossession());
                     match.setAwayPossession(updatedMatch.getAwayPossession());
                     match.setHomePasses(updatedMatch.getHomePasses());

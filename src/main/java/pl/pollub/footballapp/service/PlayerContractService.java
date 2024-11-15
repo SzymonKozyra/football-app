@@ -13,6 +13,7 @@ import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.requests.PlayerContractRequest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerContractService {
@@ -110,4 +111,18 @@ public class PlayerContractService {
         }
         playerContractRepository.deleteById(id);
     }
+
+//    public List<Player> getActivePlayersByTeam(Long teamId) {
+//        return playerContractRepository.findByTeamIdAndIsActiveTrue(teamId)
+//                .stream()
+//                .map(PlayerContract::getPlayer)
+//                .collect(Collectors.toList());
+//    }
+    public List<Player> getActivePlayersByTeam(Long teamId) {
+        return playerContractRepository.findByTeamIdAndIsActiveTrue(teamId)
+                .stream()
+                .map(PlayerContract::getPlayer)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -44,6 +44,12 @@ import ModeratorView from './views/ModeratorView';
 import UserView from './views/UserView';
 
 
+//import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import AddMatchSquadForm from './components/AddMatchSquadForm';
+import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
+
+
+
 function App() {
     const [modals, setModals] = useState({
         isRegistrationOpen: false,
@@ -223,6 +229,10 @@ function App() {
                 />
 
                 <Routes>
+                    <Route path="/add-match" element={<AddMatchForm />} />
+                    <Route path="/add-match-squad/:matchId" element={<AddMatchSquadForm />} />
+                    <Route path="/add-players-match-squad/:matchSquadId" element={<AddPlayersMatchSquadForm />} />
+
                     <Route
                         path="/admin-panel"
                         element={
