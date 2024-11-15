@@ -121,4 +121,6 @@ public class LeagueService {
     public List<League> getAllLeagues() {
         return leagueRepository.findAll();
     }
+
+
 }

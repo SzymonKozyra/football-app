@@ -161,4 +161,8 @@ public class TeamService {
         }
         teamRepository.deleteById(teamId);
     }
+
+    public List<Team> getAllTeams() {
+        return teamRepository.findAll();
+    }
 }

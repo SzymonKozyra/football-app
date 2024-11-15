@@ -26,32 +26,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and()  // Enable CORS
-                .csrf().disable()  // Disable CSRF protection for API requests
+                .cors().and()
+                .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()  // Allow public access to login and register
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // Restrict admin endpoints to ADMIN role
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/countries").permitAll()
                         .requestMatchers("/api/auth/reset-password").permitAll()
                         .requestMatchers("/api/auth/reset-password-confirm").permitAll()
                         .requestMatchers("/api/auth/register-admin").permitAll()
                         .requestMatchers("/api/auth/check-admin").permitAll()
                         .requestMatchers("/api/coaches/search/**").hasRole("MODERATOR")
-
                         .requestMatchers("/api/coach-contracts/**").hasRole("MODERATOR")
                         .requestMatchers("/api/positions/**").permitAll()
                         .requestMatchers("/assets/img/player/**").permitAll()
-                        .requestMatchers("/api/players/**").permitAll()
                         .requestMatchers("/img/player/**").permitAll()
                         .requestMatchers("/img/team/**").permitAll()
-
-
-                        //.requestMatchers("/api").permitAll()
-                        .anyRequest().authenticated()  // Secure all other endpoints
+                        // Allow all authenticated users (ROLE_USER) to access teams, leagues, and matches
+                        .requestMatchers("/api/teams/**", "/api/leagues/**", "/api/matches/**",
+                                "/api/favorite-teams/**", "/api/favorite-leagues/**", "/api/favorite-matches/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers("/api/favorites/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session for JWT
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter before UsernamePasswordAuthentication
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
