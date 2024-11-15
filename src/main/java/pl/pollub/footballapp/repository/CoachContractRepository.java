@@ -14,7 +14,7 @@ public interface CoachContractRepository extends JpaRepository<CoachContract, Lo
     List<CoachContract> findByCoachId(Long coachId);
     List<CoachContract> findByTeamId(Long teamId);
 
-    boolean existsByCoachIdAndIsActive(Long playerId, boolean isActive);
+    boolean existsByCoachIdAndIsActive(Long coachId, boolean isActive);
 
     List<CoachContract> findByIsActiveAndEndDateBefore(boolean isActive, LocalDate date);
 }
