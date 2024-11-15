@@ -43,7 +43,7 @@ public class CoachContract {
     }
 
     public void setIsActive(boolean active) {
-        isActive = active;
+        this.isActive = active;
     }
 
     public Long getId() {
@@ -101,6 +101,8 @@ public class CoachContract {
     public void setTransferFee(double transferFee) {
         this.transferFee = transferFee;
     }
+
+
 
 }
 
