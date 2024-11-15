@@ -55,4 +55,10 @@ public class MatchController {
         matchService.deleteMatch(id);
         return ResponseEntity.ok().build();
     }
+
+//    @GetMapping
+//    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
+//    public ResponseEntity<List<Match>> getAllMatches() {
+//        return ResponseEntity.ok(matchService.getAllMatches());
+//    }
 }

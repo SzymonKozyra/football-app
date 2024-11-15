@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
+import FavoriteItems from "../components/FavoriteItems";
 
 const UserView = () => {
     return (
@@ -8,10 +9,8 @@ const UserView = () => {
                 <Col md={6}>
                     <Card className="text-center">
                         <Card.Body>
-                            <Card.Title>Page Under Construction</Card.Title>
-                            <Card.Text>
-                                This section is currently being developed. Please check back later for more features and content.
-                            </Card.Text>
+                            <FavoriteItems />
+
                         </Card.Body>
                     </Card>
                 </Col>

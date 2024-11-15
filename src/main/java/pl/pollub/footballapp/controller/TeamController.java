@@ -107,4 +107,10 @@ public class TeamController {
             return ResponseEntity.status(500).body("Error deleting team: " + e.getMessage());
         }
     }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
+    public ResponseEntity<List<Team>> getAllTeams() {
+        return ResponseEntity.ok(teamService.getAllTeams());
+    }
 }

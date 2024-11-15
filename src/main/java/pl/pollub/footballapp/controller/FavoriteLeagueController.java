@@ -1,0 +1,26 @@
+package pl.pollub.footballapp.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pl.pollub.footballapp.service.FavoriteLeagueService;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/favorite-leagues")
+public class FavoriteLeagueController {
+
+    @Autowired
+    private FavoriteLeagueService favoriteLeagueService;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addFavoriteLeague(@RequestBody Map<String, Long> payload) {
+        Long userId = payload.get("userId");
+        Long leagueId = payload.get("leagueId");
+
+        favoriteLeagueService.addFavoriteLeague(userId, leagueId);
+
+        return ResponseEntity.ok("League added to favorites");
+    }
+}

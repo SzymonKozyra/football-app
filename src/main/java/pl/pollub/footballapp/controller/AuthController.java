@@ -1,5 +1,7 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -118,5 +120,27 @@ public class AuthController {
     }
 
 
+    @GetMapping("/users/email/{email}")
+    public ResponseEntity<?> getUserIdByEmail(@PathVariable String email) {
+        Optional<User> user = userRepository.findByUsername(email);
+        if (user.isPresent()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.get().getId());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
 
+    @GetMapping("/get-email")
+    public ResponseEntity<?> getUserEmailFromToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwt = authorizationHeader.substring("Bearer ".length());
+            String email = jwtUtil.extractUsername(jwt);  // Assuming `extractUsername` returns email from "sub"
+            return ResponseEntity.ok(email);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
 }

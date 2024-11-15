@@ -67,4 +67,10 @@ public class LeagueController {
         return leagueService.deleteLeague(id);
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
+    public ResponseEntity<List<League>> getAllLeagues() {
+        return ResponseEntity.ok(leagueService.getAllLeagues());
+    }
+
 }

@@ -62,4 +62,6 @@ public class MatchService {
                 })
                 .orElseThrow(() -> new RuntimeException("Match with ID " + id + " not found"));
     }
+
+
 }

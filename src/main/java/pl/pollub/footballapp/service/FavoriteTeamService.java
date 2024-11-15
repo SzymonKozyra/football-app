@@ -1,0 +1,36 @@
+package pl.pollub.footballapp.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.pollub.footballapp.model.FavoriteTeam;
+import pl.pollub.footballapp.model.Team;
+import pl.pollub.footballapp.model.User;
+import pl.pollub.footballapp.repository.FavoriteTeamRepository;
+import pl.pollub.footballapp.repository.TeamRepository;
+import pl.pollub.footballapp.repository.UserRepository;
+
+@Service
+public class FavoriteTeamService {
+
+    @Autowired
+    private FavoriteTeamRepository favoriteTeamRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Transactional
+    public FavoriteTeam addFavoriteTeam(Long userId, Long teamId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
+
+        FavoriteTeam favoriteTeam = new FavoriteTeam();
+        favoriteTeam.setUser(user);
+        favoriteTeam.setTeam(team);
+
+        return favoriteTeamRepository.save(favoriteTeam);
+    }
+}

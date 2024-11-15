@@ -40,21 +40,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwt = null;
+        Claims claims = null; // Declare `claims` here so it can be accessed in the entire method.
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring("Bearer ".length());
-            username = jwtUtil.extractUsername(jwt);
+            claims = jwtUtil.extractAllClaims(jwt); // Extract claims here
+            username = claims.getSubject(); // Assuming "sub" contains the email
         }
-        System.out.println("Received JWT: " + jwt);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(jwt, userDetails)) {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(jwtUtil.getSECRET_KEY())  // Use the same secret key as JwtUtil
-                        .parseClaimsJws(jwt)
-                        .getBody();
+                // Now you can use `claims` to get the roles
                 List<GrantedAuthority> authorities = ((List<?>) claims.get("roles")).stream()
                         .map(role -> new SimpleGrantedAuthority((String) role))
                         .collect(Collectors.toList());
@@ -68,4 +66,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
+
 }
