@@ -44,11 +44,11 @@ public class MatchController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<Match> updateMatch(@PathVariable Long id, @RequestBody Match match) {
-        return ResponseEntity.ok(matchService.updateMatch(id, match));
-    }
+//    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<Match> updateMatch(@PathVariable Long id, @RequestBody Match match) {
+//        return ResponseEntity.ok(matchService.updateMatch(id, match));
+//    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")
@@ -57,9 +57,19 @@ public class MatchController {
         return ResponseEntity.ok().build();
     }
 
+
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<Match> updateMatch(@PathVariable Long id, @RequestBody Match updatedMatch) {
+        return ResponseEntity.ok(matchService.updateMatch(id, updatedMatch));
+    }
+
 //    @GetMapping
 //    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
 //    public ResponseEntity<List<Match>> getAllMatches() {
 //        return ResponseEntity.ok(matchService.getAllMatches());
 //    }
+
+
 }

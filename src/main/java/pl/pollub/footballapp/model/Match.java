@@ -36,18 +36,36 @@ public class Match {
     @ManyToOne
     private Team awayTeam; // Nowe pole dla drużyny gości
 
-    @PrePersist
-    @PreUpdate
-    public void updateStatus() {
-        LocalDateTime now = LocalDateTime.now();
-        if (now.isBefore(dateTime)) {
-            this.status = MatchStatus.UPCOMING;
-        } else if (now.isBefore(dateTime.plus(duration, ChronoUnit.MINUTES))) {
-            this.status = MatchStatus.IN_PLAY;
-        } else {
-            this.status = MatchStatus.FINISHED;
-        }
+    private int homeGoals;
+    private int awayGoals;
+
+    public int getHomeGoals() {
+        return homeGoals;
     }
+
+    public void setHomeGoals(int homeGoals) {
+        this.homeGoals = homeGoals;
+    }
+
+    public int getAwayGoals() {
+        return awayGoals;
+    }
+
+    public void setAwayGoals(int awayGoals) {
+        this.awayGoals = awayGoals;
+    }
+//    @PrePersist
+//    @PreUpdate
+//    public void updateStatus() {
+//        LocalDateTime now = LocalDateTime.now();
+//        if (now.isBefore(dateTime)) {
+//            this.status = MatchStatus.UPCOMING;
+//        } else if (now.isBefore(dateTime.plus(duration, ChronoUnit.MINUTES))) {
+//            this.status = MatchStatus.IN_PLAY;
+//        } else {
+//            this.status = MatchStatus.FINISHED;
+//        }
+//    }
 
     private double homePossession;
     private double awayPossession;

@@ -23,7 +23,7 @@ const AddMatchForm = () => {
 
     const [duration, setDuration] = useState(0);
     //const [matchStatus, setMatchStatus] = useState('UPCOMING');
-    const [matchStatus, setMatchStatus] = useState('');
+    const [matchStatus, setMatchStatus] = useState('UPCOMING');
 
     const [homePossession, setHomePossession] = useState(0);
     const [awayPossession, setAwayPossession] = useState(0);
@@ -41,6 +41,9 @@ const AddMatchForm = () => {
     const [awayOffside, setAwayOffside] = useState(0);
     const [homeFouls, setHomeFouls] = useState(0);
     const [awayFouls, setAwayFouls] = useState(0);
+
+    const [homeGoals, setHomeGoals] = useState(0);
+    const [awayGoals, setAwayGoals] = useState(0);
 
     const [homeTeamSearchQuery, setHomeTeamSearchQuery] = useState('');
     const [awayTeamSearchQuery, setAwayTeamSearchQuery] = useState('');
@@ -163,30 +166,36 @@ const AddMatchForm = () => {
 
         const matchData = {
             dateTime,
-            referee: {id: selectedReferee.id},
-            stadium: {id: selectedStadium.id},
-            league: {id: selectedLeague.id},
-            homeTeam: {id: selectedHomeTeam.id},
-            awayTeam: {id: selectedAwayTeam.id},
+            referee: { id: selectedReferee.id },
+            stadium: { id: selectedStadium.id },
+            league: { id: selectedLeague.id },
+            homeTeam: { id: selectedHomeTeam.id },
+            awayTeam: { id: selectedAwayTeam.id },
             round,
-            duration,
-            homePossession,
-            awayPossession,
-            homePasses,
-            awayPasses,
-            homeAccuratePasses,
-            awayAccuratePasses,
-            homeShots,
-            awayShots,
-            homeShotsOnGoal,
-            awayShotsOnGoal,
-            homeCorners,
-            awayCorners,
-            homeOffside,
-            awayOffside,
-            homeFouls,
-            awayFouls
+            duration: 90, // Stała wartość
+            status: matchStatus,
+            ...(matchStatus !== 'UPCOMING' && { // Dodaj statystyki tylko jeśli status to nie UPCOMING
+                homeGoals,
+                awayGoals,
+                homePossession,
+                awayPossession,
+                homePasses,
+                awayPasses,
+                homeAccuratePasses,
+                awayAccuratePasses,
+                homeShots,
+                awayShots,
+                homeShotsOnGoal,
+                awayShotsOnGoal,
+                homeCorners,
+                awayCorners,
+                homeOffside,
+                awayOffside,
+                homeFouls,
+                awayFouls,
+            }),
         };
+        console.log("Sending match data to backend:", JSON.stringify(matchData, null, 2)); // Logowanie danych przed wysłaniem
 
         try {
             const response = await axios.post('http://localhost:8080/api/matches/add', matchData, {
@@ -226,10 +235,15 @@ const AddMatchForm = () => {
                 <Form.Group controlId="formMatchStatus" className="mb-3">
                     <Form.Label>Match Status</Form.Label>
                     <Form.Control
-                        type="text"
+                        as="select"
                         value={matchStatus}
-                        readOnly
-                    />
+                        onChange={(e) => setMatchStatus(e.target.value)}
+                        required
+                    >
+                        <option value="UPCOMING">UPCOMING</option>
+                        <option value="IN_PLAY">IN_PLAY</option>
+                        <option value="FINISHED">FINISHED</option>
+                    </Form.Control>
                 </Form.Group>
 
                 <Form.Group controlId="formDateTime" className="mb-3">
@@ -371,200 +385,232 @@ const AddMatchForm = () => {
                     )}
                 </Form.Group>
 
-                <Form.Group controlId="formDuration" className="mb-3">
-                    <Form.Label>Duration (minutes)</Form.Label>
-                    <Form.Control
-                        type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(parseInt(e.target.value))}
-                        min="0"
-                        required
-                    />
-                </Form.Group>
+                {/*<Form.Group controlId="formDuration" className="mb-3">*/}
+                {/*    <Form.Label>Duration (minutes)</Form.Label>*/}
+                {/*    <Form.Control*/}
+                {/*        type="number"*/}
+                {/*        value={duration}*/}
+                {/*        onChange={(e) => setDuration(parseInt(e.target.value))}*/}
+                {/*        min="0"*/}
+                {/*        required*/}
+                {/*    />*/}
+                {/*</Form.Group>*/}
 
-                <Row>
-                    <Col>
-                        <h5 className="text-center">Home</h5>
-                        <Form.Group controlId="formHomePossession" className="mb-3">
-                            <Form.Label>Home Possession (%)</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homePossession}
-                                onChange={(e) => {
-                                    const newHomePossession = parseFloat(e.target.value);
-                                    setHomePossession(newHomePossession);
-                                    setAwayPossession(100 - newHomePossession);
-                                }}
-                                min="0"
-                                max="100"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomePasses" className="mb-3">
-                            <Form.Label>Home Passes</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homePasses}
-                                onChange={(e) => setHomePasses(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeAccuratePasses" className="mb-3">
-                            <Form.Label>Home Accurate Passes</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeAccuratePasses}
-                                onChange={(e) => setHomeAccuratePasses(parseInt(e.target.value))}
-                                min="0"
-                                max={homePasses}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeShots" className="mb-3">
-                            <Form.Label>Home Shots</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeShots}
-                                onChange={(e) => setHomeShots(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeShotsOnGoal" className="mb-3">
-                            <Form.Label>Home Shots on Goal</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeShotsOnGoal}
-                                onChange={(e) => setHomeShotsOnGoal(parseInt(e.target.value))}
-                                min="0"
-                                max={homeShots}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeCorners" className="mb-3">
-                            <Form.Label>Home Corners</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeCorners}
-                                onChange={(e) => setHomeCorners(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeOffside" className="mb-3">
-                            <Form.Label>Home Offside</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeOffside}
-                                onChange={(e) => setHomeOffside(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formHomeFouls" className="mb-3">
-                            <Form.Label>Home Fouls</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={homeFouls}
-                                onChange={(e) => setHomeFouls(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
 
-                    <Col>
-                        <h5 className="text-center">Away</h5>
-                        <Form.Group controlId="formAwayPossession" className="mb-3">
-                            <Form.Label>Away Possession (%)</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayPossession}
-                                onChange={(e) => {
-                                    const newAwayPossession = parseFloat(e.target.value);
-                                    setAwayPossession(newAwayPossession);
-                                    setHomePossession(100 - newAwayPossession);
-                                }}
-                                min="0"
-                                max="100"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayPasses" className="mb-3">
-                            <Form.Label>Away Passes</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayPasses}
-                                onChange={(e) => setAwayPasses(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayAccuratePasses" className="mb-3">
-                            <Form.Label>Away Accurate Passes</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayAccuratePasses}
-                                onChange={(e) => setAwayAccuratePasses(parseInt(e.target.value))}
-                                min="0"
-                                max={awayPasses}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayShots" className="mb-3">
-                            <Form.Label>Away Shots</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayShots}
-                                onChange={(e) => setAwayShots(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayShotsOnGoal" className="mb-3">
-                            <Form.Label>Away Shots on Goal</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayShotsOnGoal}
-                                onChange={(e) => setAwayShotsOnGoal(parseInt(e.target.value))}
-                                min="0"
-                                max={awayShots}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayCorners" className="mb-3">
-                            <Form.Label>Away Corners</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayCorners}
-                                onChange={(e) => setAwayCorners(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayOffside" className="mb-3">
-                            <Form.Label>Away Offside</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayOffside}
-                                onChange={(e) => setAwayOffside(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAwayFouls" className="mb-3">
-                            <Form.Label>Away Fouls</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={awayFouls}
-                                onChange={(e) => setAwayFouls(parseInt(e.target.value))}
-                                min="0"
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
+                {matchStatus !== 'UPCOMING' && (
+                    <>
+                        <Row>
+                            <Col>
+                                <Form.Group controlId="formHomeGoals" className="mb-3">
+                                    <Form.Label>Home Team Goals</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeGoals}
+                                        onChange={(e) => setHomeGoals(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group controlId="formAwayGoals" className="mb-3">
+                                    <Form.Label>Away Team Goals</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayGoals}
+                                        onChange={(e) => setAwayGoals(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <h5 className="text-center">Home</h5>
+                                <Form.Group controlId="formHomePossession" className="mb-3">
+                                    <Form.Label>Home Possession (%)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homePossession}
+                                        onChange={(e) => {
+                                            const newHomePossession = parseFloat(e.target.value);
+                                            setHomePossession(newHomePossession);
+                                            setAwayPossession(100 - newHomePossession);
+                                        }}
+                                        min="0"
+                                        max="100"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomePasses" className="mb-3">
+                                    <Form.Label>Home Passes</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homePasses}
+                                        onChange={(e) => setHomePasses(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeAccuratePasses" className="mb-3">
+                                    <Form.Label>Home Accurate Passes</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeAccuratePasses}
+                                        onChange={(e) => setHomeAccuratePasses(parseInt(e.target.value))}
+                                        min="0"
+                                        max={homePasses}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeShots" className="mb-3">
+                                    <Form.Label>Home Shots</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeShots}
+                                        onChange={(e) => setHomeShots(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeShotsOnGoal" className="mb-3">
+                                    <Form.Label>Home Shots on Goal</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeShotsOnGoal}
+                                        onChange={(e) => setHomeShotsOnGoal(parseInt(e.target.value))}
+                                        min="0"
+                                        max={homeShots}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeCorners" className="mb-3">
+                                    <Form.Label>Home Corners</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeCorners}
+                                        onChange={(e) => setHomeCorners(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeOffside" className="mb-3">
+                                    <Form.Label>Home Offside</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeOffside}
+                                        onChange={(e) => setHomeOffside(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formHomeFouls" className="mb-3">
+                                    <Form.Label>Home Fouls</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={homeFouls}
+                                        onChange={(e) => setHomeFouls(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            <Col>
+                                <h5 className="text-center">Away</h5>
+                                <Form.Group controlId="formAwayPossession" className="mb-3">
+                                    <Form.Label>Away Possession (%)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayPossession}
+                                        onChange={(e) => {
+                                            const newAwayPossession = parseFloat(e.target.value);
+                                            setAwayPossession(newAwayPossession);
+                                            setHomePossession(100 - newAwayPossession);
+                                        }}
+                                        min="0"
+                                        max="100"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayPasses" className="mb-3">
+                                    <Form.Label>Away Passes</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayPasses}
+                                        onChange={(e) => setAwayPasses(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayAccuratePasses" className="mb-3">
+                                    <Form.Label>Away Accurate Passes</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayAccuratePasses}
+                                        onChange={(e) => setAwayAccuratePasses(parseInt(e.target.value))}
+                                        min="0"
+                                        max={awayPasses}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayShots" className="mb-3">
+                                    <Form.Label>Away Shots</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayShots}
+                                        onChange={(e) => setAwayShots(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayShotsOnGoal" className="mb-3">
+                                    <Form.Label>Away Shots on Goal</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayShotsOnGoal}
+                                        onChange={(e) => setAwayShotsOnGoal(parseInt(e.target.value))}
+                                        min="0"
+                                        max={awayShots}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayCorners" className="mb-3">
+                                    <Form.Label>Away Corners</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayCorners}
+                                        onChange={(e) => setAwayCorners(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayOffside" className="mb-3">
+                                    <Form.Label>Away Offside</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayOffside}
+                                        onChange={(e) => setAwayOffside(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="formAwayFouls" className="mb-3">
+                                    <Form.Label>Away Fouls</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={awayFouls}
+                                        onChange={(e) => setAwayFouls(parseInt(e.target.value))}
+                                        min="0"
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    </>
+                )}
+
 
                 <Button variant="primary" type="submit" className="w-100 mt-3">Add Match</Button>
             </Form>

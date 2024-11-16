@@ -27,6 +27,7 @@ import EditMatchForm from '../components/EditMatchForm';
 
 
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
+import MatchSearchAndEditForm from "../components/MatchSearchAndEditForm";
 
 const ModeratorView = () => {
     const [selectedComponent, setSelectedComponent] = useState(null);
@@ -56,7 +57,8 @@ const ModeratorView = () => {
 //            case 'AddTournament': return <AddTournamentForm />;
 //            case 'EditTournaments': return <TournamentSearchAndEditForm />;
             case 'AddMatch': return <AddMatchForm />;
-            case 'EditMatches': return <EditMatchForm />;
+            //case 'EditMatches': return <EditMatchForm />;
+            case 'EditMatches': return <MatchSearchAndEditForm/>;
 
             default: return <p>Please select an option from the sidebar.</p>;
         }
