@@ -1,0 +1,11 @@
+Najważniejsze
+- reprezentacje
+- wyszukiwanie zawodników (pozbyc sie tego klikania podwojnego)
+
+
+Ważne
+- playercontract: salary powinno byc optional
+- importy do wszystkiego
+
+Mniej ważne
+- przycisk do logowania od razu na konto moderatora, ale to jzu teraz zbey nam pomagał

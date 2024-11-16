@@ -186,7 +186,11 @@ public class PlayerController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @GetMapping("/by-team/{teamId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<List<Player>> getPlayersByTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(playerService.getPlayersByTeam(teamId));
+    }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> deletePlayer(@PathVariable Long id) {

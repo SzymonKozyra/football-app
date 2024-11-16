@@ -37,6 +37,8 @@ public class MatchService {
     public Match updateMatch(Long id, Match updatedMatch) {
         return matchRepository.findById(id)
                 .map(match -> {
+                    match.setHomeTeam(updatedMatch.getHomeTeam()); // Ustawienie drużyny gospodarzy
+                    match.setAwayTeam(updatedMatch.getAwayTeam());
                     match.setDateTime(updatedMatch.getDateTime());
                     match.setReferee(updatedMatch.getReferee());
                     match.setStadium(updatedMatch.getStadium());

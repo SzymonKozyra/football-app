@@ -12,6 +12,8 @@ import pl.pollub.footballapp.repository.PlayerRepository;
 import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.requests.PlayerContractRequest;
 
+import java.sql.SQLOutput;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,6 @@ public class PlayerContractService {
             return ResponseEntity.badRequest().body("Player already has an active contract.");
         }
 
-        // Check if there is an overlapping contract
         boolean overlappingContractExists = playerContractRepository.findByPlayerId(request.getPlayerId())
                 .stream()
                 .anyMatch(contract -> (request.getStartDate().isBefore(contract.getEndDate()) || contract.getEndDate() == null)
@@ -44,7 +45,6 @@ public class PlayerContractService {
             return ResponseEntity.badRequest().body("Cannot add contract. A contract already exists for the specified date range.");
         }
 
-        // Process contract creation if no conflicts found
         Player player = playerRepository.findById(request.getPlayerId())
                 .orElseThrow(() -> new IllegalArgumentException("Player not found with id: " + request.getPlayerId()));
 
@@ -65,9 +65,20 @@ public class PlayerContractService {
             playerContract.setTransferFee(null);
         }
 
+        boolean isActive = request.getEndDate() == null || request.getEndDate().isAfter(LocalDate.now());
+        playerContract.setIsActive(isActive);  // Assuming there's a setter or field for isActive in PlayerContract
+
+        // Set the player's team if the contract is active
+        if (isActive) {
+            System.out.println("***** USTAWIANIE NOWEJ DRUZYNY *****");
+            player.setTeam(team);
+            playerRepository.save(player);  // Save the updated player with the new team
+        }
+
         playerContractRepository.save(playerContract);
         return ResponseEntity.ok("Player contract added successfully");
     }
+
 
     public List<PlayerContract> getContractsByPlayer(Long playerId) {
         return playerContractRepository.findByPlayerId(playerId);
@@ -90,9 +101,10 @@ public class PlayerContractService {
         Player player = playerRepository.findById(playerContract.getPlayer().getId())
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        Team team = teamRepository.findById(playerContract.getTeam().getId())
+        Team team = teamRepository.findById(request.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
+        // Update the contract fields
         playerContract.setPlayer(player);
         playerContract.setTeam(team);
         playerContract.setStartDate(request.getStartDate());
@@ -101,7 +113,20 @@ public class PlayerContractService {
         playerContract.setTransferFee(request.getTransferFee());
         playerContract.setTransferType(request.getTransferType());
 
+        boolean isActive = request.getEndDate() == null || request.getEndDate().isAfter(LocalDate.now());
+        playerContract.setIsActive(isActive);  // Assuming there's a setter or field for isActive in PlayerContract
+
+        // Set the player's team if the contract is active
+        if (isActive) {
+            player.setTeam(team);
+        } else {
+            player.setTeam(null); // Clear the player's team if the contract is no longer active
+        }
+
+        // Save the updated player and contract
+        playerRepository.save(player);
         PlayerContract updatedContract = playerContractRepository.save(playerContract);
+
         return ResponseEntity.ok(updatedContract);
     }
 

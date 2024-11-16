@@ -1,9 +1,7 @@
 package pl.pollub.footballapp.model;
 
 import jakarta.persistence.*;
-import pl.pollub.footballapp.MatchSquadType;
-
-import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class MatchSquad {
@@ -12,25 +10,38 @@ public class MatchSquad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "match_id")
+    @Column(nullable = false)
+    private boolean isHomeTeam;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "match_id", nullable = false)
     private Match match;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "player_id", nullable = false)
+    private Player player;
 
-    @Enumerated(EnumType.STRING)
-    private MatchSquadType type;
+    @Column(nullable = false)
+    private boolean firstSquad;
+
+    @Column(nullable = true)
+    private Integer minutesPlayed;
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isHomeTeam() {
+        return isHomeTeam;
+    }
+
+    public void setHomeTeam(boolean homeTeam) {
+        isHomeTeam = homeTeam;
     }
 
     public Match getMatch() {
@@ -41,32 +52,27 @@ public class MatchSquad {
         this.match = match;
     }
 
-    public Team getTeam() {
-        return team;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
-    public MatchSquadType getType() {
-        return type;
+    public boolean isFirstSquad() {
+        return firstSquad;
     }
 
-    public void setType(MatchSquadType type) {
-        this.type = type;
+    public void setFirstSquad(boolean firstSquad) {
+        this.firstSquad = firstSquad;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MatchSquad that = (MatchSquad) o;
-        return Objects.equals(id, that.id);
+    public Optional<Integer> getMinutesPlayed() {
+        return Optional.ofNullable(minutesPlayed);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setMinutesPlayed(Integer minutesPlayed) {
+        this.minutesPlayed = minutesPlayed;
     }
 }

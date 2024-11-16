@@ -38,6 +38,17 @@ public class Player {
 
     // Getters and Setters
 
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = true)
+    private Team team;
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
     public Long getId() {
         return id;

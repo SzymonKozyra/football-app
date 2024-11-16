@@ -30,6 +30,11 @@ public class Match {
 
     @Enumerated(EnumType.STRING)
     private MatchStatus status;
+    @ManyToOne
+    private Team homeTeam; // Nowe pole dla drużyny gospodarzy
+
+    @ManyToOne
+    private Team awayTeam; // Nowe pole dla drużyny gości
 
     @PrePersist
     @PreUpdate
@@ -258,5 +263,22 @@ public class Match {
 
     public void setAwayFouls(int awayFouls) {
         this.awayFouls = awayFouls;
+    }
+
+    // Gettery i settery dla nowych pól
+    public Team getHomeTeam() {
+        return homeTeam;
+    }
+
+    public void setHomeTeam(Team homeTeam) {
+        this.homeTeam = homeTeam;
+    }
+
+    public Team getAwayTeam() {
+        return awayTeam;
+    }
+
+    public void setAwayTeam(Team awayTeam) {
+        this.awayTeam = awayTeam;
     }
 }

@@ -6,6 +6,7 @@ import pl.pollub.footballapp.model.MatchSquad;
 import pl.pollub.footballapp.repository.MatchSquadRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MatchSquadService {
@@ -17,7 +18,7 @@ public class MatchSquadService {
         this.matchSquadRepository = matchSquadRepository;
     }
 
-    public MatchSquad saveMatchSquad(MatchSquad matchSquad) {
+    public MatchSquad addMatchSquad(MatchSquad matchSquad) {
         return matchSquadRepository.save(matchSquad);
     }
 
@@ -25,12 +26,11 @@ public class MatchSquadService {
         return matchSquadRepository.findAll();
     }
 
-    public MatchSquad getMatchSquadById(Long id) {
-        return matchSquadRepository.findById(id).orElse(null);
+    public Optional<MatchSquad> getMatchSquadById(Long id) {
+        return matchSquadRepository.findById(id);
     }
 
     public void deleteMatchSquad(Long id) {
         matchSquadRepository.deleteById(id);
     }
 }
-

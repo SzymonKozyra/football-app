@@ -167,5 +167,9 @@ public class PlayerService {
         }
     }
 
+    public List<Player> getPlayersByTeam(Long teamId) {
+        return playerRepository.findAllByTeamId(teamId);
+    }
+
 
 }

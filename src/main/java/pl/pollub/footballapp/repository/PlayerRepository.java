@@ -14,4 +14,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     List<Player> findByFullNameContaining(@Param("query") String query, Sort sort);
 
     boolean existsByFirstNameAndLastNameAndDateOfBirthAndCountryId(String firstName, String lastName, LocalDate dateOfBirth, Long countryId);
+
+    List<Player> findAllByTeamId(Long teamId);
 }
