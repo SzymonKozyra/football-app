@@ -101,7 +101,9 @@ public class PlayerContractService {
         Player player = playerRepository.findById(playerContract.getPlayer().getId())
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        Team team = teamRepository.findById(request.getTeamId())
+//        Team team = teamRepository.findById(request.getTeamId())
+//                .orElseThrow(() -> new RuntimeException("Team not found"));
+        Team team = teamRepository.findById(playerContract.getTeam().getId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
         // Update the contract fields
