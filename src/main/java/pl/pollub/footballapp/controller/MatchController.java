@@ -25,8 +25,9 @@ public class MatchController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<Match> addMatch(@RequestBody Match match) {
-        return ResponseEntity.ok(matchService.saveMatch(match));
+    public ResponseEntity<Long> addMatch(@RequestBody Match match) {
+        Match savedMatch = matchService.saveMatch(match);
+        return ResponseEntity.ok(savedMatch.getId());
     }
 
     @GetMapping

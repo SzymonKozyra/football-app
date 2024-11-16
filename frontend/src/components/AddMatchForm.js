@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Form, Button, Container, Row, Col, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal } from 'react-bootstrap';
 
 const AddMatchForm = () => {
     const navigate = useNavigate();
@@ -47,6 +48,13 @@ const AddMatchForm = () => {
     const [filteredAwayTeams, setFilteredAwayTeams] = useState([]);
     const [selectedHomeTeam, setSelectedHomeTeam] = useState(null);
     const [selectedAwayTeam, setSelectedAwayTeam] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+    const [newMatchId, setNewMatchId] = useState(null);
+
+    const handleModalClose = () => setShowModal(false);
+    const handleModalShow = () => setShowModal(true);
+
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -110,6 +118,15 @@ const AddMatchForm = () => {
         }
     }, [leagueSearchQuery, refereeSearchQuery, stadiumSearchQuery]);
 
+
+    // useEffect(() => {
+    //     if (newMatchId) {
+    //         console.log("newMatchId has been set:", newMatchId);
+    //         setShowModal(true); // Open the modal once `newMatchId` is set
+    //     }
+    // }, [newMatchId]);
+
+
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
         setLeagueSearchQuery(league.name);
@@ -140,17 +157,17 @@ const AddMatchForm = () => {
         setFilteredAwayTeams([]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
         const matchData = {
             dateTime,
-            referee: { id: selectedReferee.id },
-            stadium: { id: selectedStadium.id },
-            league: { id: selectedLeague.id },
-            homeTeam: { id: selectedHomeTeam.id },
-            awayTeam: { id: selectedAwayTeam.id },
+            referee: {id: selectedReferee.id},
+            stadium: {id: selectedStadium.id},
+            league: {id: selectedLeague.id},
+            homeTeam: {id: selectedHomeTeam.id},
+            awayTeam: {id: selectedAwayTeam.id},
             round,
             duration,
             homePossession,
@@ -171,42 +188,33 @@ const AddMatchForm = () => {
             awayFouls
         };
 
-        axios.post('http://localhost:8080/api/matches/add', matchData, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
-                alert('Match added successfully');
-                // Resetowanie stanu formularza
-                // setDateTime('');
-                // setSelectedReferee(null);
-                // setSelectedStadium(null);
-                // setSelectedLeague(null);
-                // setLeagueSearchQuery('');
-                // setRefereeSearchQuery('');
-                // setStadiumSearchQuery('');
-                // setRound('');
-                // setDuration(0);
-                // setHomePossession(0);
-                // setAwayPossession(0);
-                // setHomePasses(0);
-                // setAwayPasses(0);
-                // setHomeAccuratePasses(0);
-                // setAwayAccuratePasses(0);
-                // setHomeShots(0);
-                // setAwayShots(0);
-                // setHomeShotsOnGoal(0);
-                // setAwayShotsOnGoal(0);
-                // setHomeCorners(0);
-                // setAwayCorners(0);
-                // setHomeOffside(0);
-                // setAwayOffside(0);
-                // setHomeFouls(0);
-                // setAwayFouls(0);
-            })
-            .catch(error => {
-                console.error('Error adding match:', error);
-                alert('Failed to add match');
+        try {
+            const response = await axios.post('http://localhost:8080/api/matches/add', matchData, {
+                headers: {Authorization: `Bearer ${token}`}
             });
+            console.log("Backend response:", response.data); // Logowanie odpowiedzi backendu
+            const newMatchIdLocal = response.data.id; // Użycie lokalnej zmiennej
+            const newMatchIdLocal2 = response.data.id; // Użycie lokalnej zmiennej
+            console.log("newMatchIdLocal:", newMatchIdLocal);
+            console.log("newMatchIdLocal2:", newMatchIdLocal2);
+            setNewMatchId(response.data); // Assuming the backend returns the newly created match ID.
+            console.log("newMatchId:", newMatchId); // Logowanie odpowiedzi backendu
+
+            handleModalShow();
+        } catch (error) {
+            console.error('Error adding match:', error);
+            alert('Failed to add match');
+        }
+    };
+
+    const handleAddMatchSquad = () => {
+        console.log("New match ID before navigation:", newMatchId); // Logowanie ID przed nawigacją
+        handleModalClose();
+        if (newMatchId) {
+            navigate(`/add-match-squad/${newMatchId}`);
+        } else {
+            alert('Match ID is missing!');
+        }
     };
 
 
@@ -560,6 +568,20 @@ const AddMatchForm = () => {
 
                 <Button variant="primary" type="submit" className="w-100 mt-3">Add Match</Button>
             </Form>
+            <Modal show={showModal} onHide={handleModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Match Added</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Do you want to add a squad for this match?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleModalClose}>
+                        No
+                    </Button>
+                    <Button variant="primary" onClick={handleAddMatchSquad}>
+                        Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

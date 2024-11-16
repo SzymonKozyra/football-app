@@ -1,9 +1,10 @@
 Najważniejsze
-- reprezentacje
+- responsywność
 - wyszukiwanie zawodników (pozbyc sie tego klikania podwojnego)
-
+- zeby nie dalo sie ustawic dwoch takich samych teamow w meczu
 
 Ważne
+- reprezentacje
 - playercontract: salary powinno byc optional
 - importy do wszystkiego
 
