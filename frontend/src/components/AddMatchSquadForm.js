@@ -9,8 +9,11 @@ const AddMatchSquadForm = () => {
     const [awayPlayers, setAwayPlayers] = useState([]);
     const [selectedHomePlayers, setSelectedHomePlayers] = useState([]);
     const [selectedAwayPlayers, setSelectedAwayPlayers] = useState([]);
+    const [firstSquadHome, setFirstSquadHome] = useState({});
+    const [firstSquadAway, setFirstSquadAway] = useState({});
     const [homeTeamId, setHomeTeamId] = useState(null);
     const [awayTeamId, setAwayTeamId] = useState(null);
+
     useEffect(() => {
         console.log("matchId:", matchId);
     }, [matchId]);
@@ -72,18 +75,29 @@ const AddMatchSquadForm = () => {
         }
     };
 
+    const handleFirstSquadChange = (playerId, isChecked, isHomeTeam) => {
+        if (isHomeTeam) {
+            setFirstSquadHome(prev => ({ ...prev, [playerId]: isChecked }));
+        } else {
+            setFirstSquadAway(prev => ({ ...prev, [playerId]: isChecked }));
+        }
+    };
+
     const handleSaveSquad = async () => {
         const token = localStorage.getItem('jwtToken');
 
-        const saveSquad = async (players, isHomeTeam) => {
+        const saveSquad = async (players, firstSquad, isHomeTeam) => {
             for (const player of players) {
+                const squadObject = {
+                    matchId,
+                    playerId: player.id,
+                    isHomeTeam,
+                    firstSquad: firstSquad[player.id] || false
+                };
+                console.log("Sending squad object:", squadObject); // Logowanie obiektu wysyłanego na backend
+
                 try {
-                    await axios.post('http://localhost:8080/api/match-squad/add', {
-                        matchId,
-                        playerId: player.id,
-                        isHomeTeam,
-                        firstSquad: true // Adjust based on user input if needed
-                    }, {
+                    await axios.post('http://localhost:8080/api/match-squad/add', squadObject, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                 } catch (error) {
@@ -92,8 +106,8 @@ const AddMatchSquadForm = () => {
             }
         };
 
-        await saveSquad(selectedHomePlayers, true);
-        await saveSquad(selectedAwayPlayers, false);
+        await saveSquad(selectedHomePlayers, firstSquadHome, true);
+        await saveSquad(selectedAwayPlayers, firstSquadAway, false);
         alert('Squads saved successfully');
     };
 
@@ -111,7 +125,19 @@ const AddMatchSquadForm = () => {
                                 onClick={() => handlePlayerSelection(player, true)}
                                 active={selectedHomePlayers.some(p => p.id === player.id)}
                             >
-                                {player.firstName} {player.lastName}
+                                <Row>
+                                    <Col>
+                                        {player.firstName} {player.lastName}
+                                    </Col>
+                                    <Col>
+                                        <Form.Check
+                                            type="checkbox"
+                                            label="First Squad"
+                                            checked={firstSquadHome[player.id] || false}
+                                            onChange={(e) => handleFirstSquadChange(player.id, e.target.checked, true)}
+                                        />
+                                    </Col>
+                                </Row>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
@@ -126,7 +152,19 @@ const AddMatchSquadForm = () => {
                                 onClick={() => handlePlayerSelection(player, false)}
                                 active={selectedAwayPlayers.some(p => p.id === player.id)}
                             >
-                                {player.firstName} {player.lastName}
+                                <Row>
+                                    <Col>
+                                        {player.firstName} {player.lastName}
+                                    </Col>
+                                    <Col>
+                                        <Form.Check
+                                            type="checkbox"
+                                            label="First Squad"
+                                            checked={firstSquadAway[player.id] || false}
+                                            onChange={(e) => handleFirstSquadChange(player.id, e.target.checked, false)}
+                                        />
+                                    </Col>
+                                </Row>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>

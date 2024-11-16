@@ -4,9 +4,10 @@ Najważniejsze
 - zeby nie dalo sie ustawic dwoch takich samych teamow w meczu
 
 Ważne
-- reprezentacje
 - playercontract: salary powinno byc optional
 - importy do wszystkiego
+- zeby sie registerAdmin nie pokazywalo
 
 Mniej ważne
 - przycisk do logowania od razu na konto moderatora, ale to jzu teraz zbey nam pomagał
+- reprezentacje

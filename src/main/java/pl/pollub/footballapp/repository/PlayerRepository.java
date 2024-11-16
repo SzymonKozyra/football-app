@@ -16,4 +16,5 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     boolean existsByFirstNameAndLastNameAndDateOfBirthAndCountryId(String firstName, String lastName, LocalDate dateOfBirth, Long countryId);
 
     List<Player> findAllByTeamId(Long teamId);
+
 }

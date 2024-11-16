@@ -46,6 +46,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/teams/**", "/api/leagues/**", "/api/matches/**",
                                 "/api/favorite-teams/**", "/api/favorite-leagues/**", "/api/favorite-matches/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .requestMatchers("/api/favorites/**").permitAll()
+
+                        .requestMatchers("/api/match-squad/**").hasRole("MODERATOR")
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
