@@ -64,13 +64,39 @@ const MatchSearchAndEditForm = () => {
     const handleEditClick = (match) => {
         setSelectedMatch(match.id);
         setEditData({
-            ...match,
-            referee: match.referee.id,
-            stadium: match.stadium.id,
-            league: match.league.id,
-            homeTeam: match.homeTeam.id,
-            awayTeam: match.awayTeam.id,
+            dateTime: match.dateTime,
+            referee: match.referee ? match.referee.id : null,
+            stadium: match.stadium ? match.stadium.id : null,
+            league: match.league ? match.league.id : null,
+            homeTeam: match.homeTeam ? match.homeTeam.id : null,
+            awayTeam: match.awayTeam ? match.awayTeam.id : null,
+            round: match.round,
+            status: match.status,
+            homeGoals: match.homeGoals || 0,
+            awayGoals: match.awayGoals || 0,
+            homePossession: match.homePossession || 0,
+            awayPossession: match.awayPossession || 0,
+            homePasses: match.homePasses || 0,
+            awayPasses: match.awayPasses || 0,
+            homeAccuratePasses: match.homeAccuratePasses || 0,
+            awayAccuratePasses: match.awayAccuratePasses || 0,
+            homeShots: match.homeShots || 0,
+            awayShots: match.awayShots || 0,
+            homeShotsOnGoal: match.homeShotsOnGoal || 0,
+            awayShotsOnGoal: match.awayShotsOnGoal || 0,
+            homeCorners: match.homeCorners || 0,
+            awayCorners: match.awayCorners || 0,
+            homeOffside: match.homeOffside || 0,
+            awayOffside: match.awayOffside || 0,
+            homeFouls: match.homeFouls || 0,
+            awayFouls: match.awayFouls || 0,
         });
+        setHomeTeamSearchQuery(match.homeTeam.name);
+        setAwayTeamSearchQuery(match.awayTeam.name);
+        setRefereeSearchQuery(`${match.referee.firstName} ${match.referee.lastName}`);
+        setStadiumSearchQuery(match.stadium.name);
+        setLeagueSearchQuery(match.league.name);
+
     };
 
     const handleEditSubmit = (e) => {
@@ -277,6 +303,7 @@ const MatchSearchAndEditForm = () => {
                                                     </ListGroup>
                                                 )}
                                             </Form.Group>
+
                                             {editData.status !== 'UPCOMING' && (
                                                 <>
                                                     <Row>
@@ -286,7 +313,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homeGoals}
-                                                                    onChange={(e) => setEditData({ ...editData, homeGoals: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, homeGoals: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -298,7 +327,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayGoals}
-                                                                    onChange={(e) => setEditData({ ...editData, awayGoals: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, awayGoals: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -318,7 +349,7 @@ const MatchSearchAndEditForm = () => {
                                                                         setEditData({
                                                                             ...editData,
                                                                             homePossession: newHomePossession,
-                                                                            awayPossession: 100 - newHomePossession
+                                                                            awayPossession: 100 - newHomePossession,
                                                                         });
                                                                     }}
                                                                     min="0"
@@ -331,7 +362,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homePasses}
-                                                                    onChange={(e) => setEditData({ ...editData, homePasses: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, homePasses: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -341,7 +374,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homeAccuratePasses}
-                                                                    onChange={(e) => setEditData({ ...editData, homeAccuratePasses: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, homeAccuratePasses: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     max={editData.homePasses}
                                                                     required
@@ -352,7 +387,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homeShots}
-                                                                    onChange={(e) => setEditData({ ...editData, homeShots: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, homeShots: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -362,39 +399,11 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homeShotsOnGoal}
-                                                                    onChange={(e) => setEditData({ ...editData, homeShotsOnGoal: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, homeShotsOnGoal: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     max={editData.homeShots}
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formHomeCorners" className="mb-3">
-                                                                <Form.Label>Home Corners</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.homeCorners}
-                                                                    onChange={(e) => setEditData({ ...editData, homeCorners: parseInt(e.target.value) })}
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formHomeOffside" className="mb-3">
-                                                                <Form.Label>Home Offside</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.homeOffside}
-                                                                    onChange={(e) => setEditData({ ...editData, homeOffside: parseInt(e.target.value) })}
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formHomeFouls" className="mb-3">
-                                                                <Form.Label>Home Fouls</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.homeFouls}
-                                                                    onChange={(e) => setEditData({ ...editData, homeFouls: parseInt(e.target.value) })}
-                                                                    min="0"
                                                                     required
                                                                 />
                                                             </Form.Group>
@@ -411,7 +420,7 @@ const MatchSearchAndEditForm = () => {
                                                                         setEditData({
                                                                             ...editData,
                                                                             awayPossession: newAwayPossession,
-                                                                            homePossession: 100 - newAwayPossession
+                                                                            homePossession: 100 - newAwayPossession,
                                                                         });
                                                                     }}
                                                                     min="0"
@@ -424,7 +433,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayPasses}
-                                                                    onChange={(e) => setEditData({ ...editData, awayPasses: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, awayPasses: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -434,7 +445,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayAccuratePasses}
-                                                                    onChange={(e) => setEditData({ ...editData, awayAccuratePasses: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, awayAccuratePasses: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     max={editData.awayPasses}
                                                                     required
@@ -445,7 +458,9 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayShots}
-                                                                    onChange={(e) => setEditData({ ...editData, awayShots: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, awayShots: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     required
                                                                 />
@@ -455,39 +470,11 @@ const MatchSearchAndEditForm = () => {
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayShotsOnGoal}
-                                                                    onChange={(e) => setEditData({ ...editData, awayShotsOnGoal: parseInt(e.target.value) })}
+                                                                    onChange={(e) =>
+                                                                        setEditData({ ...editData, awayShotsOnGoal: parseInt(e.target.value) })
+                                                                    }
                                                                     min="0"
                                                                     max={editData.awayShots}
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formAwayCorners" className="mb-3">
-                                                                <Form.Label>Away Corners</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.awayCorners}
-                                                                    onChange={(e) => setEditData({ ...editData, awayCorners: parseInt(e.target.value) })}
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formAwayOffside" className="mb-3">
-                                                                <Form.Label>Away Offside</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.awayOffside}
-                                                                    onChange={(e) => setEditData({ ...editData, awayOffside: parseInt(e.target.value) })}
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                            <Form.Group controlId="formAwayFouls" className="mb-3">
-                                                                <Form.Label>Away Fouls</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.awayFouls}
-                                                                    onChange={(e) => setEditData({ ...editData, awayFouls: parseInt(e.target.value) })}
-                                                                    min="0"
                                                                     required
                                                                 />
                                                             </Form.Group>
@@ -496,7 +483,9 @@ const MatchSearchAndEditForm = () => {
                                                 </>
                                             )}
 
-                                            <Button variant="primary" type="submit" className="w-100">Save Changes</Button>
+                                            <Button variant="primary" type="submit" className="w-100">
+                                                Save Changes
+                                            </Button>
                                         </Form>
                                     </div>
                                 )}
