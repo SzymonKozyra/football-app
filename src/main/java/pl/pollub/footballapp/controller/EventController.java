@@ -3,15 +3,17 @@ package pl.pollub.footballapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.footballapp.EventType;
 import pl.pollub.footballapp.model.Event;
+import pl.pollub.footballapp.requests.EventRequest;
 import pl.pollub.footballapp.service.EventService;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-
     private final EventService eventService;
 
     @Autowired
@@ -20,30 +22,33 @@ public class EventController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Event> addEvent(@RequestBody Event event) {
-        return ResponseEntity.ok(eventService.saveEvent(event));
+    public ResponseEntity<Event> addEvent(@RequestBody EventRequest eventRequest) {
+        System.out.println("Received EventRequest: " + eventRequest);
+        System.out.println("MatchID:"+eventRequest.getMatchId());
+        return ResponseEntity.ok(eventService.addEvent(eventRequest));
     }
 
-    @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+    @GetMapping("/match/{matchId}")
+    public ResponseEntity<List<Event>> getEventsForMatch(@PathVariable Long matchId) {
+        return ResponseEntity.ok(eventService.getEventsForMatch(matchId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        return eventService.getEventById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        return ResponseEntity.ok(eventService.updateEvent(id, event));
+    @GetMapping("/types")
+    public List<EventType> getEventTypes() {
+        return Arrays.asList(EventType.values());
+    }
+    @PostMapping("/add-batch")
+    public ResponseEntity<List<Event>> addEvents(@RequestBody List<EventRequest> eventRequests) {
+        List<Event> savedEvents = eventRequests.stream()
+                .map(eventService::addEvent)
+                .toList();
+        return ResponseEntity.ok(savedEvents);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        eventService.deleteEvent(id);
-        return ResponseEntity.ok().build();
-    }
 }

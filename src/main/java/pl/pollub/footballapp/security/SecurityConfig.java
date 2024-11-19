@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/api/favorite-teams/**", "/api/favorite-leagues/**", "/api/favorite-matches/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .requestMatchers("/api/favorites/**").permitAll()
 
-                        .requestMatchers("/api/match-squad/**").hasRole("MODERATOR")
+                        .requestMatchers("/api/match-squad/**").permitAll()
+                        .requestMatchers("/api/match-squad/players/**").permitAll()
 
 
                         .anyRequest().authenticated()
@@ -55,6 +56,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

@@ -1,47 +1,40 @@
 package pl.pollub.footballapp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import pl.pollub.footballapp.EventType;
 
 @Entity
+@Table(name = "events")
 public class Event {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int minute;
-
     @ManyToOne
+    @JoinColumn(name = "match_id", nullable = false)
     private Match match;
 
     @ManyToOne
+    @JoinColumn(name = "player_id", nullable = true)
     private Player player;
+
+    private int minute;
 
     @Enumerated(EnumType.STRING)
     private EventType type;
 
-    // Getters and setters
+    @Column(name = "part_of_game")
+    private String partOfGame;
+
+    // Getters and Setters
+
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getMinute() {
-        return minute;
-    }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
     }
 
     public Match getMatch() {
@@ -60,11 +53,27 @@ public class Event {
         this.player = player;
     }
 
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+
     public EventType getType() {
         return type;
     }
 
     public void setType(EventType type) {
         this.type = type;
+    }
+
+    public String getPartOfGame() {
+        return partOfGame;
+    }
+
+    public void setPartOfGame(String partOfGame) {
+        this.partOfGame = partOfGame;
     }
 }

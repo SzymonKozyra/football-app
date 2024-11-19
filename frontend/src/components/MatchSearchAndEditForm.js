@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Form, Button, Card, Row, Col, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import EventManagement from "./EventManagement";
+import { useNavigate } from 'react-router-dom';
 
 const MatchSearchAndEditForm = () => {
+    const navigate = useNavigate();
+
     const [matches, setMatches] = useState([]);
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [editData, setEditData] = useState({
@@ -46,6 +50,12 @@ const MatchSearchAndEditForm = () => {
     const [refereeSearchQuery, setRefereeSearchQuery] = useState('');
     const [stadiumSearchQuery, setStadiumSearchQuery] = useState('');
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
+
+
+    const [showManageEvents, setShowManageEvents] = useState(false); // Toggle state for Manage Events view
+
+
+
 
 
     const token = localStorage.getItem('jwtToken');
@@ -123,7 +133,28 @@ const MatchSearchAndEditForm = () => {
                 alert('Failed to update match');
             });
     };
+    //
+    // const handleManageEventsClick = (match) => {
+    //     setSelectedMatch(match);
+    //     setShowManageEvents(true); // Toggle to Manage Events view
+    // };
 
+    const handleManageEventsClick = (match) => {
+        setSelectedMatch(match);
+        setShowManageEvents(true);
+        //navigate(`/manage-events/${match.id}`);
+    };
+
+    if (showManageEvents && selectedMatch) {
+        return (
+            <Container className="mt-5">
+                <Button variant="secondary" onClick={() => setShowManageEvents(false)}>
+                    Back to Matches
+                </Button>
+                <EventManagement  matchId={selectedMatch.id} matchDetails={selectedMatch} />
+            </Container>
+        );
+    }
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search and Edit Matches</h1>
@@ -140,10 +171,17 @@ const MatchSearchAndEditForm = () => {
                                             <strong>Date:</strong> {new Date(match.dateTime).toLocaleString()}<br />
                                             <strong>Round:</strong> {match.round}<br />
                                             <strong>Status:</strong> {match.status}<br />
-                                            <strong>Home Team:</strong> {match.homeTeam.name}<br />
-                                            <strong>Away Team:</strong> {match.awayTeam.name}
+                                            <strong>Home Team:</strong> {match.homeTeam ? match.homeTeam.name : 'N/A'}<br />
+                                            <strong>Away Team:</strong> {match.awayTeam ? match.awayTeam.name : 'N/A'}
                                         </div>
                                         <Button variant="outline-primary" onClick={() => handleEditClick(match)}>Edit</Button>
+                                        <Button
+                                            variant="outline-secondary"
+                                            onClick={() => handleManageEventsClick(match)}
+                                        >
+                                            Manage Events
+                                        </Button>
+
                                     </Card.Body>
                                 </Card>
 

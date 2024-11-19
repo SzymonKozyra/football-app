@@ -1,5 +1,7 @@
 package pl.pollub.footballapp.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,7 @@ public class MatchSquadController {
 
     @Autowired
     private MatchRepository matchRepository;
+    private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
@@ -69,5 +72,23 @@ public class MatchSquadController {
     public ResponseEntity<Void> deleteMatchSquad(@PathVariable Long id) {
         matchSquadService.deleteMatchSquad(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/players/{matchId}")
+    public ResponseEntity<List<Player>> getPlayersByMatchId(@PathVariable Long matchId) {
+        log.debug("Received request for players in matchId: {}", matchId);
+        List<Player> players = matchSquadService.getPlayersByMatchId(matchId);
+        log.debug("Returning players: {}", players);
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/first-squad/{matchId}")
+    public ResponseEntity<List<Player>> getFirstSquadPlayers(@PathVariable Long matchId) {
+        return ResponseEntity.ok(matchSquadService.getFirstSquadPlayers(matchId));
+    }
+
+    @GetMapping("/substitutes/{matchId}")
+    public ResponseEntity<List<Player>> getSubstitutePlayers(@PathVariable Long matchId) {
+        return ResponseEntity.ok(matchSquadService.getSubstitutePlayers(matchId));
     }
 }

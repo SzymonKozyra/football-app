@@ -47,6 +47,7 @@ import UserView from './views/UserView';
 //import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AddMatchSquadForm from './components/AddMatchSquadForm';
 import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
+import EventManagement from "./components/EventManagement";
 
 
 
@@ -243,6 +244,9 @@ function App() {
                             )
                         }
                     />
+
+                    <Route path="/manage-events/:matchId" element={<EventManagement />} />
+
                 </Routes>
         </div>
     );
