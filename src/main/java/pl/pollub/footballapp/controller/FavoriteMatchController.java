@@ -25,4 +25,14 @@ public class FavoriteMatchController {
 
         return ResponseEntity.ok("Match added to favorites");
     }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> removeFavoriteMatch(@RequestBody Map<String, Long> payload) {
+        Long userId = payload.get("userId");
+        Long matchId = payload.get("matchId");
+
+        favoriteMatchService.removeFavoriteMatch(userId, matchId);
+
+        return ResponseEntity.ok("Match removed from favorites");
+    }
 }

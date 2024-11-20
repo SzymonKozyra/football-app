@@ -3,9 +3,7 @@ package pl.pollub.footballapp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pollub.footballapp.model.FavoriteMatch;
-import pl.pollub.footballapp.model.Match;
-import pl.pollub.footballapp.model.User;
+import pl.pollub.footballapp.model.*;
 import pl.pollub.footballapp.repository.FavoriteMatchRepository;
 import pl.pollub.footballapp.repository.MatchRepository;
 import pl.pollub.footballapp.repository.UserRepository;
@@ -31,5 +29,15 @@ public class FavoriteMatchService {
         favoriteMatch.setMatch(match);
 
         return favoriteMatchRepository.save(favoriteMatch);
+    }
+
+    public void removeFavoriteMatch(Long userId, Long matchId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Match match = matchRepository.findById(matchId).orElseThrow(() -> new RuntimeException("Match not found"));
+
+        FavoriteMatch favoritematch = favoriteMatchRepository.findByUserAndMatch(user, match)
+                .orElseThrow(() -> new RuntimeException("Favorite match not found"));
+
+        favoriteMatchRepository.delete(favoritematch);
     }
 }

@@ -209,6 +209,7 @@ function App() {
                 {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
                 {currentMode === 'moderator' && <ModeratorView />}
                 {currentMode === 'user' && <MainView />}
+                {/*{currentMode === 'user' && <MainView />}*/}
             </div>
                 <RegistrationModal
                     isOpen={modals.isRegistrationOpen}

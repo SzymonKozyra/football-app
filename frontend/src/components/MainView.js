@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import TeamImageSmall from "./TeamImageSmall";
+import TeamImageVerySmall from "./TeamImageVerySmall";
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -86,8 +87,100 @@ const MainView = () => {
         setSelectedDate(nextDay);
     };
 
+    const toggleFavorite = async (type, item) => {
+        console.log("Toggling favorite:", type, item);
+
+        if (!userId || !item || !item.id) {
+            console.error("Invalid userId or item.");
+            return;
+        }
+
+        // Mapa typów dla liczby pojedynczej
+        const typeMap = {
+            teams: 'team',
+            leagues: 'league',
+            matches: 'match'
+        };
+
+        const singularType = typeMap[type]; // Pobranie liczby pojedynczej z mapy
+
+        if (!singularType) {
+            console.error("Invalid type provided:", type);
+            return;
+        }
+
+        // Wykorzystaj includes zamiast sprawdzania w stanie favorites
+        const isFavorite = type === 'matches'
+            ? favorites.matches.some(fav => fav.match.id === item.id)
+            : false;
+
+        const endpointMap = {
+            team: isFavorite ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
+            league: isFavorite ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
+            match: isFavorite ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
+        };
+
+        const dataMap = {
+            team: { teamId: item.id, userId },
+            league: { leagueId: item.id, userId },
+            match: { matchId: item.id, userId }
+        };
+
+        const endpoint = endpointMap[singularType];
+        const data = dataMap[singularType];
+
+        if (!endpoint || !data) {
+            console.error("Invalid endpoint or data for type:", singularType);
+            return;
+        }
+
+        console.log("Endpoint:", endpoint);
+        console.log("Data:", data);
+
+        try {
+            if (isFavorite) {
+                // Usunięcie z ulubionych
+                await axios({
+                    method: 'delete',
+                    url: endpoint,
+                    headers: { Authorization: `Bearer ${token}` },
+                    data: data // Przekazanie danych dla DELETE
+                });
+            } else {
+                // Dodanie do ulubionych
+                await axios.post(endpoint, data, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+
+            // Odświeżanie ulubionych po każdej operacji
+            await refetchFavorites();
+        } catch (error) {
+            console.error(`Error toggling favorite ${type}:`, error);
+        }
+    };
+
+    const refetchFavorites = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/favorites/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setFavorites(response.data); // Zaktualizowanie ulubionych
+            console.log("Favorites refreshed:", response.data);
+        } catch (error) {
+            console.error("Error fetching updated favorites:", error);
+        }
+    };
+
+
+    // const isFavorite = (type, id) => {
+    //     return favorites[type].some(fav => fav[`${type.slice(0, -1)}`].id === id);
+    // };
+
+
+
     const renderMatchesByLeague = () => {
-        const favoriteLeagueIds = favorites.leagues.map(league => league.id);
+        const favoriteMatchIds = favorites.matches.map(match => match.match.id); // Pobranie ID ulubionych meczów
         const groupedMatches = matches.reduce((acc, match) => {
             const leagueName = match.league.name;
             if (!acc[leagueName]) acc[leagueName] = [];
@@ -95,25 +188,48 @@ const MainView = () => {
             return acc;
         }, {});
 
-        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => {
-            const isAFavorite = favoriteLeagueIds.includes(groupedMatches[a][0].league.id);
-            const isBFavorite = favoriteLeagueIds.includes(groupedMatches[b][0].league.id);
-            if (isAFavorite && !isBFavorite) return -1;
-            if (!isAFavorite && isBFavorite) return 1;
-            return a.localeCompare(b);
-        });
+        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
 
         return sortedLeagues.map(leagueName => (
             <Card className="mb-4" key={leagueName}>
-                <Card.Header className="d-flex justify-content-between align-items-center">
-                    <span>{leagueName}</span>
+                <Card.Header className="d-flex align-items-center">
+                    {/* Flaga kraju */}
+                    <img
+                        src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
+                        alt={groupedMatches[leagueName][0].league.country.name}
+                        style={{ width: '20px', height: '15px', marginRight: '10px' }}
+                    />
+                    {leagueName}
                 </Card.Header>
                 <ListGroup variant="flush">
                     {groupedMatches[leagueName].map(match => (
-                        <ListGroup.Item key={match.id} className="d-flex justify-content-between align-items-center">
-                            <span>
-                                {match.time} - {match.homeTeam.name} vs {match.awayTeam.name}
-                            </span>
+                        <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
+                            {/* Gwiazdka ulubionych */}
+                            <i
+                                className={`bi ${favoriteMatchIds.includes(match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => toggleFavorite('matches', match)}
+                            ></i>
+                            {/* Godzina meczu */}
+                            <span style={{ marginRight: '15px' }}>{match.time}</span>
+                            {/* Drużyny */}
+                            <div style={{ flex: 1 }}>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.homeTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.awayTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
+                                </div>
+                            </div>
+                            {/* Wynik meczu */}
+                            {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
+                                <div style={{ textAlign: 'right' }}>
+                                    <div>{match.homeGoals}</div>
+                                    <div>{match.awayGoals}</div>
+                                </div>
+                            ) : null}
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
@@ -164,7 +280,7 @@ const MainView = () => {
                         {favorites.teams.map(team => (
                             <ListGroup.Item key={team.id} className="d-flex align-items-center">
                                 {/* Herb drużyny */}
-                                <TeamImageSmall team={team.team} />
+                                <TeamImageVerySmall team={team.team} />
                                 <span style={{ marginLeft: '10px' }}>{team.team.name}</span>
                             </ListGroup.Item>
                         ))}
