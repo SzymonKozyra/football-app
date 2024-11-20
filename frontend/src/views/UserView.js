@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Container, Row, Col, ListGroup, Card, Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FavoriteItems from "../components/FavoriteItems";
+import MainView from "../components/MainView";
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -70,94 +71,8 @@ const UserView = () => {
         .toString()
         .padStart(2, '0')}`;
 
-    // return (
-    //     <Container fluid>
-    //         <Row>
-    //             {/* Sidebar */}
-    //             <Col md={3} className="bg-light vh-100 p-3">
-    //                 <h5>Navigation</h5>
-    //                 <ListGroup variant="flush">
-    //                     <ListGroup.Item>
-    //                         <strong>Favorite Leagues</strong>
-    //                         <ListGroup className="mt-2">
-    //                             {favorites.leagues.map(fav => (
-    //                                 <ListGroup.Item key={fav.league.id} className="d-flex align-items-center">
-    //                                     <img
-    //                                         src={`/assets/flags/${fav.league.country.code}.svg`}
-    //                                         alt={fav.league.country.name}
-    //                                         style={{ width: 20, height: 20, marginRight: 10 }}
-    //                                     />
-    //                                     {fav.league.name}
-    //                                 </ListGroup.Item>
-    //                             ))}
-    //                         </ListGroup>
-    //                     </ListGroup.Item>
-    //                     <ListGroup.Item>
-    //                         <strong>Favorite Teams</strong>
-    //                         <ListGroup className="mt-2">
-    //                             {favorites.teams.map(fav => (
-    //                                 <ListGroup.Item key={fav.team.id} className="d-flex align-items-center">
-    //                                     <img
-    //                                         src={`/assets/img/teams/${fav.team.picture}`}
-    //                                         alt={fav.team.name}
-    //                                         style={{ width: 20, height: 20, marginRight: 10 }}
-    //                                     />
-    //                                     {fav.team.name}
-    //                                 </ListGroup.Item>
-    //                             ))}
-    //                         </ListGroup>
-    //                     </ListGroup.Item>
-    //                 </ListGroup>
-    //             </Col>
-    //
-    //             {/* Main Content */}
-    //             <Col md={9} className="p-3">
-    //                 <div className="d-flex align-items-center mb-3">
-    //                     <Button
-    //                         variant="outline-primary"
-    //                         onClick={() => handleDateChange(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))}
-    //                     >
-    //                         &lt;
-    //                     </Button>
-    //                     <Button variant="outline-secondary" className="mx-3" onClick={() => handleDateChange(new Date())}>
-    //                         {formattedDate}
-    //                     </Button>
-    //                     <Button
-    //                         variant="outline-primary"
-    //                         onClick={() => handleDateChange(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))}
-    //                     >
-    //                         &gt;
-    //                     </Button>
-    //                 </div>
-    //                 <Row>
-    //                     {sortedLeagues.map(league => (
-    //                         <Col key={league.id} md={4} className="mb-4">
-    //                             <Card>
-    //                                 <Card.Body className="d-flex align-items-center">
-    //                                     <img
-    //                                         src={`/assets/flags/${league.country.code}.svg`}
-    //                                         alt={league.country.name}
-    //                                         style={{ width: 20, height: 20, marginRight: 10 }}
-    //                                     />
-    //                                     <div className="flex-grow-1">{league.name}</div>
-    //                                     <Form.Check
-    //                                         type="switch"
-    //                                         id={`favorite-switch-${league.id}`}
-    //                                         checked={favorites.leagues.some(fav => fav.league.id === league.id)}
-    //                                         onChange={() => toggleFavoriteLeague(league)}
-    //                                         label=""
-    //                                     />
-    //                                 </Card.Body>
-    //                             </Card>
-    //                         </Col>
-    //                     ))}
-    //                 </Row>
-    //             </Col>
-    //         </Row>
-    //     </Container>
-    // );
     return (
-        <FavoriteItems/>
+        <MainView/>
     );
 };
 

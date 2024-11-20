@@ -37,6 +37,7 @@ public class EventService {
 
     public Event addEvent(EventRequest eventRequest) {
         Event event = new Event();
+
         // Logowanie wartości
         System.out.println("Received EventRequest: " + eventRequest);
 
@@ -62,7 +63,7 @@ public class EventService {
             case GOAL:
             case FREE_KICK:
             case PENALTY:
-                if(!event.getPartOfGame().equals("PENALTIES")) {
+                if (!event.getPartOfGame().equals("PENALTIES")) {
                     if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
                         match.setHomeGoals(match.getHomeGoals() + 1);
                     } else if (event.getPlayer() != null) {
@@ -70,16 +71,61 @@ public class EventService {
                     }
                 }
                 break;
+
+            case SHOT_ON_GOAL:
+                if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
+                    match.setHomeShotsOnGoal(match.getHomeShotsOnGoal() + 1);
+                    match.setHomeShots(match.getHomeShots() + 1);
+                } else if (event.getPlayer() != null) {
+                    match.setAwayShotsOnGoal(match.getAwayShotsOnGoal() + 1);
+                    match.setAwayShots(match.getAwayShots() + 1);
+                }
+                break;
+
+            case SHOT_MISSED:
+                if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
+                    match.setHomeShots(match.getHomeShots() + 1);
+                } else if (event.getPlayer() != null) {
+                    match.setAwayShots(match.getAwayShots() + 1);
+                }
+                break;
+
+            case ACCURATE_PASS:
+                if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
+                    match.setHomePasses(match.getHomePasses() + 1);
+                    match.setHomeAccuratePasses(match.getHomeAccuratePasses() + 1);
+                } else if (event.getPlayer() != null) {
+                    match.setAwayPasses(match.getAwayPasses() + 1);
+                    match.setAwayAccuratePasses(match.getAwayAccuratePasses() + 1);
+                }
+                break;
+
+            case MISSED_PASS:
+                if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
+                    match.setHomePasses(match.getHomePasses() + 1);
+                } else if (event.getPlayer() != null) {
+                    match.setAwayPasses(match.getAwayPasses() + 1);
+                }
+                break;
+
+            case OFFSIDE:
+                if (event.getPlayer() != null && event.getPlayer().getTeam().equals(match.getHomeTeam())) {
+                    match.setHomeOffside(match.getHomeOffside() + 1);
+                } else if (event.getPlayer() != null) {
+                    match.setAwayOffside(match.getAwayOffside() + 1);
+                }
+                break;
+
             case MATCH_START:
                 match.setStatus(MatchStatus.IN_PLAY);
-                match.setDuration(calculateMatchDuration(match.getId()));
-                calculateMinutesPlayed(match.getId());
                 break;
+
             case MATCH_END:
                 match.setStatus(MatchStatus.FINISHED);
-                match.setDuration(calculateMatchDuration(match.getId()));
+                match.setDuration(calculateMatchDurationFromEvents(eventRepository.findByMatchId(match.getId())));
                 calculateMinutesPlayed(match.getId());
                 break;
+
             case SUB_IN:
                 Event subOffEvent = new Event();
                 subOffEvent.setMatch(event.getMatch());
@@ -88,8 +134,8 @@ public class EventService {
                 subOffEvent.setPartOfGame(event.getPartOfGame());
                 eventRepository.save(subOffEvent);
                 break;
+
             case YELLOW_CARD:
-                // Sprawdzenie liczby żółtych kartek w meczu dla tego zawodnika
                 long yellowCardCount = eventRepository.findByMatchId(match.getId()).stream()
                         .filter(e -> e.getType() == EventType.YELLOW_CARD &&
                                 e.getPlayer() != null &&
@@ -97,7 +143,6 @@ public class EventService {
                         .count();
 
                 if (yellowCardCount >= 1) {
-                    // Dodanie zdarzenia RED_CARD
                     Event redCardEvent = new Event();
                     redCardEvent.setMatch(match);
                     redCardEvent.setPlayer(event.getPlayer());
@@ -143,7 +188,6 @@ public class EventService {
 
 
     public void calculateMinutesPlayed(Long matchId) {
-        // Pobranie meczu i jego zdarzeń
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + matchId));
         List<Event> events = eventRepository.findByMatchId(matchId);
@@ -153,94 +197,93 @@ public class EventService {
                 .filter(event -> event.getType() == EventType.FIRST_HALF_END)
                 .map(Event::getMinute)
                 .findFirst()
-                .orElse(0);
+                .orElse(45);
+
         int secondHalfEnd = events.stream()
                 .filter(event -> event.getType() == EventType.SECOND_HALF_END)
                 .map(Event::getMinute)
                 .findFirst()
-                .orElse(0);
+                .orElse(90);
+
         int otFirstHalfEnd = events.stream()
                 .filter(event -> event.getType() == EventType.OT_FIRST_HALF_END)
                 .map(Event::getMinute)
                 .findFirst()
                 .orElse(0);
+
         int otSecondHalfEnd = events.stream()
                 .filter(event -> event.getType() == EventType.OT_SECOND_HALF_END)
                 .map(Event::getMinute)
                 .findFirst()
                 .orElse(0);
 
-        // Czas trwania meczu
         int matchDuration = firstHalfEnd + secondHalfEnd + otFirstHalfEnd + otSecondHalfEnd;
 
-        // Przetwarzanie zawodników w MatchSquad
         List<MatchSquad> matchSquads = matchSquadRepository.findByMatchId(matchId);
 
         for (MatchSquad squad : matchSquads) {
             int minutesPlayed = 0;
 
-            if (squad.isFirstSquad()) {
-                // Dla zawodnika w pierwszym składzie
-                Optional<Event> redCardEvent = events.stream()
-                        .filter(event -> event.getType() == EventType.RED_CARD &&
-                                event.getPlayer() != null &&
-                                event.getPlayer().getId().equals(squad.getPlayer().getId()))
-                        .findFirst();
+            // Sprawdź, czy zawodnik jest w pierwszym składzie
+            Optional<Event> subOffEvent = events.stream()
+                    .filter(event -> event.getType() == EventType.SUB_OFF &&
+                            event.getPlayer() != null &&
+                            event.getPlayer().getId().equals(squad.getPlayer().getId()))
+                    .findFirst();
 
-                if (redCardEvent.isPresent()) {
-                    // Jeśli zawodnik dostał czerwoną kartkę, sumujemy czas do momentu czerwonej kartki
-                    int redCardMinute = redCardEvent.get().getMinute();
+            Optional<Event> subInEvent = events.stream()
+                    .filter(event -> event.getType() == EventType.SUB_IN &&
+                            event.getPlayer() != null &&
+                            event.getPlayer().getId().equals(squad.getPlayer().getId()))
+                    .findFirst();
 
-                    if (redCardEvent.get().getPartOfGame().equals("FIRST_HALF")) {
-                        minutesPlayed = redCardMinute;
-                    } else if (redCardEvent.get().getPartOfGame().equals("SECOND_HALF")) {
-                        minutesPlayed = firstHalfEnd + redCardMinute;
-                    } else if (redCardEvent.get().getPartOfGame().equals("OT_FIRST_HALF")) {
-                        minutesPlayed = firstHalfEnd + secondHalfEnd + redCardMinute;
-                    } else if (redCardEvent.get().getPartOfGame().equals("OT_SECOND_HALF")|| redCardEvent.get().getPartOfGame().equals("PENALTIES")) {
-                        minutesPlayed = firstHalfEnd + secondHalfEnd + otFirstHalfEnd + redCardMinute;
-                    }
-                } else {
-                    // Jeśli zawodnik nie dostał czerwonej kartki, grał cały mecz
-                    minutesPlayed = matchDuration;
-                }
+            if (subOffEvent.isPresent()) {
+                // Zawodnik schodzący
+                Event subOff = subOffEvent.get();
+                int subOffMinute = subOff.getMinute();
+                minutesPlayed = calculateMinutesUntilPart(subOff.getPartOfGame(), firstHalfEnd, secondHalfEnd, otFirstHalfEnd) + subOffMinute;
+            } else if (subInEvent.isPresent()) {
+                // Zawodnik wchodzący
+                Event subIn = subInEvent.get();
 
-            } else {
-                // Dla zawodnika wchodzącego na zmianę
-                Optional<Event> subInEvent = events.stream()
-                        .filter(event -> event.getType() == EventType.SUB_IN &&
-                                event.getPlayer() != null &&
-                                event.getPlayer().getId().equals(squad.getPlayer().getId()))
-                        .findFirst();
-                Optional<Event> redCardEvent = events.stream()
-                        .filter(event -> event.getType() == EventType.RED_CARD &&
-                                event.getPlayer() != null &&
-                                event.getPlayer().getId().equals(squad.getPlayer().getId()))
-                        .findFirst();
-                Optional<Event> subOffEvent = events.stream()
+                // Znajdź zawodnika, za którego wszedł
+                Optional<Event> relatedSubOffEvent = events.stream()
                         .filter(event -> event.getType() == EventType.SUB_OFF &&
-                                event.getPlayer() != null &&
-                                event.getPlayer().getId().equals(squad.getPlayer().getId()))
+                                event.getMinute() == subIn.getMinute() &&
+                                event.getPartOfGame().equals(subIn.getPartOfGame()))
                         .findFirst();
 
-                if (subInEvent.isPresent()) {
-                    int entryMinute = subInEvent.get().getMinute();
-                    if (redCardEvent.isPresent()) {
-                        // Jeśli zawodnik dostał czerwoną kartkę
-                        int redCardMinute = redCardEvent.get().getMinute();
-                        minutesPlayed = (redCardEvent.get().getPartOfGame().equals("SECOND_HALF") ? firstHalfEnd : firstHalfEnd + secondHalfEnd)
-                                + redCardMinute - entryMinute;
-                    } else {
-                        // Jeśli zawodnik nie dostał czerwonej kartki
-                        int exitMinute = subOffEvent.map(Event::getMinute).orElse(matchDuration);
-                        minutesPlayed = exitMinute - entryMinute;
-                    }
+                if (relatedSubOffEvent.isPresent()) {
+                    int subOffMinute = relatedSubOffEvent.get().getMinute();
+                    minutesPlayed = matchDuration - calculateMinutesUntilPart(relatedSubOffEvent.get().getPartOfGame(), firstHalfEnd, secondHalfEnd, otFirstHalfEnd) - subOffMinute;
+                } else {
+                    // Jeśli brak zdarzenia SUB_OFF, licz od momentu wejścia do końca meczu
+                    int subInMinute = subIn.getMinute();
+                    minutesPlayed = matchDuration - calculateMinutesUntilPart(subIn.getPartOfGame(), firstHalfEnd, secondHalfEnd, otFirstHalfEnd) - subInMinute;
                 }
+            } else {
+                // Zawodnik grający od początku do końca meczu
+                minutesPlayed = matchDuration;
             }
 
             // Aktualizacja czasu gry
             squad.setMinutesPlayed(minutesPlayed);
             matchSquadRepository.save(squad);
+        }
+    }
+
+    private int calculateMinutesUntilPart(String partOfGame, int firstHalfEnd, int secondHalfEnd, int otFirstHalfEnd) {
+        switch (partOfGame) {
+            case "FIRST_HALF":
+                return 0;
+            case "SECOND_HALF":
+                return firstHalfEnd;
+            case "OT_FIRST_HALF":
+                return firstHalfEnd + secondHalfEnd;
+            case "OT_SECOND_HALF":
+                return firstHalfEnd + secondHalfEnd + otFirstHalfEnd;
+            default:
+                return 0;
         }
     }
 

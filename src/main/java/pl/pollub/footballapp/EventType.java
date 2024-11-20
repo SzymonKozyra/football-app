@@ -14,5 +14,10 @@ public enum EventType {
     OT_FIRST_HALF_END,
     OT_SECOND_HALF_END,
     SUB_IN,
-    SUB_OFF
+    SUB_OFF,
+    SHOT_MISSED,
+    SHOT_ON_GOAL,
+    ACCURATE_PASS,
+    MISSED_PASS,
+    OFFSIDE
 }

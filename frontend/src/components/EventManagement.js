@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Form, Button, ListGroup } from 'react-bootstrap';
+import TeamImage from "./TeamImage";
+import TeamImageSmall from "./TeamImageSmall";
+import PlayerImageSmall from "./PlayerImageSmall";
+import {Col, Row} from "reactstrap";
 
 const EventManagement = ({ matchId, matchDetails }) => {
     const [events, setEvents] = useState([]);
@@ -51,9 +55,32 @@ const EventManagement = ({ matchId, matchDetails }) => {
             .get(`http://localhost:8080/api/events/match/${matchId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` },
             })
-            .then((response) => setEvents(response.data))
+            .then((response) => {
+                const partOfGameOrder = {
+                    FIRST_HALF: 1,
+                    SECOND_HALF: 2,
+                    OT_FIRST_HALF: 3,
+                    OT_SECOND_HALF: 4,
+                    PENALTIES: 5,
+                };
+
+                const sortedEvents = response.data.sort((a, b) => {
+                    // Sortowanie po `partOfGame` według zdefiniowanego porządku
+                    const partA = partOfGameOrder[a.partOfGame] || 99; // Jeśli brak `partOfGame`, daj najwyższy priorytet
+                    const partB = partOfGameOrder[b.partOfGame] || 99;
+
+                    if (partA !== partB) {
+                        return partA - partB;
+                    }
+                    // Sortowanie po `minute`
+                    return a.minute - b.minute;
+                });
+
+                setEvents(sortedEvents);
+            })
             .catch((error) => console.error('Error fetching events for match:', error));
     };
+
 
     const handleAddEvent = (e) => {
         e.preventDefault();
@@ -139,14 +166,26 @@ const EventManagement = ({ matchId, matchDetails }) => {
             return null; // Brak pól w formularzu
         }
 
-        if (eventData.type.endsWith('_END') && eventData.type !== 'MATCH_END') {
-            return commonFields; // Tylko pole minute
-        }
-
         return (
             <>
                 {commonFields}
-                {['GOAL', 'ASSIST', 'YELLOW_CARD', 'RED_CARD', 'FREE_KICK', 'PENALTY', 'SUB_OFF'].includes(eventData.type) && (
+                {eventData.type !== 'MATCH_START' && eventData.type !== 'MATCH_END' && (
+                    <Form.Group controlId="formPartOfGame" className="mb-3">
+                        <Form.Label>Part of Game</Form.Label>
+                        <Form.Select
+                            value={eventData.partOfGame}
+                            onChange={(e) => setEventData({ ...eventData, partOfGame: e.target.value })}
+                        >
+                            {['FIRST_HALF', 'SECOND_HALF', 'OT_FIRST_HALF', 'OT_SECOND_HALF', 'PENALTIES'].map((part) => (
+                                <option key={part} value={part}>
+                                    {part}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                )}
+                {['GOAL', 'ASSIST', 'YELLOW_CARD', 'RED_CARD', 'FREE_KICK', 'PENALTY', 'SUB_OFF', 'ACCURATE_PASS', 'MISSED_PASS', 'SHOT_MISSED', 'SHOT_ON_GOAL' ]
+                    .includes(eventData.type) && (
                     <Form.Group controlId="formPlayerId" className="mb-3">
                         <Form.Label>Player</Form.Label>
                         <Form.Select
@@ -179,20 +218,38 @@ const EventManagement = ({ matchId, matchDetails }) => {
                     </Form.Group>
                 )}
                 {eventData.type === 'SUB_IN' && (
-                    <Form.Group controlId="formSubOffPlayerId" className="mb-3">
-                        <Form.Label>Sub Off Player</Form.Label>
-                        <Form.Select
-                            value={eventData.subOffPlayerId}
-                            onChange={(e) => setEventData({ ...eventData, subOffPlayerId: e.target.value })}
-                        >
-                            <option value="">Select a Player</option>
-                            {firstSquadPlayers.map((player) => (
-                                <option key={player.id} value={player.id}>
-                                    {player.firstName} {player.lastName}
-                                </option>
-                            ))}
-                        </Form.Select>
-                    </Form.Group>
+                    <>
+                        <Form.Group controlId="formPlayerId" className="mb-3">
+                            <Form.Label>Substitute Player</Form.Label>
+                            <Form.Select
+                                value={eventData.playerId}
+                                onChange={(e) => setEventData({ ...eventData, playerId: e.target.value })}
+                                required
+                            >
+                                <option value="">Select a Substitute Player</option>
+                                {substitutePlayers.map((player) => (
+                                    <option key={player.id} value={player.id}>
+                                        {player.firstName} {player.lastName}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group controlId="formSubOffPlayerId" className="mb-3">
+                            <Form.Label>Sub Off Player</Form.Label>
+                            <Form.Select
+                                value={eventData.subOffPlayerId}
+                                onChange={(e) => setEventData({ ...eventData, subOffPlayerId: e.target.value })}
+                                required
+                            >
+                                <option value="">Select a Player</option>
+                                {firstSquadPlayers.map((player) => (
+                                    <option key={player.id} value={player.id}>
+                                        {player.firstName} {player.lastName}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </>
                 )}
             </>
         );
@@ -225,7 +282,21 @@ const EventManagement = ({ matchId, matchDetails }) => {
             <ListGroup>
                 {events.map((event) => (
                     <ListGroup.Item key={event.id}>
-                        {event.type} - Player: {event.player?.firstName || 'N/A'} {event.player?.lastName || ''} - Minute: {event.minute} - Part: {event.partOfGame}
+
+                        <Row>
+                            <Col xs={1}>
+                                {/* Zdjęcie drużyny */}
+                                {event.player && event.player.team && <TeamImageSmall team={event.player.team} />}
+                            </Col>
+                            <Col xs={1}>
+                                {/* Zdjęcie zawodnika */}
+                                {event.player && <PlayerImageSmall player={event.player} />}
+                            </Col>
+                            <Col xs={10}>
+                                {/* Szczegóły zdarzenia */}
+                                {event.type} - Player: {event.player?.firstName || 'N/A'} {event.player?.lastName || ''} - Minute: {event.minute} - Part: {event.partOfGame}
+                            </Col>
+                        </Row>
                         <Button
                             variant="danger"
                             size="sm"
