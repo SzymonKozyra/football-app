@@ -1,0 +1,62 @@
+package pl.pollub.footballapp.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import pl.pollub.footballapp.model.Ranking;
+import pl.pollub.footballapp.model.RankingPoints;
+import pl.pollub.footballapp.model.User;
+import pl.pollub.footballapp.repository.RankingPointsRepository;
+import pl.pollub.footballapp.repository.RankingRepository;
+import pl.pollub.footballapp.repository.UserRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class RankingPointsService {
+
+    private final RankingPointsRepository rankingPointsRepository;
+    private RankingRepository rankingRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    public RankingPointsService(RankingPointsRepository rankingPointsRepository) {
+        this.rankingPointsRepository = rankingPointsRepository;
+    }
+
+    public List<RankingPoints> getRankingPointsByRankingId(Long rankingId) {
+        return rankingPointsRepository.findByRankingId(rankingId);
+    }
+
+//    public RankingPoints updateRankingPoints(Long userId, Long rankingId, int additionalPoints) {
+//        RankingPoints rankingPoints = rankingPointsRepository.findByUserIdAndRankingId(userId, rankingId);
+//
+//        if (rankingPoints == null) {
+//            throw new IllegalArgumentException("Ranking points not found for user and ranking.");
+//        }
+//
+//        rankingPoints.setPoints(rankingPoints.getPoints() + additionalPoints);
+//        rankingPoints.setLastUpdated(LocalDateTime.now());
+//        return rankingPointsRepository.save(rankingPoints);
+//    }
+
+    public void updateRankingPoints(Long userId, int pointsToAdd) {
+        Ranking activeRanking = rankingRepository.findByIsActiveTrue()
+                .orElseThrow(() -> new IllegalStateException("No active ranking found"));
+
+        RankingPoints rankingPoints = rankingPointsRepository.findByUserIdAndRankingId(userId, activeRanking.getId())
+                .orElseGet(() -> {
+                    RankingPoints newPoints = new RankingPoints();
+                    newPoints.setUser(new User()); // Jeśli User jest relacją ManyToOne, trzeba wczytać obiekt User
+                    newPoints.setRanking(activeRanking);
+                    newPoints.setPoints(0);
+                    newPoints.setLastUpdated(LocalDateTime.now());
+                    return newPoints;
+                });
+
+        // Aktualizuj punkty
+        rankingPoints.setPoints(rankingPoints.getPoints() + pointsToAdd);
+        rankingPoints.setLastUpdated(LocalDateTime.now());
+        rankingPointsRepository.save(rankingPoints);
+    }
+}

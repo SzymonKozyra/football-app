@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.MatchStatus;
 import pl.pollub.footballapp.model.Match;
+import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.repository.MatchRepository;
 
 import java.util.List;
@@ -87,4 +88,19 @@ public class MatchService {
 //                .orElseThrow(() -> new RuntimeException("Match not found with id " + id));
 //    }
 
+    public List<Match> findMatchesByTeamName(String teamName) {
+        return matchRepository.searchByTeamName(teamName);
+    }
+
+    public List<Match> getMatchesByTeamName(String teamName) {
+        return matchRepository.searchByTeamName(teamName);
+    }
+
+//    public List<Match> searchMatchesByTeamName(String teamName) {
+//        return matchRepository.findByTeamNameContaining(teamName);
+//    }
+
+    public List<Match> searchMatchesByTeamName(String teamName) {
+        return matchRepository.findByTeamName(teamName);
+    }
 }

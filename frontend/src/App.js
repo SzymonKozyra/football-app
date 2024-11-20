@@ -34,6 +34,8 @@ import AddPlayerContractForm from "./components/AddPlayerContractForm";
 import EditPlayerContractForm from "./components/EditPlayerContractForm";
 import AddInjuryForm from "./components/AddInjuryForm";
 import EditInjuryForm from "./components/EditInjuryForm";
+import AddBetForm from "./components/AddBetForm";
+import EditBetForm from "./components/EditBetForm";
 
 //import AddTournamentForm from "./components/AddTournamentForm";
 //import TournamentSearchAndEditForm from "./components/TournamentSearchAndEditForm";
@@ -47,6 +49,7 @@ import UserView from './views/UserView';
 //import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AddMatchSquadForm from './components/AddMatchSquadForm';
 import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
+import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 
 

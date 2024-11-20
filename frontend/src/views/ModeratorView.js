@@ -24,6 +24,9 @@ import EditInjuryForm from '../components/EditInjuryForm';
 
 import AddMatchForm from '../components/AddMatchForm';
 import EditMatchForm from '../components/EditMatchForm';
+import AddBetForm from '../components/AddBetForm';
+import EditBetForm from '../components/EditBetForm';
+import AddRankingForm from '../components/AddRankingForm';
 
 
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
@@ -59,6 +62,9 @@ const ModeratorView = () => {
             case 'AddMatch': return <AddMatchForm />;
             //case 'EditMatches': return <EditMatchForm />;
             case 'EditMatches': return <MatchSearchAndEditForm/>;
+            case 'AddBet': return <AddBetForm/>;
+            case 'EditBets': return <EditBetForm/>;
+            case 'AddRanking': return <AddRankingForm/>;
 
             default: return <p>Please select an option from the sidebar.</p>;
         }
@@ -86,6 +92,8 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddCoachContract')}>Add Coach Contract</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayerContract')}>Add Player Contract</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddMatch')}>Add Match</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddBet')}>Add Bet</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddRanking')}>Add Ranking</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>
@@ -104,6 +112,7 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditCoachContracts')}>Edit Coach Contracts</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayerContracts')}>Edit Player Contracts</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditMatches')}>Edit Matches</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditBets')}>Edit Bets</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>

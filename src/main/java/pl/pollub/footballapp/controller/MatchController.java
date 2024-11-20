@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.Match;
+import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.service.LeagueService;
 import pl.pollub.footballapp.service.MatchService;
 import pl.pollub.footballapp.service.RefereeService;
@@ -71,5 +72,27 @@ public class MatchController {
 //        return ResponseEntity.ok(matchService.getAllMatches());
 //    }
 
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Match>> searchMatches(@RequestParam String teamName) {
+//        List<Match> matches = matchService.findMatchesByTeamName(teamName);
+//        return ResponseEntity.ok(matches);
+//    }
 
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Match>> searchMatches(@RequestParam String query) {
+//        List<Match> matches = matchService.searchMatchesByTeamName(query);
+//        return ResponseEntity.ok(matches);
+//    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Match>> searchMatches(@RequestParam String query) {
+        List<Match> matches = matchService.searchMatchesByTeamName(query);
+        return ResponseEntity.ok(matches);
+    }
+
+//    @GetMapping("/team/{teamId}")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public List<Match> getMatchesByTeam(@PathVariable Long teamId) {
+//        return matchService.getMatchesByTeamName(teamId);
+//    }
 }
