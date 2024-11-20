@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import pl.pollub.footballapp.service.MatchService;
 import pl.pollub.footballapp.service.RefereeService;
 import pl.pollub.footballapp.service.StadiumService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -95,4 +97,11 @@ public class MatchController {
 //    public List<Match> getMatchesByTeam(@PathVariable Long teamId) {
 //        return matchService.getMatchesByTeamName(teamId);
 //    }
+
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<Match>> getMatchesByDate(
+            @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<Match> matches = matchService.getMatchesByDate(date);
+        return ResponseEntity.ok(matches);
+    }
 }

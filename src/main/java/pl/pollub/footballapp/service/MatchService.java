@@ -7,6 +7,9 @@ import pl.pollub.footballapp.model.Match;
 import pl.pollub.footballapp.model.PlayerContract;
 import pl.pollub.footballapp.repository.MatchRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,7 +102,12 @@ public class MatchService {
 //    public List<Match> searchMatchesByTeamName(String teamName) {
 //        return matchRepository.findByTeamNameContaining(teamName);
 //    }
-
+    public List<Match> getMatchesByDate(LocalDate date) {
+        // Zakres od początku dnia do końca dnia
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+        return matchRepository.findAllByDateTimeBetween(startOfDay, endOfDay);
+    }
     public List<Match> searchMatchesByTeamName(String teamName) {
         return matchRepository.findByTeamName(teamName);
     }

@@ -8,6 +8,7 @@ import pl.pollub.footballapp.MatchStatus;
 import pl.pollub.footballapp.model.Match;
 import pl.pollub.footballapp.model.MatchSquad;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -29,4 +30,5 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
             "LOWER(m.awayTeam.name) LIKE LOWER(CONCAT('%', :teamName, '%'))")
     List<Match> findByTeamNameContaining(@Param("teamName") String teamName);
 
+    List<Match> findAllByDateTimeBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

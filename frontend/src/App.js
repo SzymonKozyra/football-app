@@ -51,6 +51,7 @@ import AddMatchSquadForm from './components/AddMatchSquadForm';
 import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
+import MainView from "./components/MainView";
 
 
 
@@ -207,7 +208,7 @@ function App() {
             <div className="main-content">
                 {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
                 {currentMode === 'moderator' && <ModeratorView />}
-                {currentMode === 'user' && <UserView />}
+                {currentMode === 'user' && <MainView />}
             </div>
                 <RegistrationModal
                     isOpen={modals.isRegistrationOpen}

@@ -1,7 +1,7 @@
 // TeamImage.js
 import React, { useState, useEffect } from 'react';
 
-const TeamImage = ({ team }) => {
+const TeamImageSmall = ({ team }) => {
     const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/team/team_${team.id}.jpg`);
 
     useEffect(() => {
@@ -47,4 +47,4 @@ const TeamImage = ({ team }) => {
     );
 };
 
-export default TeamImage;
+export default TeamImageSmall;
