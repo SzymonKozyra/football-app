@@ -64,7 +64,6 @@ public class TeamService {
             League league = leagueRepository.findById(teamRequest.getLeagueId())
                     .orElseThrow(() -> new RuntimeException("League not found: " + teamRequest.getLeagueId()));
 
-            // Check for duplicate by name and league
             boolean isDuplicate = teamRepository.existsByNameAndLeague(teamRequest.getName(), league);
 
             if (!isDuplicate) {
@@ -86,21 +85,6 @@ public class TeamService {
         }
 
         return ResponseEntity.ok(message);
-    }
-
-    public String updateTeam(Long id, TeamRequest teamRequest) {
-        Team team = teamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
-
-        League league = leagueRepository.findById(teamRequest.getLeagueId())
-                .orElseThrow(() -> new RuntimeException("League not found"));
-
-        team.setName(teamRequest.getName());
-        team.setPicture(teamRequest.getPicture());
-        team.setLeague(league);
-
-        teamRepository.save(team);
-        return "Team updated successfully";
     }
 
     public List<Team> searchTeams(String query) {
@@ -130,6 +114,21 @@ public class TeamService {
         }
 
         return "Team added successfully";
+    }
+
+    public String updateTeam(Long id, TeamRequest teamRequest) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        League league = leagueRepository.findById(teamRequest.getLeagueId())
+                .orElseThrow(() -> new RuntimeException("League not found"));
+
+        team.setName(teamRequest.getName());
+        team.setPicture(teamRequest.getPicture());
+        team.setLeague(league);
+
+        teamRepository.save(team);
+        return "Team updated successfully";
     }
 
     public String updateTeam(Long id, TeamRequest teamRequest, MultipartFile picture) throws IOException {

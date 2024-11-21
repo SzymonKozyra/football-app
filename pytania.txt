@@ -1,9 +1,13 @@
-czy nazwy tabel w liczbie mnogiej?
+czy podrozdzial 3.1.1 zostawic
 
-upload plików, gdzie zapisywac?
+czy wylogowanie zrobic jako oddzielny podrozdzial 3.3.3
 
-statystyki piłkarza do meczu jak zrobić połączenie (np. jak zmiany zawodników obsługiwać i wyświetlać)?
+czy robic rozdzial kontrola poprawności danych i czy wrzucic to w podrozdzial bezpieczenstwo
 
-co można usunąć z projektu?
+Czy opisywac wyszukiwanie trenera i pokazanie jego kontraktow
+(relacja jeden do wielu, team moze miec wiele kontraktow a trener jeden)
 
-podanie o zmiane tematu 
+czy rysunki, listingi, i podpisy maja byc wysrodkowane
+
+czy ma znaczenie czy podpisujemy listingi jako funkcja czy metoda
+i czy podpisy pogrubione i z kropką na końcu

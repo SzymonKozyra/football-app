@@ -99,24 +99,20 @@ public class AuthController {
         return ResponseEntity.ok("Account deleted successfully");
     }
 
+    @GetMapping("/check-admin")
+    public ResponseEntity<Boolean> checkIfAdminExists() {
+        boolean adminExists = userRepository.existsByRole(User.Role.ROLE_ADMIN);
+        return ResponseEntity.ok(adminExists);
+    }
+
     @PostMapping("/register-admin")
     public ResponseEntity<?> registerAdmin(@RequestBody User user) {
-        // Sprawdź, czy istnieje już użytkownik z rolą ADMIN
         if (userRepository.existsByRole(User.Role.ROLE_ADMIN)) {
             return ResponseEntity.badRequest().body("Admin account already exists.");
         }
-
-        // Tworzenie konta admina
         user.setRole(User.Role.ROLE_ADMIN);
-        userService.registerUser(user);  // Zakłada, że w UserService jest metoda hashująca hasło i zapisująca użytkownika
+        userService.registerUser(user);
         return ResponseEntity.ok("Admin account created successfully.");
-    }
-
-    @GetMapping("/check-admin")
-    public ResponseEntity<Boolean> checkIfAdminExists() {
-        // Sprawdzamy, czy istnieje użytkownik z rolą ADMIN
-        boolean adminExists = userRepository.existsByRole(User.Role.ROLE_ADMIN);
-        return ResponseEntity.ok(adminExists);
     }
 
 

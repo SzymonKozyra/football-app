@@ -139,14 +139,13 @@ function App() {
 
     const handleNewPasswordSubmit = async (newPassword) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
-                token, // token should be in the state or retrieved from the URL
+            const response = await
+                axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
+                token,
                 password: newPassword,
             });
-
             if (response.status === 200) {
                 console.log("Password reset successfully!");
-                //toggleModal('isNewPasswordOpen');
             }
         } catch (error) {
             console.error("Error resetting password:", error);
@@ -180,8 +179,8 @@ function App() {
     if (!adminExists) {
         return (
             <div className="App">
-                <h1>Register Admin</h1>
-                <RegisterAdminForm />
+                <h4>There are no admin accounts registered. You have to register one below to continue.</h4>
+                <RegisterAdminForm/>
             </div>
         );
     }
@@ -229,10 +228,11 @@ function App() {
                     isOpen={modals.isPasswordResetOpen}
                     onClose={() => toggleModal('isPasswordResetOpen')}
                 />
+
                 <NewPasswordModal
                     isOpen={modals.isNewPasswordOpen}
                     onClose={() => toggleModal('isNewPasswordOpen')}
-                    onSubmit={handleNewPasswordSubmit} // Pass the function here
+                    onSubmit={handleNewPasswordSubmit}
                     token={token}
                 />
 

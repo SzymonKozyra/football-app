@@ -16,18 +16,10 @@ public class UserService  implements UserDetailsService {
     private UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void registerUser(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-
-        userRepository.save(user);
-    }
-
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
-
 
     public User findByEmail(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -38,6 +30,16 @@ public class UserService  implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
     }
+
+    public void registerUser(User user) {
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
+
+        userRepository.save(user);
+    }
+
+
+
     public User findByUsername(String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
 

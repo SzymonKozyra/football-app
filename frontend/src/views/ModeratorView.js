@@ -19,9 +19,6 @@ import AddPlayerContractForm from "../components/AddPlayerContractForm";
 import EditPlayerContractForm from "../components/EditPlayerContractForm";
 import AddInjuryForm from '../components/AddInjuryForm';
 import EditInjuryForm from '../components/EditInjuryForm';
-//import AddTournamentForm from '../components/AddTournamentForm';
-//import TournamentSearchAndEditForm from '../components/TournamentSearchAndEditForm';
-
 import AddMatchForm from '../components/AddMatchForm';
 import EditMatchForm from '../components/EditMatchForm';
 import AddBetForm from '../components/AddBetForm';
@@ -57,8 +54,6 @@ const ModeratorView = () => {
             case 'EditCoachContracts': return <EditCoachContractForm />;
             case 'AddPlayerContract': return <AddPlayerContractForm />;
             case 'EditPlayerContracts': return <EditPlayerContractForm />;
-//            case 'AddTournament': return <AddTournamentForm />;
-//            case 'EditTournaments': return <TournamentSearchAndEditForm />;
             case 'AddMatch': return <AddMatchForm />;
             //case 'EditMatches': return <EditMatchForm />;
             case 'EditMatches': return <MatchSearchAndEditForm/>;

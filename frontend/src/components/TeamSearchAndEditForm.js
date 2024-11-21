@@ -52,7 +52,7 @@ const TeamSearchAndEditForm = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
-                console.log(response.data); // Log the response to check `isClub` values
+                console.log(response.data);
                 setTeams(response.data);
                 setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
@@ -68,11 +68,11 @@ const TeamSearchAndEditForm = () => {
             name: team.name,
             picture: team.picture,
             leagueId: team.league ? team.league.id : '',
-            isClub: team.club, // Map `club` from backend to `isClub`
+            isClub: team.club,
         });
-        setSelectedLeague(team.league); // Set selected league to the current team league
-        setLeagueSearchQuery(team.league ? team.league.name : ''); // Set the search query to the league name
-        setIsEditingLeague(false); // Initially, do not show suggestions
+        setSelectedLeague(team.league);
+        setLeagueSearchQuery(team.league ? team.league.name : '');
+        setIsEditingLeague(false);
         setPictureFile(null);
     };
 

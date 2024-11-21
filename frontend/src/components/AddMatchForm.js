@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ListGroup, Accordion } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal } from 'react-bootstrap';
@@ -611,9 +611,9 @@ const AddMatchForm = () => {
                     </>
                 )}
 
-
                 <Button variant="primary" type="submit" className="w-100 mt-3">Add Match</Button>
             </Form>
+
             <Modal show={showModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Match Added</Modal.Title>
@@ -628,6 +628,46 @@ const AddMatchForm = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Accordion className="mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>File Format Templates</Accordion.Header>
+                    <Accordion.Body className="text-start">
+                        <h5>JSON Template</h5>
+                        <pre>
+                {`[
+    {
+        "date_time": "2014-08-05 12:30",
+        "referee_id": 1,
+        "stadium_id": 2,
+        "league_id": 3,
+        "home_possession": 55.0,
+        "away_possession": 45.0,
+        "home_passes": 400,
+        "away_passes": 350,
+        "home_accurate_passes": 320,
+        "away_accurate_passes": 290,
+        "home_shots": 10,
+        "away_shots": 8,
+        "home_shots_on_goal": 5,
+        "away_shots_on_goal": 3,
+        "home_corners": 7,
+        "away_corners": 4,
+        "home_offside": 2,
+        "away_offside": 1,
+        "home_fouls": 12,
+        "away_fouls": 14
+    }
+]`}
+            </pre>
+                        <h5>CSV Template</h5>
+                        <pre>
+                {`date_time,referee_id,stadium_id,league_id,home_possession,away_possession,home_passes,away_passes,home_accurate_passes,away_accurate_passes,home_shots,away_shots,home_shots_on_goal,away_shots_on_goal,home_corners,away_corners,home_offside,away_offside,home_fouls,away_fouls
+2014-08-05 12:30,1,2,3,55.0,45.0,400,350,320,290,10,8,5,3,7,4,2,1,12,14`}
+            </pre>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
         </Container>
     );
 };
