@@ -72,7 +72,8 @@ const UserView = () => {
         .padStart(2, '0')}`;
 
     return (
-        <MainView/>
+        // <MainView/>
+        <FavoriteItems/>
     );
 };
 

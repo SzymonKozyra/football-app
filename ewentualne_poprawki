@@ -8,6 +8,8 @@ Ważne
 - importy do wszystkiego
 - zeby sie registerAdmin nie pokazywalo
 - zrobienie przechodzenia miedzy stronami w sposob asynchroniczny na akzdej stronie rpzynajmnije u moderatora, bo kwasy wychodza
+- datetime, dla zdarzen; glowne wykorzystanie: minuta meczu
+
 
 Mniej ważne
 - przycisk do logowania od razu na konto moderatora, ale to jzu teraz zbey nam pomagał

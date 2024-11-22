@@ -17,6 +17,10 @@ const MainView = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [userId, setUserId] = useState(null);
     const [isFavoritesReady, setIsFavoritesReady] = useState(false); // Flaga określająca gotowość
+
+    const [allLeagues, setAllLeagues] = useState([]);
+    const [allTeams, setAllTeams] = useState([]);
+
     const token = localStorage.getItem('jwtToken');
 
     // Pobranie ID użytkownika
@@ -35,6 +39,18 @@ const MainView = () => {
                 .catch(error => console.error('Error fetching user ID:', error));
         }
     }, [token]);
+
+    // Pobranie wszystkich lig i drużyn
+    useEffect(() => {
+        axios.get(`${BASE_URL}/api/leagues`, { headers: { Authorization: `Bearer ${token}` } })
+            .then(response => setAllLeagues(response.data))
+            .catch(error => console.error('Error fetching leagues:', error));
+
+        axios.get(`${BASE_URL}/api/teams`, { headers: { Authorization: `Bearer ${token}` } })
+            .then(response => setAllTeams(response.data))
+            .catch(error => console.error('Error fetching teams:', error));
+    }, [token]);
+
 
     // Pobranie ulubionych lig i drużyn
     useEffect(() => {
@@ -58,7 +74,10 @@ const MainView = () => {
     useEffect(() => {
         const formattedDate = selectedDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
         axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, { headers: { Authorization: `Bearer ${token}` } })
-            .then(response => setMatches(response.data))
+            .then(response => {
+                setMatches(response.data);
+                console.log("Dane zwrócone z backendu dla meczów:", response.data); // Logujemy dane
+            })
             .catch(error => console.error('Error fetching matches:', error));
     }, [selectedDate, token]);
 
@@ -109,15 +128,13 @@ const MainView = () => {
             return;
         }
 
-        // Wykorzystaj includes zamiast sprawdzania w stanie favorites
-        const isFavorite = type === 'matches'
-            ? favorites.matches.some(fav => fav.match.id === item.id)
-            : false;
+        // Sprawdzenie, czy element jest ulubiony, za pomocą uniwersalnego isFavorite
+        const isFavoriteItem = isFavorite(type, item.id);
 
         const endpointMap = {
-            team: isFavorite ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
-            league: isFavorite ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
-            match: isFavorite ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
+            team: isFavoriteItem ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
+            league: isFavoriteItem ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
+            match: isFavoriteItem ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
         };
 
         const dataMap = {
@@ -138,7 +155,7 @@ const MainView = () => {
         console.log("Data:", data);
 
         try {
-            if (isFavorite) {
+            if (isFavoriteItem) {
                 // Usunięcie z ulubionych
                 await axios({
                     method: 'delete',
@@ -160,6 +177,7 @@ const MainView = () => {
         }
     };
 
+
     const refetchFavorites = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/favorites/${userId}`, {
@@ -171,47 +189,130 @@ const MainView = () => {
             console.error("Error fetching updated favorites:", error);
         }
     };
+    const isFavorite = (type, id) => {
+        const typeMap = {
+            matches: (fav) => fav.match.id === id,
+            leagues: (fav) => fav.league.id === id,
+            teams: (fav) => fav.team.id === id,
+        };
 
+        if (!typeMap[type]) {
+            console.error(`Invalid type provided: ${type}`);
+            return false;
+        }
 
+        return favorites[type]?.some(typeMap[type]) || false;
+    };
+    // const isFavorite = type === 'matches'
+    //     ? favorites.matches.some(fav => fav.match.id === item.id)
+    //     : false;
     // const isFavorite = (type, id) => {
     //     return favorites[type].some(fav => fav[`${type.slice(0, -1)}`].id === id);
     // };
 
 
 
-    const renderMatchesByLeague = () => {
-        const favoriteMatchIds = favorites.matches.map(match => match.match.id); // Pobranie ID ulubionych meczów
-        const groupedMatches = matches.reduce((acc, match) => {
-            const leagueName = match.league.name;
-            if (!acc[leagueName]) acc[leagueName] = [];
-            acc[leagueName].push(match);
-            return acc;
-        }, {});
+    // const renderMatchesByLeague = () => {
+    //     const favoriteMatchIds = favorites.matches.map(match => match.match.id); // Pobranie ID ulubionych meczów
+    //     const groupedMatches = matches.reduce((acc, match) => {
+    //         const leagueName = match.league.name;
+    //         if (!acc[leagueName]) acc[leagueName] = [];
+    //         acc[leagueName].push(match);
+    //         return acc;
+    //     }, {});
+    //
+    //     const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
+    //
+    //     return sortedLeagues.map(leagueName => (
+    //         <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
+    //             <Card.Header className="d-flex align-items-center justify-content-between">
+    //                 <div className="d-flex align-items-center">
+    //                     {/* Flaga kraju */}
+    //                     <i
+    //                         className={`bi ${isFavorite('leagues', groupedMatches[leagueName][0].league.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+    //                         style={{ cursor: 'pointer' }}
+    //                         onClick={() => toggleFavorite('leagues', groupedMatches[leagueName][0].league)}
+    //                     ></i>
+    //                     <span style={{ marginRight: '15px' }}></span>
+    //                     <img
+    //                         src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
+    //                         alt={groupedMatches[leagueName][0].league.country.name}
+    //                         style={{ width: '20px', height: '15px', marginRight: '10px' }}
+    //                     />
+    //                     {leagueName}
+    //                 </div>
+    //             </Card.Header>
+    //             <ListGroup variant="flush">
+    //                 {groupedMatches[leagueName].map(match => (
+    //                     <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between" style={{ width: '100%' }}>
+    //                         {/* Gwiazdka ulubionych meczów */}
+    //                         <i
+    //                             className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+    //                             style={{ cursor: 'pointer' }}
+    //                             onClick={() => toggleFavorite('matches', match)}
+    //                         ></i>
+    //                         {/* Godzina meczu */}
+    //                         <span style={{ marginRight: '22px', marginLeft: '20px' }}>
+    //                 {new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+    //             </span>
+    //                         {/* Drużyny */}
+    //                         <div style={{ flex: 1 }}>
+    //                             <div className="d-flex align-items-center">
+    //                                 <TeamImageVerySmall team={match.homeTeam} />
+    //                                 <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
+    //                             </div>
+    //                             <div className="d-flex align-items-center">
+    //                                 <TeamImageVerySmall team={match.awayTeam} />
+    //                                 <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
+    //                             </div>
+    //                         </div>
+    //                         {/* Wynik meczu */}
+    //                         {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
+    //                             <span style={{ marginRight: '40px' }}>
+    //                     <div style={{ textAlign: 'right' }}>
+    //                         <div>{match.homeGoals}</div>
+    //                         <div>{match.awayGoals}</div>
+    //                     </div>
+    //                 </span>
+    //                         ) : null}
+    //                     </ListGroup.Item>
+    //                 ))}
+    //             </ListGroup>
+    //         </Card>
+    //     ));
+    //
+    // };
 
-        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
+    const renderFavoriteMatches = () => {
+        const formattedDate = selectedDate.toISOString().split('T')[0]; // Format daty YYYY-MM-DD
 
-        return sortedLeagues.map(leagueName => (
-            <Card className="mb-4" key={leagueName}>
-                <Card.Header className="d-flex align-items-center">
-                    {/* Flaga kraju */}
-                    <img
-                        src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
-                        alt={groupedMatches[leagueName][0].league.country.name}
-                        style={{ width: '20px', height: '15px', marginRight: '10px' }}
-                    />
-                    {leagueName}
+        // Filtruj ulubione mecze na podstawie daty
+        const favoriteMatches = favorites.matches
+            .map(fav => fav.match)
+            .filter(match => match.dateTime.startsWith(formattedDate)); // Sprawdzamy datę
+
+        if (favoriteMatches.length === 0) {
+            return null; // Nie renderuj sekcji, jeśli nie ma meczów w wybranej dacie
+        }
+
+        return (
+            <Card className="mb-4 mt-4" style={{ width: '700px', margin: '0 auto' }}>
+                <Card.Header className="d-flex align-items-center justify-content-between">
+                    <h5 className="mb-0">Ulubione mecze</h5>
                 </Card.Header>
                 <ListGroup variant="flush">
-                    {groupedMatches[leagueName].map(match => (
+                    {favoriteMatches.map(match => (
                         <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
-                            {/* Gwiazdka ulubionych */}
+                            {/* Gwiazdka ulubionych meczów */}
                             <i
-                                className={`bi ${favoriteMatchIds.includes(match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => toggleFavorite('matches', match)}
                             ></i>
                             {/* Godzina meczu */}
-                            <span style={{ marginRight: '15px' }}>{match.time}</span>
+                            <span style={{ marginRight: '15px', marginLeft: '15px' }}>
+                            {new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                             {/* Drużyny */}
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
@@ -225,10 +326,82 @@ const MainView = () => {
                             </div>
                             {/* Wynik meczu */}
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
+                                <span style={{ marginRight: '40px' }}>
                                 <div style={{ textAlign: 'right' }}>
                                     <div>{match.homeGoals}</div>
                                     <div>{match.awayGoals}</div>
                                 </div>
+                            </span>
+                            ) : null}
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
+            </Card>
+        );
+    };
+
+
+    const renderMatchesByLeague = () => {
+        const groupedMatches = matches.reduce((acc, match) => {
+            const leagueName = match.league.name;
+            if (!acc[leagueName]) acc[leagueName] = [];
+            acc[leagueName].push(match);
+            return acc;
+        }, {});
+
+        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
+
+        return sortedLeagues.map(leagueName => (
+            <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
+                <Card.Header className="d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center">
+                        {/* Flaga kraju */}
+                        <i
+                            className={`bi ${isFavorite('leagues', groupedMatches[leagueName][0].league.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => toggleFavorite('leagues', groupedMatches[leagueName][0].league)}
+                        ></i>
+                        <span style={{ marginRight: '15px' }}></span>
+                        <img
+                            src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
+                            alt={groupedMatches[leagueName][0].league.country.name}
+                            style={{ width: '20px', height: '15px', marginRight: '10px' }}
+                        />
+                        {leagueName}
+                    </div>
+                </Card.Header>
+                <ListGroup variant="flush">
+                    {groupedMatches[leagueName].map(match => (
+                        <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
+                            {/* Gwiazdka ulubionych meczów */}
+                            <i
+                                className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => toggleFavorite('matches', match)}
+                            ></i>
+                            {/* Godzina meczu */}
+                            <span style={{ marginRight: '15px', marginLeft: '15px' }}>
+                            {new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                            {/* Drużyny */}
+                            <div style={{ flex: 1 }}>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.homeTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.awayTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
+                                </div>
+                            </div>
+                            {/* Wynik meczu */}
+                            {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
+                                <span style={{ marginRight: '40px' }}>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div>{match.homeGoals}</div>
+                                    <div>{match.awayGoals}</div>
+                                </div>
+                            </span>
                             ) : null}
                         </ListGroup.Item>
                     ))}
@@ -236,6 +409,7 @@ const MainView = () => {
             </Card>
         ));
     };
+
 
     // Wstrzymaj renderowanie, jeśli ulubione dane nie są gotowe
     if (!isFavoritesReady) {
@@ -280,16 +454,44 @@ const MainView = () => {
                         {favorites.teams.map(team => (
                             <ListGroup.Item key={team.id} className="d-flex align-items-center">
                                 {/* Herb drużyny */}
-                                <TeamImageVerySmall team={team.team} />
-                                <span style={{ marginLeft: '10px' }}>{team.team.name}</span>
+                                <TeamImageVerySmall team={team.team}/>
+                                <span style={{marginLeft: '10px'}}>{team.team.name}</span>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                    <h5 className="mt-4">Wszystkie ligi</h5>
+                    <ListGroup>
+                        {allLeagues.map((league) => (
+                            <ListGroup.Item key={league.id}
+                                            className="d-flex justify-content-between align-items-center">
+                                {league.name}
+                                <i
+                                    className={`bi ${isFavorite('leagues', league.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                    style={{cursor: 'pointer'}}
+                                    onClick={() => toggleFavorite('leagues', league)}
+                                ></i>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+
+                    <h5 className="mt-4">Wszystkie drużyny</h5>
+                    <ListGroup>
+                        {allTeams.map((team) => (
+                            <ListGroup.Item key={team.id} className="d-flex justify-content-between align-items-center">
+                                {team.name}
+                                <i
+                                    className={`bi ${isFavorite('teams', team.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                    style={{cursor: 'pointer'}}
+                                    onClick={() => toggleFavorite('teams', team)}
+                                ></i>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
                 </Col>
 
                 <Col xs={9}>
-                    <div className="d-flex align-items-center justify-content-between mt-4">
-                        <Button variant="light" onClick={goToPreviousDay}>
+                    <div className="d-flex align-items-center justify-content-center mt-4">
+                        <Button variant="light" onClick={goToPreviousDay} style={{ marginRight: '5px' }}>
                             <BiLeftArrow />
                         </Button>
                         <DatePicker
@@ -298,13 +500,18 @@ const MainView = () => {
                             dateFormat="dd/MM/yyyy"
                             customInput={<Button variant="outline-dark">{selectedDate.toLocaleDateString()}</Button>}
                         />
-                        <Button variant="light" onClick={goToNextDay}>
+                        <Button variant="light" onClick={goToNextDay} style={{ marginLeft: '5px' }}>
                             <BiRightArrow />
                         </Button>
                     </div>
 
+                    {/* Ulubione mecze */}
+                    <div className="mt-4">{renderFavoriteMatches()}</div>
+
+                    {/* Wszystkie mecze */}
                     <div className="mt-4">{renderMatchesByLeague()}</div>
                 </Col>
+
             </Row>
         </Container>
     );
