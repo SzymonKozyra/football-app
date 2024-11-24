@@ -51,7 +51,6 @@ const MainView = () => {
             })
         );
     };
-
     const calculateMatchMinute = (match) => {
         if (match.status === 'FINISHED') {
             return 'Finished';
@@ -71,6 +70,7 @@ const MainView = () => {
                 return "Live"; // Default fallback for matches without events
             }
 
+            // Sort events by date in descending order
             const sortedEvents = [...match.events].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
             const startEvent = sortedEvents.find((event) => startEventTypes.includes(event.type));
 
@@ -82,14 +82,19 @@ const MainView = () => {
                 switch (startEvent.type) {
                     case 'MATCH_START':
                         return diffInMinutes <= 45 ? `${diffInMinutes}'` : `45+${diffInMinutes - 45}'`;
+
                     case 'SECOND_HALF_START':
                         return diffInMinutes <= 45 ? `45+${diffInMinutes}'` : `90+${diffInMinutes - 45}'`;
+
                     case 'OT_FIRST_HALF_START':
                         return diffInMinutes <= 15 ? `90+${diffInMinutes}'` : `105+${diffInMinutes - 15}'`;
+
                     case 'OT_SECOND_HALF_START':
                         return diffInMinutes <= 15 ? `105+${diffInMinutes}'` : `120+${diffInMinutes - 15}'`;
+
                     case 'PENALTIES_START':
                         return 'Penalties';
+
                     default:
                         return `${diffInMinutes}'`;
                 }
@@ -101,7 +106,6 @@ const MainView = () => {
 
         return null; // For non-IN_PLAY and non-FINISHED statuses
     };
-
 
 
     // Pobranie ID użytkownika
@@ -179,13 +183,11 @@ const MainView = () => {
                 }),
             }));
 
-
             console.log("Updated Matches with Events:", updatedMatches);
         } catch (error) {
             console.error("Error fetching matches and events:", error);
         }
     };
-
     useEffect(() => {
         // Fetch matches and their events whenever selectedDate changes
         fetchMatchesAndEvents();
@@ -393,50 +395,71 @@ const MainView = () => {
     //
     // };
 
-    const renderFavoriteMatches = () => {
-        const formattedDate = selectedDate.toISOString().split('T')[0]; // Format daty YYYY-MM-DD
+    const renderMatchesByLeague = () => {
+        const groupedMatches = matches.reduce((acc, match) => {
+            const leagueName = match.league.name;
+            if (!acc[leagueName]) acc[leagueName] = [];
+            acc[leagueName].push(match);
+            return acc;
+        }, {});
 
-        // Filtruj ulubione mecze na podstawie daty
-        const favoriteMatches = favorites.matches
-            .map(fav => fav.match)
-            .filter(match => match.dateTime.startsWith(formattedDate)); // Sprawdzamy datę
+        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
 
-        if (favoriteMatches.length === 0) {
-            return null; // Nie renderuj sekcji, jeśli nie ma meczów w wybranej dacie
-        }
-
-        return (
-            <Card className="mb-4 mt-4" style={{ width: '700px', margin: '0 auto' }}>
+        return sortedLeagues.map((leagueName) => (
+            <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
                 <Card.Header className="d-flex align-items-center justify-content-between">
-                    <h5 className="mb-0">Ulubione mecze</h5>
+                    <div className="d-flex align-items-center">
+                        <i
+                            className={`bi ${
+                                isFavorite('leagues', groupedMatches[leagueName][0].league.id)
+                                    ? 'bi-star-fill text-warning'
+                                    : 'bi-star'
+                            }`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => toggleFavorite('leagues', groupedMatches[leagueName][0].league)}
+                        ></i>
+                        <span style={{ marginRight: '15px' }}></span>
+                        <img
+                            src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
+                            alt={groupedMatches[leagueName][0].league.country.name}
+                            style={{ width: '20px', height: '15px', marginRight: '10px' }}
+                        />
+                        {leagueName}
+                    </div>
                 </Card.Header>
                 <ListGroup variant="flush">
-                    {favoriteMatches.map(match => (
+                    {groupedMatches[leagueName].map((match) => (
                         <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
-                            {/* Gwiazdka ulubionych meczów */}
+                            {/* Favorite Star */}
                             <i
-                                className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
+                                className={`bi ${
+                                    isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'
+                                }`}
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => toggleFavorite('matches', match)}
                             ></i>
-                            {/* Godzina meczu */}
-                            <span style={{
-                                marginRight: '15px',
-                                marginLeft: '15px',
-                                width: '70px', // Stała szerokość
-                                textAlign: 'center', // Wyśrodkowanie tekstu
-                                display: 'inline-block', // Inline-block dla zachowania szerokości
-                                backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent', // Lekko czerwone tło dla IN_PLAY
-                                borderRadius: '5px', // Zaokrąglone rogi dla estetyki
-                                padding: '5px', // Dodatkowy odstęp
-                            }}>
-    {match.status === 'IN_PLAY'
-        ? calculateMatchMinute(match)
-        : match.status === 'FINISHED'
-            ? 'Finished'
-            : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-</span>
-                            {/* Drużyny */}
+
+                            {/* Match Time or Minute */}
+                            <span
+                                style={{
+                                    marginRight: '15px',
+                                    marginLeft: '15px',
+                                    width: '70px',
+                                    textAlign: 'center',
+                                    display: 'inline-block',
+                                    backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent',
+                                    borderRadius: '5px',
+                                    padding: '5px',
+                                }}
+                            >
+                            {match.status === 'IN_PLAY'
+                                ? calculateMatchMinute(match)
+                                : match.status === 'FINISHED'
+                                    ? 'Finished'
+                                    : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+
+                            {/* Teams */}
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -447,7 +470,80 @@ const MainView = () => {
                                     <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
                                 </div>
                             </div>
-                            {/* Wynik meczu */}
+
+                            {/* Score */}
+                            {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
+                                <span style={{ marginRight: '40px' }}>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div>{match.homeGoals}</div>
+                                    <div>{match.awayGoals}</div>
+                                </div>
+                            </span>
+                            ) : null}
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
+            </Card>
+        ));
+    };
+    const renderFavorites = () => {
+        const favoriteMatchIds = favorites.matches.map((fav) => fav.match.id);
+        const favoriteMatches = matches.filter((match) => favoriteMatchIds.includes(match.id));
+
+        if (favoriteMatches.length === 0) {
+            return null; // Don't render the section if no favorite matches exist
+        }
+
+        return (
+            <Card className="mb-4 mt-4" style={{ width: '700px', margin: '0 auto' }}>
+                <Card.Header className="d-flex align-items-center justify-content-between">
+                    <h5 className="mb-0">Ulubione mecze</h5>
+                </Card.Header>
+                <ListGroup variant="flush">
+                    {favoriteMatches.map((match) => (
+                        <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
+                            {/* Favorite Star */}
+                            <i
+                                className={`bi ${
+                                    isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'
+                                }`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => toggleFavorite('matches', match)}
+                            ></i>
+
+                            {/* Match Time or Minute */}
+                            <span
+                                style={{
+                                    marginRight: '15px',
+                                    marginLeft: '15px',
+                                    width: '70px',
+                                    textAlign: 'center',
+                                    display: 'inline-block',
+                                    backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent',
+                                    borderRadius: '5px',
+                                    padding: '5px',
+                                }}
+                            >
+                            {match.status === 'IN_PLAY'
+                                ? calculateMatchMinute(match)
+                                : match.status === 'FINISHED'
+                                    ? 'Finished'
+                                    : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+
+                            {/* Teams */}
+                            <div style={{ flex: 1 }}>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.homeTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
+                                </div>
+                                <div className="d-flex align-items-center">
+                                    <TeamImageVerySmall team={match.awayTeam} />
+                                    <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
+                                </div>
+                            </div>
+
+                            {/* Score */}
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
                                 <span style={{ marginRight: '40px' }}>
                                 <div style={{ textAlign: 'right' }}>
@@ -464,91 +560,26 @@ const MainView = () => {
     };
 
 
-    const renderMatchesByLeague = () => {
-        const groupedMatches = matches.reduce((acc, match) => {
-            const leagueName = match.league.name;
-            if (!acc[leagueName]) acc[leagueName] = [];
-            acc[leagueName].push(match);
-            return acc;
-        }, {});
+    const renderFavoritesAndMatches = () => {
+        // Filter favorite matches for rendering
+        const favoriteMatchIds = favorites.matches.map((fav) => fav.match.id);
+        const favoriteMatches = matches.filter((match) => favoriteMatchIds.includes(match.id));
 
-        const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
-
-        return sortedLeagues.map(leagueName => (
-            <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
-                <Card.Header className="d-flex align-items-center justify-content-between">
-                    <div className="d-flex align-items-center">
-                        {/* Flaga kraju */}
-                        <i
-                            className={`bi ${isFavorite('leagues', groupedMatches[leagueName][0].league.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => toggleFavorite('leagues', groupedMatches[leagueName][0].league)}
-                        ></i>
-                        <span style={{ marginRight: '15px' }}></span>
-                        <img
-                            src={`/assets/flags/${groupedMatches[leagueName][0].league.country.code}.svg`}
-                            alt={groupedMatches[leagueName][0].league.country.name}
-                            style={{ width: '20px', height: '15px', marginRight: '10px' }}
-                        />
-                        {leagueName}
+        return (
+            <>
+                {/* Render Favorites */}
+                {favoriteMatches.length > 0 && (
+                    <div className="mt-4">
+                        <h5>Ulubione mecze</h5>
+                        {renderMatchesByLeague(favoriteMatches)}
                     </div>
-                </Card.Header>
-                <ListGroup variant="flush">
-                    {groupedMatches[leagueName].map(match => (
-                        <ListGroup.Item key={match.id} className="d-flex align-items-center justify-content-between">
-                            {/* Gwiazdka ulubionych meczów */}
-                            <i
-                                className={`bi ${isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => toggleFavorite('matches', match)}
-                            ></i>
-                            {/* Godzina meczu */}
-                            {/* Godzina meczu lub minuta */}
-                            <span style={{
-                                marginRight: '15px',
-                                marginLeft: '15px',
-                                width: '70px', // Stała szerokość
-                                textAlign: 'center', // Wyśrodkowanie tekstu
-                                display: 'inline-block', // Inline-block dla zachowania szerokości
-                                backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent', // Lekko czerwone tło dla IN_PLAY
-                                borderRadius: '5px', // Zaokrąglone rogi dla estetyki
-                                padding: '5px', // Dodatkowy odstęp
-                            }}>
-                                {match.status === 'IN_PLAY' ? (
-                                            console.log("Matches By League - Match Data:", match),
-                                                calculateMatchMinute(match)
-                                        ) :
-                                    (match.status === 'FINISHED' ? 'Finished' :
-                                        new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))}
-                            </span>
+                )}
 
-                            {/* Drużyny */}
-                            <div style={{ flex: 1 }}>
-                                <div className="d-flex align-items-center">
-                                    <TeamImageVerySmall team={match.homeTeam} />
-                                    <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
-                                </div>
-                                <div className="d-flex align-items-center">
-                                    <TeamImageVerySmall team={match.awayTeam} />
-                                    <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
-                                </div>
-                            </div>
-                            {/* Wynik meczu */}
-                            {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
-                                <span style={{ marginRight: '40px' }}>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div>{match.homeGoals}</div>
-                                    <div>{match.awayGoals}</div>
-                                </div>
-                            </span>
-                            ) : null}
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-            </Card>
-        ));
+                {/* Render All Matches */}
+                <div className="mt-4">{renderMatchesByLeague(matches)}</div>
+            </>
+        );
     };
-
 
     // Wstrzymaj renderowanie, jeśli ulubione dane nie są gotowe
     if (!isFavoritesReady) {
@@ -644,11 +675,11 @@ const MainView = () => {
                         </Button>
                     </div>
 
-                    {/* Ulubione mecze */}
-                    <div className="mt-4">{renderFavoriteMatches()}</div>
+                    {/* Favorites Section */}
+                    {renderFavorites()}
 
-                    {/* Wszystkie mecze */}
-                    <div className="mt-4">{renderMatchesByLeague()}</div>
+                    {/* All Matches by League */}
+                    {renderMatchesByLeague()}
                 </Col>
 
             </Row>
