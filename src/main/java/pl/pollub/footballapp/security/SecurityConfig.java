@@ -49,6 +49,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/match-squad/**").permitAll()
                         .requestMatchers("/api/match-squad/players/**").permitAll()
+                        .requestMatchers("/api/matches/**").permitAll() // Pozwól na dostęp bez autoryzacji
 
 
                         .anyRequest().authenticated()

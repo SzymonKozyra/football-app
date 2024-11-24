@@ -21,8 +21,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, loginData, onLogout, onOpenLogin, o
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
                 <Link to="/" className="navbar-logo">
-                    <img src="/logo.png" alt="Logo" />
-                    Football Application
+                    <img src="/assets/logo.png" alt="Logo" height={200}/>
                 </Link>
                 <div className="d-flex align-items-center">
                     {isLoggedIn && (loginData.role === 'ROLE_ADMIN' || loginData.role === 'ROLE_MODERATOR') && (

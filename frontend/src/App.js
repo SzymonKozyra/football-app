@@ -52,6 +52,7 @@ import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 import MainView from "./components/MainView";
+import MatchDetail from "./components/MatchDetail";
 
 
 
@@ -251,7 +252,11 @@ function App() {
                     />
 
                     <Route path="/manage-events/:matchId" element={<EventManagement />} />
+                    {/* Route for the main view */}
+                    <Route path="/" element={<MainView />} />
 
+                    {/* Route for the match detail view */}
+                    <Route path="/match/:matchId" element={<MatchDetail />} />
                 </Routes>
         </div>
     );

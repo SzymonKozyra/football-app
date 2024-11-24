@@ -40,7 +40,6 @@ public class MatchController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<Match> getMatchById(@PathVariable Long id) {
         return matchService.getMatchById(id)
                 .map(ResponseEntity::ok)

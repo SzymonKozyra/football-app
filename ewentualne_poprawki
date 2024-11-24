@@ -2,13 +2,14 @@ Najważniejsze
 - responsywność
 - wyszukiwanie zawodników (pozbyc sie tego klikania podwojnego)
 - zeby nie dalo sie ustawic dwoch takich samych teamow w meczu
+- upload zdjec gdzies indziej niz w pliakch projektowych, czyli gdzies na dysku, bo jak ktos bedzie testowal strone to zobaczy ze nie dziala i lipa
+
 
 Ważne
 - playercontract: salary powinno byc optional
 - importy do wszystkiego
 - zeby sie registerAdmin nie pokazywalo
 - zrobienie przechodzenia miedzy stronami w sposob asynchroniczny na akzdej stronie rpzynajmnije u moderatora, bo kwasy wychodza
-- datetime, dla zdarzen; glowne wykorzystanie: minuta meczu
 
 
 Mniej ważne
