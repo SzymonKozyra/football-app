@@ -12,8 +12,11 @@ import TeamImageVerySmall from "./TeamImageVerySmall";
 const BASE_URL = 'http://localhost:8080';
 
 const MainView = () => {
-    const [favorites, setFavorites] = useState({ leagues: [], teams: [] });
-    const [matches, setMatches] = useState([]);
+    const [favorites, setFavorites] = useState({
+        matches: [],
+        leagues: [],
+        teams: [],
+    });       const [matches, setMatches] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [userId, setUserId] = useState(null);
     const [isFavoritesReady, setIsFavoritesReady] = useState(false); // Flaga określająca gotowość
@@ -22,6 +25,84 @@ const MainView = () => {
     const [allTeams, setAllTeams] = useState([]);
 
     const token = localStorage.getItem('jwtToken');
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setMatches((prevMatches) => [...prevMatches]); // Wymuszamy aktualizację stanu
+        }, 60000); // Aktualizuj co minutę
+
+        return () => clearInterval(interval); // Wyczyść interwał po unmount
+    }, []);
+    useEffect(() => {
+        console.log("Favorites state updated:", favorites);
+    }, [favorites]);
+    const fetchEventsForMatches = async (matches) => {
+        // Fetch events for a list of matches and return updated matches
+        return Promise.all(
+            matches.map(async (match) => {
+                try {
+                    const response = await axios.get(`${BASE_URL}/api/events/match/${match.id}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    return { ...match, events: response.data }; // Add events to match
+                } catch (error) {
+                    console.error(`Error fetching events for match ${match.id}:`, error);
+                    return match; // Return match without events if there's an error
+                }
+            })
+        );
+    };
+
+    const calculateMatchMinute = (match) => {
+        if (match.status === 'FINISHED') {
+            return 'Finished';
+        }
+
+        if (match.status === 'IN_PLAY') {
+            const startEventTypes = [
+                'MATCH_START',
+                'SECOND_HALF_START',
+                'OT_FIRST_HALF_START',
+                'OT_SECOND_HALF_START',
+                'PENALTIES_START',
+            ];
+
+            if (!match.events || !Array.isArray(match.events)) {
+                console.warn(`No events available for match ${match.id}`);
+                return "Live"; // Default fallback for matches without events
+            }
+
+            const sortedEvents = [...match.events].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+            const startEvent = sortedEvents.find((event) => startEventTypes.includes(event.type));
+
+            if (startEvent) {
+                const startTime = new Date(startEvent.dateTime);
+                const now = new Date();
+                const diffInMinutes = Math.floor((now - startTime) / 60000) + 1;
+
+                switch (startEvent.type) {
+                    case 'MATCH_START':
+                        return diffInMinutes <= 45 ? `${diffInMinutes}'` : `45+${diffInMinutes - 45}'`;
+                    case 'SECOND_HALF_START':
+                        return diffInMinutes <= 45 ? `45+${diffInMinutes}'` : `90+${diffInMinutes - 45}'`;
+                    case 'OT_FIRST_HALF_START':
+                        return diffInMinutes <= 15 ? `90+${diffInMinutes}'` : `105+${diffInMinutes - 15}'`;
+                    case 'OT_SECOND_HALF_START':
+                        return diffInMinutes <= 15 ? `105+${diffInMinutes}'` : `120+${diffInMinutes - 15}'`;
+                    case 'PENALTIES_START':
+                        return 'Penalties';
+                    default:
+                        return `${diffInMinutes}'`;
+                }
+            }
+
+            console.warn(`No start event found for match ${match.id}`);
+            return "Live"; // Fallback if no start event is found
+        }
+
+        return null; // For non-IN_PLAY and non-FINISHED statuses
+    };
+
+
 
     // Pobranie ID użytkownika
     useEffect(() => {
@@ -71,14 +152,43 @@ const MainView = () => {
     }, [userId, token]);
 
     // Pobranie meczów dla wybranej daty
+    const fetchMatchesAndEvents = async () => {
+        try {
+            const formattedDate = selectedDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            const response = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const fetchedMatches = response.data;
+
+            // Fetch events for all matches
+            const updatedMatches = await fetchEventsForMatches(fetchedMatches);
+
+            // Update matches
+            setMatches(updatedMatches);
+
+            // Sync events with favorites
+            setFavorites((prevFavorites) => ({
+                ...prevFavorites,
+                matches: prevFavorites.matches.map((fav) => {
+                    const updatedMatch = updatedMatches.find((match) => match.id === fav.match.id);
+                    return {
+                        ...fav,
+                        match: updatedMatch ? { ...fav.match, events: updatedMatch.events } : fav.match,
+                    };
+                }),
+            }));
+
+
+            console.log("Updated Matches with Events:", updatedMatches);
+        } catch (error) {
+            console.error("Error fetching matches and events:", error);
+        }
+    };
+
     useEffect(() => {
-        const formattedDate = selectedDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
-        axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, { headers: { Authorization: `Bearer ${token}` } })
-            .then(response => {
-                setMatches(response.data);
-                console.log("Dane zwrócone z backendu dla meczów:", response.data); // Logujemy dane
-            })
-            .catch(error => console.error('Error fetching matches:', error));
+        // Fetch matches and their events whenever selectedDate changes
+        fetchMatchesAndEvents();
     }, [selectedDate, token]);
 
 
@@ -310,9 +420,22 @@ const MainView = () => {
                                 onClick={() => toggleFavorite('matches', match)}
                             ></i>
                             {/* Godzina meczu */}
-                            <span style={{ marginRight: '15px', marginLeft: '15px' }}>
-                            {new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                            <span style={{
+                                marginRight: '15px',
+                                marginLeft: '15px',
+                                width: '70px', // Stała szerokość
+                                textAlign: 'center', // Wyśrodkowanie tekstu
+                                display: 'inline-block', // Inline-block dla zachowania szerokości
+                                backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent', // Lekko czerwone tło dla IN_PLAY
+                                borderRadius: '5px', // Zaokrąglone rogi dla estetyki
+                                padding: '5px', // Dodatkowy odstęp
+                            }}>
+    {match.status === 'IN_PLAY'
+        ? calculateMatchMinute(match)
+        : match.status === 'FINISHED'
+            ? 'Finished'
+            : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+</span>
                             {/* Drużyny */}
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
@@ -380,9 +503,25 @@ const MainView = () => {
                                 onClick={() => toggleFavorite('matches', match)}
                             ></i>
                             {/* Godzina meczu */}
-                            <span style={{ marginRight: '15px', marginLeft: '15px' }}>
-                            {new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                            {/* Godzina meczu lub minuta */}
+                            <span style={{
+                                marginRight: '15px',
+                                marginLeft: '15px',
+                                width: '70px', // Stała szerokość
+                                textAlign: 'center', // Wyśrodkowanie tekstu
+                                display: 'inline-block', // Inline-block dla zachowania szerokości
+                                backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent', // Lekko czerwone tło dla IN_PLAY
+                                borderRadius: '5px', // Zaokrąglone rogi dla estetyki
+                                padding: '5px', // Dodatkowy odstęp
+                            }}>
+                                {match.status === 'IN_PLAY' ? (
+                                            console.log("Matches By League - Match Data:", match),
+                                                calculateMatchMinute(match)
+                                        ) :
+                                    (match.status === 'FINISHED' ? 'Finished' :
+                                        new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))}
+                            </span>
+
                             {/* Drużyny */}
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">

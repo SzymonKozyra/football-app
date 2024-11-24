@@ -1,8 +1,11 @@
 package pl.pollub.footballapp;
-
 public enum EventType {
     MATCH_START,
     MATCH_END,
+    SECOND_HALF_START,
+    OT_FIRST_HALF_START,
+    OT_SECOND_HALF_START,
+    PENALTIES_START,
     GOAL,
     ASSIST,
     YELLOW_CARD,

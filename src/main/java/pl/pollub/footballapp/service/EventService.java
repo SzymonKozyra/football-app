@@ -57,7 +57,13 @@ public class EventService {
         event.setMinute(eventRequest.getMinute());
         event.setType(eventRequest.getType());
         event.setPartOfGame(eventRequest.getPartOfGame());
-
+        if (eventRequest.getDateTime() != null) {
+            System.out.println("Using provided dateTime: " + eventRequest.getDateTime());
+            event.setDateTime(eventRequest.getDateTime());
+        } else {
+            System.out.println("Using default match dateTime: " + match.getDateTime());
+            event.setDateTime(match.getDateTime());
+        }
         // Logika biznesowa
         switch (event.getType()) {
             case GOAL:

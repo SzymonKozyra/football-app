@@ -3,6 +3,8 @@ package pl.pollub.footballapp.model;
 import jakarta.persistence.*;
 import pl.pollub.footballapp.EventType;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "events")
 public class Event {
@@ -26,9 +28,10 @@ public class Event {
     @Column(name = "part_of_game")
     private String partOfGame;
 
+    @Column(name = "date_time")
+    private LocalDateTime dateTime; // Nowe pole
+
     // Getters and Setters
-
-
     public Long getId() {
         return id;
     }
@@ -75,5 +78,13 @@ public class Event {
 
     public void setPartOfGame(String partOfGame) {
         this.partOfGame = partOfGame;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }

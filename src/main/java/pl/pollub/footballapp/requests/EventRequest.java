@@ -1,13 +1,15 @@
 package pl.pollub.footballapp.requests;
 
 import pl.pollub.footballapp.EventType;
+import java.time.LocalDateTime;
 
 public class EventRequest {
     private Long matchId;
     private Long playerId;
     private int minute;
-    private EventType type;
     private String partOfGame;
+    private EventType type;
+    private LocalDateTime dateTime; // Nowe pole
 
     // Getters and Setters
     public Long getMatchId() {
@@ -34,14 +36,6 @@ public class EventRequest {
         this.minute = minute;
     }
 
-    public EventType getType() {
-        return type;
-    }
-
-    public void setType(EventType type) {
-        this.type = type;
-    }
-
     public String getPartOfGame() {
         return partOfGame;
     }
@@ -50,14 +44,19 @@ public class EventRequest {
         this.partOfGame = partOfGame;
     }
 
-    @Override
-    public String toString() {
-        return "EventRequest{" +
-                "matchId=" + matchId +
-                ", playerId=" + playerId +
-                ", minute=" + minute +
-                ", type='" + type + '\'' +
-                ", partOfGame='" + partOfGame + '\'' +
-                '}';
+    public EventType getType() {
+        return type;
+    }
+
+    public void setType(EventType type) {
+        this.type = type;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }
