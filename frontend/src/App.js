@@ -53,6 +53,7 @@ import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 import MainView from "./components/MainView";
 import MatchDetail from "./components/MatchDetail";
+import "./components/MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 
 
 

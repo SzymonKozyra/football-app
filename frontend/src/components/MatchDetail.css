@@ -1,0 +1,100 @@
+/* Stylizacja modala */
+.custom-modal .modal-dialog .custom-modal-content {
+    /*max-width: 900px !important;*/
+    /*width: 100% !important;*/
+}
+
+.modal-content{
+    position: relative;
+    flex-direction: column;
+    width: 150% !important;
+    color: var(--bs-modal-color);
+    pointer-events: auto;
+    background-color: var(--bs-modal-bg);
+    background-clip: padding-box;
+    border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+    border-radius: var(--bs-modal-border-radius);
+    outline: 0;
+}
+
+.custom-modal .modal-content {
+    padding: 20px !important;
+    /*max-width: 900px !important;*/
+}
+.match-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px; /* Powiększamy tekst w nagłówku */
+}
+
+.match-detail-flag {
+    width: 25px; /* Powiększamy flagę */
+    height: 20px;
+    border-radius: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+.match-detail-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Wyrównanie elementów do środka osi pionowej */
+    text-align: center;
+    padding: 20px 0;
+    gap: 30px; /* Większa przestrzeń między sekcjami */
+}
+
+
+.team-section {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Odstęp między gwiazdką a sekcją drużyny */
+    text-align: center;
+    flex: 1; /* Równomierna szerokość sekcji */
+    justify-content: space-between; /* Rozkład gwiazdki i drużyny */
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.team-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.match-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Wyrównanie wyniku do środka osi pionowej */
+    height: 100%; /* Upewniamy się, że sekcja "rozciąga się" na całą dostępną przestrzeń */
+}
+
+.match-score {
+    font-size: 46px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 60px; /* Dodanie przestrzeni, jeśli potrzebne */
+}
+
+.match-vs {
+    font-size: 24px;
+    font-weight: bold;
+    color: gray;
+}
+.match-date {
+    font-size: 16px;
+    color: gray;
+    width: 150px;
+    margin-bottom: 0px;
+}
+
+.match-detail-body .bi {
+    font-size: 24px; /* Zwiększa rozmiar gwiazdek */
+    cursor: pointer;
+    margin-bottom: 40px;
+}

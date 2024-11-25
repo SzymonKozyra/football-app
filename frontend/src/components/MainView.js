@@ -10,6 +10,8 @@ import TeamImageSmall from "./TeamImageSmall";
 import TeamImageVerySmall from "./TeamImageVerySmall";
 import { Link } from 'react-router-dom'; // Import React Router Link
 import { Modal } from 'react-bootstrap';
+import MatchDetail from "./MatchDetail";
+import "./MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -611,27 +613,13 @@ const MainView = () => {
 
             {/* Modal Section */}
             {showModal && (
-                <Modal show={showModal} onHide={handleCloseModal} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Mecz szczegóły</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {selectedMatch ? (
-                            <div>
-                                <h5>
-                                    {selectedMatch.homeTeam.name} vs {selectedMatch.awayTeam.name}
-                                </h5>
-                                <p>
-                                    Data: {new Date(selectedMatch.dateTime).toLocaleDateString('pl-PL')} <br />
-                                    Status: {selectedMatch.status} <br />
-                                    Wynik: {selectedMatch.homeGoals} - {selectedMatch.awayGoals}
-                                </p>
-                            </div>
-                        ) : (
-                            <p>Ładowanie...</p>
-                        )}
-                    </Modal.Body>
-                </Modal>
+                <MatchDetail
+                show={showModal}
+                onHide={handleCloseModal}
+                match={selectedMatch}
+                toggleFavorite={toggleFavorite} // Przekazanie toggleFavorite
+                isFavorite={isFavorite} // Przekazanie isFavorite
+                />
             )}
         </Container>
     );
