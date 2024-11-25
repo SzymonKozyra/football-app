@@ -98,3 +98,52 @@
     cursor: pointer;
     margin-bottom: 40px;
 }
+
+.match-events {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.event-list {
+    list-style: none; /* Remove default bullets */
+    padding: 0;       /* Remove default padding */
+    margin: 0;        /* Remove default margin */
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between; /* Ensure proper alignment */
+    align-items: center;
+    padding: 7px 0;  /* Optional: add vertical spacing between events */
+}
+
+.home-event {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.away-event {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.event-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+}
+
+.part-label {
+    font-size: 12px; /* Smaller font for part-of-game labels */
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+
+hr {
+    margin-top: 0;
+}
+.minute{
+    min-width: 20px;
+}

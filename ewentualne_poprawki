@@ -10,8 +10,9 @@ Ważne
 - importy do wszystkiego
 - zeby sie registerAdmin nie pokazywalo
 - zrobienie przechodzenia miedzy stronami w sposob asynchroniczny na akzdej stronie rpzynajmnije u moderatora, bo kwasy wychodza
-
+- zmienic ograniczenie zeby zawodnik co zaczyna mecz na lawce mogl zejsc z boiska
 
 Mniej ważne
 - przycisk do logowania od razu na konto moderatora, ale to jzu teraz zbey nam pomagał
 - reprezentacje
+- SZYBKO DA SIE ZROBIC: zrobic pole w Player, ktore bedzie przechowywalo nazwe zawodnika, ktora bedzie pokazywana pzy evencie w meczu, czyli dla Neymara Neymar, a dla CR7 C. Ronaldo
