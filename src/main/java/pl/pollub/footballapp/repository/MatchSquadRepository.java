@@ -22,5 +22,11 @@ public interface MatchSquadRepository extends JpaRepository<MatchSquad, Long> {
     List<Player> findSubstitutePlayersByMatchId(@Param("matchId") Long matchId);
 
     List<MatchSquad> findByMatchId(Long matchId);
+
+    @Query("SELECT ms.player FROM MatchSquad ms WHERE ms.match.id = :matchId AND ms.isHomeTeam = :homeTeam AND ms.firstSquad = true")
+    List<Player> findFirstSquadPlayersByMatchIdAndHomeTeam(Long matchId, boolean homeTeam);
+
+    @Query("SELECT ms.player FROM MatchSquad ms WHERE ms.match.id = :matchId AND ms.isHomeTeam = :homeTeam AND ms.firstSquad = false")
+    List<Player> findSubstitutePlayersByMatchIdAndHomeTeam(Long matchId, boolean homeTeam);
 }
 

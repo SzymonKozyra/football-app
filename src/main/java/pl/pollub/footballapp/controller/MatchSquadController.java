@@ -91,4 +91,22 @@ public class MatchSquadController {
     public ResponseEntity<List<Player>> getSubstitutePlayers(@PathVariable Long matchId) {
         return ResponseEntity.ok(matchSquadService.getSubstitutePlayers(matchId));
     }
+
+    // Nowy endpoint do pobierania pierwszej jedenastki z uwzględnieniem homeTeam
+    @GetMapping("/first-squad-home/{matchId}")
+    public ResponseEntity<List<Player>> getFirstSquadPlayersByHomeTeam(
+            @PathVariable Long matchId,
+            @RequestParam boolean homeTeam) {
+        List<Player> players = matchSquadService.getFirstSquadPlayersByHomeTeam(matchId, homeTeam);
+        return ResponseEntity.ok(players);
+    }
+
+    // Nowy endpoint do pobierania rezerwowych z uwzględnieniem homeTeam
+    @GetMapping("/substitutes-home/{matchId}")
+    public ResponseEntity<List<Player>> getSubstitutePlayersByHomeTeam(
+            @PathVariable Long matchId,
+            @RequestParam boolean homeTeam) {
+        List<Player> players = matchSquadService.getSubstitutePlayersByHomeTeam(matchId, homeTeam);
+        return ResponseEntity.ok(players);
+    }
 }

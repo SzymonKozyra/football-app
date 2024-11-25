@@ -52,4 +52,14 @@ public class MatchSquadService {
     public List<Player> getSubstitutePlayers(Long matchId) {
         return matchSquadRepository.findSubstitutePlayersByMatchId(matchId);
     }
+
+    // Nowa metoda do pobierania pierwszej jedenastki z uwzględnieniem homeTeam
+    public List<Player> getFirstSquadPlayersByHomeTeam(Long matchId, boolean homeTeam) {
+        return matchSquadRepository.findFirstSquadPlayersByMatchIdAndHomeTeam(matchId, homeTeam);
+    }
+
+    // Nowa metoda do pobierania rezerwowych z uwzględnieniem homeTeam
+    public List<Player> getSubstitutePlayersByHomeTeam(Long matchId, boolean homeTeam) {
+        return matchSquadRepository.findSubstitutePlayersByMatchIdAndHomeTeam(matchId, homeTeam);
+    }
 }
