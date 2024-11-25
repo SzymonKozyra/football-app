@@ -17,10 +17,14 @@ const AddCoachContractForm = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (searchQuery && token) {
+        if (searchQuery) {
+            if (selectedCoach && searchQuery !== `${selectedCoach.firstName} ${selectedCoach.lastName}`) {
+                setSelectedCoach(null);
+            }
+
+            const token = localStorage.getItem('jwtToken');
             axios.get(`http://localhost:8080/api/coaches/search?query=${searchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             })
                 .then(response => setFilteredCoaches(response.data))
                 .catch(error => {
@@ -29,14 +33,19 @@ const AddCoachContractForm = () => {
                 });
         } else {
             setFilteredCoaches([]);
+            setSelectedCoach(null);
         }
-    }, [searchQuery]);
+    }, [searchQuery, selectedCoach]);
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (teamSearchQuery && token) {
+        if (teamSearchQuery) {
+            if (selectedTeam && teamSearchQuery !== selectedTeam.name) {
+                setSelectedTeam(null);
+            }
+
+            const token = localStorage.getItem('jwtToken');
             axios.get(`http://localhost:8080/api/teams/search?query=${teamSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             })
                 .then(response => setFilteredTeams(response.data))
                 .catch(error => {
@@ -45,8 +54,9 @@ const AddCoachContractForm = () => {
                 });
         } else {
             setFilteredTeams([]);
+            setSelectedTeam(null);
         }
-    }, [teamSearchQuery]);
+    }, [teamSearchQuery, selectedTeam]);
 
     const handleCoachSelect = (coach) => {
         setSelectedCoach(coach);
@@ -69,24 +79,31 @@ const AddCoachContractForm = () => {
             salary,
             transferFee,
             coachId: selectedCoach ? selectedCoach.id : null,
-            teamId: selectedTeam ? selectedTeam.id : null
+            teamId: selectedTeam ? selectedTeam.id : null,
         };
 
         axios.post('http://localhost:8080/api/coach-contracts/add', contractData, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
         })
             .then(() => {
                 alert('Coach contract added successfully');
-                setStartDate('');
-                setEndDate('');
-                setSalary('');
-                setTransferFee('');
-                setSelectedCoach(null);
-                setSearchQuery('');
-                setSelectedTeam(null);
-                setTeamSearchQuery('');
+                resetForm();
             })
             .catch(error => console.error('Error adding contract:', error));
+    };
+
+    const resetForm = () => {
+        setStartDate('');
+        setEndDate('');
+        setSalary('');
+        setTransferFee('');
+        setSearchQuery('');
+        setFilteredCoaches([]);
+        setSelectedCoach(null);
+        setTeamSearchQuery('');
+        setFilteredTeams([]);
+        setSelectedTeam(null);
+        setError(null);
     };
 
     const getTodayDate = () => {
@@ -107,7 +124,7 @@ const AddCoachContractForm = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search for a coach"
                     />
-                    {filteredCoaches.length > 0 && (
+                    {filteredCoaches.length > 0 && !selectedCoach && (
                         <ListGroup className="mt-2">
                             {filteredCoaches.map((coach) => (
                                 <ListGroup.Item
@@ -130,7 +147,7 @@ const AddCoachContractForm = () => {
                         onChange={(e) => setTeamSearchQuery(e.target.value)}
                         placeholder="Search for a team"
                     />
-                    {filteredTeams.length > 0 && (
+                    {filteredTeams.length > 0 && !selectedTeam && (
                         <ListGroup className="mt-2">
                             {filteredTeams.map((team) => (
                                 <ListGroup.Item
@@ -203,16 +220,16 @@ const AddCoachContractForm = () => {
     {
         "coachId": 1,
         "teamId": 1,
-        "startDate": "YYYY-MM-DD",
-        "endDate": "YYYY-MM-DD",
+        "start_date": "2005-05-13",
+        "end_date": "2005-08-13",
         "salary": 50000.00,
         "transferFee": 10000.00
     },
     {
         "coachId": 2,
         "teamId": 3,
-        "startDate": "YYYY-MM-DD",
-        "endDate": "YYYY-MM-DD",
+        "start_date": "2009-05-13",
+        "end_date": "2009-08-13",
         "salary": 60000.00,
         "transferFee": 12000.00
     }
@@ -221,8 +238,8 @@ const AddCoachContractForm = () => {
                         <h5>CSV Template</h5>
                         <pre>
                 {`startDate,endDate,salary,transferFee,coachId,teamId,isActive
-1,1,YYYY-MM-DD,YYYY-MM-DD,50000.00,10000.00
-2,3,YYYY-MM-DD,YYYY-MM-DD,60000.00,12000.00`}
+1,1,2009-05-13,2009-08-13,50000.00,10000.00
+2,3,2005-05-13,2005-08-13,60000.00,12000.00`}
             </pre>
                     </Accordion.Body>
                 </Accordion.Item>

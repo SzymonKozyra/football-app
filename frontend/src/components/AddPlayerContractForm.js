@@ -18,30 +18,40 @@ const AddPlayerContractForm = () => {
     const [alertMessage, setAlertMessage] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (playerSearchQuery && token) {
+        if (playerSearchQuery) {
+            if (selectedPlayer && playerSearchQuery !== `${selectedPlayer.firstName} ${selectedPlayer.lastName}`) {
+                setSelectedPlayer(null);
+            }
+
+            const token = localStorage.getItem('jwtToken');
             axios.get(`http://localhost:8080/api/players/search?query=${playerSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             })
                 .then(response => setFilteredPlayers(response.data))
                 .catch(error => console.error('Error fetching players:', error));
         } else {
             setFilteredPlayers([]);
+            setSelectedPlayer(null);
         }
-    }, [playerSearchQuery]);
+    }, [playerSearchQuery, selectedPlayer]);
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (teamSearchQuery && token) {
+        if (teamSearchQuery) {
+            if (selectedTeam && teamSearchQuery !== selectedTeam.name) {
+                setSelectedTeam(null);
+            }
+
+            const token = localStorage.getItem('jwtToken');
             axios.get(`http://localhost:8080/api/teams/search?query=${teamSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             })
                 .then(response => setFilteredTeams(response.data))
                 .catch(error => console.error('Error fetching teams:', error));
         } else {
             setFilteredTeams([]);
+            setSelectedTeam(null);
         }
-    }, [teamSearchQuery]);
+    }, [teamSearchQuery, selectedTeam]);
 
     const handlePlayerSelect = (player) => {
         setSelectedPlayer(player);
@@ -61,36 +71,42 @@ const AddPlayerContractForm = () => {
         const contractData = {
             startDate,
             endDate,
-            salary: salary || null, // Make salary optional
+            salary: salary || null,
             transferFee: transferType === 'TRANSFER' ? transferFee : null,
             transferType,
             playerId: selectedPlayer ? selectedPlayer.id : null,
-            teamId: selectedTeam ? selectedTeam.id : null
+            teamId: selectedTeam ? selectedTeam.id : null,
         };
 
         axios.post('http://localhost:8080/api/player-contracts/add', contractData, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
         })
-            .then(response => {
+            .then(() => {
                 alert('Player contract added successfully');
-                setStartDate('');
-                setEndDate('');
-                setSalary('');
-                setTransferFee('');
-                setTransferType('');
-                setSelectedPlayer(null);
-                setPlayerSearchQuery('');
-                setSelectedTeam(null);
-                setTeamSearchQuery('');
-                setAlertMessage(null);
+                resetForm();
             })
             .catch(error => {
                 if (error.response && error.response.data) {
-                    setAlertMessage(error.response.data); // Display the backend's error message
+                    setAlertMessage(error.response.data);
                 } else {
                     setAlertMessage('An error occurred while adding the contract');
                 }
             });
+    };
+
+    const resetForm = () => {
+        setStartDate('');
+        setEndDate('');
+        setSalary('');
+        setTransferFee('');
+        setTransferType('');
+        setPlayerSearchQuery('');
+        setFilteredPlayers([]);
+        setSelectedPlayer(null);
+        setTeamSearchQuery('');
+        setFilteredTeams([]);
+        setSelectedTeam(null);
+        setAlertMessage(null);
     };
 
     const getTodayDate = () => {
@@ -104,7 +120,6 @@ const AddPlayerContractForm = () => {
             {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
 
-                {/* Player Search */}
                 <Form.Group controlId="formPlayerSearch" className="mb-3">
                     <Form.Label>Search Player</Form.Label>
                     <Form.Control
@@ -113,7 +128,7 @@ const AddPlayerContractForm = () => {
                         onChange={(e) => setPlayerSearchQuery(e.target.value)}
                         placeholder="Search for a player"
                     />
-                    {filteredPlayers.length > 0 && (
+                    {filteredPlayers.length > 0 && !selectedPlayer && (
                         <ListGroup className="mt-2">
                             {filteredPlayers.map((player) => (
                                 <ListGroup.Item
@@ -128,7 +143,6 @@ const AddPlayerContractForm = () => {
                     )}
                 </Form.Group>
 
-                {/* Team Search */}
                 <Form.Group controlId="formTeamSearch" className="mb-3">
                     <Form.Label>Search Team</Form.Label>
                     <Form.Control
@@ -137,7 +151,7 @@ const AddPlayerContractForm = () => {
                         onChange={(e) => setTeamSearchQuery(e.target.value)}
                         placeholder="Search for a team"
                     />
-                    {filteredTeams.length > 0 && (
+                    {filteredTeams.length > 0 && !selectedTeam && (
                         <ListGroup className="mt-2">
                             {filteredTeams.map((team) => (
                                 <ListGroup.Item
@@ -152,7 +166,6 @@ const AddPlayerContractForm = () => {
                     )}
                 </Form.Group>
 
-                {/* Other Fields */}
                 <Form.Group controlId="formStartDate" className="mb-3">
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control
@@ -222,16 +235,16 @@ const AddPlayerContractForm = () => {
     {
         "player_id": 1,
         "team_id": 1,
-        "start_date": "YYYY-MM-DD",
-        "end_date": "YYYY-MM-DD",
+        "start_date": "2005-05-13",
+        "end_date": "2005-08-13",
         "salary": 50000.00,
         "transfer_type": "LOAN"
     },
     {
         "player_id": 2,
         "team_id": 3,
-        "start_date": "YYYY-MM-DD",
-        "end_date": "YYYY-MM-DD",
+        "start_date": "2009-05-13",
+        "end_date": "2009-08-13",
         "salary": 60000.00,
         "transfer_type": "TRANSFER",
         "transfer_fee": 12000.00
@@ -241,8 +254,8 @@ const AddPlayerContractForm = () => {
                         <h5>CSV Template</h5>
                         <pre>
                 {`player_id,team_id,start_date,end_date,salary,transfer_type,transfer_fee
-1,1,YYYY-MM-DD,YYYY-MM-DD,50000.00,LOAN
-2,3,YYYY-MM-DD,YYYY-MM-DD,60000.00,TRANSFER,12000.00,`}
+1,1,2005-05-13,2005-08-13,50000.00,LOAN
+2,3,2009-05-13,2009-08-13,60000.00,TRANSFER,12000.00`}
             </pre>
                     </Accordion.Body>
                 </Accordion.Item>

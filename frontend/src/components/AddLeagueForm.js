@@ -196,20 +196,22 @@ const AddLeagueForm = () => {
                         <pre>
                             {`[
     {
+        "countryName": "England",
         "name": "Premier League",
-        "countryName": "England"
+        "edition": "23/24"
     },
     {
+        "countryName": "Spain",
         "name": "La Liga",
-        "countryName": "Spain"
+        "edition": "21/22"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`name,countryName
-Premier League,England
-La Liga,Spain`}
+                            {`countryName, name, edition
+England, Premier League, 23/24
+Spain, La Liga, 21/22`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>

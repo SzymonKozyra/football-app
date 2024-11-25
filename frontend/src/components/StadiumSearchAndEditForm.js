@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import UsePagination from './UsePagination';
+import PaginationComponent from './PaginationComponent';
 
 const StadiumSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -9,16 +11,32 @@ const StadiumSearchAndEditForm = () => {
     const [countries, setCountries] = useState([]);
     const [selectedStadiumId, setSelectedStadiumId] = useState(null);
     const [noResultsMessage, setNoResultsMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [editData, setEditData] = useState({
         name: '',
         capacity: '',
         cityName: '',
         countryName: ''
     });
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(stadiums, 20);
 
     useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+
+        //Wyświetlanie wszystkich rekordów odrazu po wejściu w widok, przed naciśnięciem "Search"
+        // axios.get(`http://localhost:8080/api/stadiums`, {
+        //     headers: { Authorization: `Bearer ${token}` }
+        // })
+        //     .then(response => {
+        //         setStadiums(response.data);
+        //         setCurrentPage(1);
+        //         setErrorMessage('');
+        //         setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
+        //     })
+        //     .catch(error => console.error('Error fetching stadiums:', error));
+
         axios.get('http://localhost:8080/api/countries', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
+            headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => setCountries(response.data))
             .catch(error => console.error('Error fetching countries:', error));
@@ -28,11 +46,21 @@ const StadiumSearchAndEditForm = () => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
+        //Wyświetlanie błędu przy próbie wyszukania pustej wartości
+        // if (!searchQuery.trim()) {
+        //     setStadiums([]);
+        //     setErrorMessage('You are trying to search for an empty value.');
+        //     setNoResultsMessage('');
+        //     return;
+        // }
+
         axios.get(`http://localhost:8080/api/stadiums/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
                 setStadiums(response.data);
+                setCurrentPage(1);
+                setErrorMessage('');
                 setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
             .catch(error => console.error('Error fetching stadiums:', error));
@@ -104,11 +132,21 @@ const StadiumSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {stadiums.length > 0 ? (
+            {errorMessage && (
+                <Alert variant="danger" className="text-center">
+                    {errorMessage}
+                </Alert>
+            )}
+
+            {noResultsMessage && (
+                <p className="text-center text-muted">{noResultsMessage}</p>
+            )}
+
+            {currentResults.length > 0 && (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Stadiums found:</h3>
                     <Container>
-                        {stadiums.map(stadium => (
+                        {currentResults.map(stadium => (
                             <React.Fragment key={stadium.id}>
                                 <Card className="mb-3 shadow-sm">
                                     <Card.Body className="d-flex justify-content-between align-items-center" style={{ textAlign: 'left' }}>
@@ -176,9 +214,13 @@ const StadiumSearchAndEditForm = () => {
                             </React.Fragment>
                         ))}
                     </Container>
+
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
-            ) : (
-                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );

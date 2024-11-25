@@ -1,5 +1,6 @@
 // TeamImage.js
 import React, { useState, useEffect } from 'react';
+import '../App.css';
 
 const TeamImage = ({ team }) => {
     const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/team/team_${team.id}.jpg`);
@@ -42,7 +43,7 @@ const TeamImage = ({ team }) => {
             src={imageUrl}
             alt={team.name}
             className="team-picture"
-            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+            style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '4px' }}
         />
     );
 };

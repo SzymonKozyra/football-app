@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Card, Alert, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 import TeamImage from "./TeamImage";
+import UsePagination from './UsePagination';
+import PaginationComponent from './PaginationComponent';
 
 const TeamSearchAndEditForm = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [teams, setTeams] = useState([]);
     const [selectedTeamId, setSelectedTeamId] = useState(null);
     const [noResultsMessage, setNoResultsMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [editData, setEditData] = useState({
         id: '',
         name: '',
@@ -18,42 +21,68 @@ const TeamSearchAndEditForm = () => {
         isClub: true,
     });
     const [pictureFile, setPictureFile] = useState(null);
-
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
-    const [isEditingLeague, setIsEditingLeague] = useState(false); // Track if the user is editing the league
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(teams, 20);
+
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
-        if (isEditingLeague && leagueSearchQuery && token) {
+        //Wyświetlanie wszystkich rekordów odrazu po wejściu w widok, przed naciśnięciem "Search"
+        // axios.get(`http://localhost:8080/api/teams`, {
+        //     headers: { Authorization: `Bearer ${token}` }
+        // })
+        //     .then(response => {
+        //         setTeams(response.data);
+        //         setCurrentPage(1);
+        //         setErrorMessage('');
+        //         setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
+        //     })
+        //     .catch(error => console.error('Error fetching teams:', error));
+
+        if (leagueSearchQuery) {
+            if (selectedLeague && leagueSearchQuery !== selectedLeague.name) {
+                setSelectedLeague(null);
+            }
+
+
             axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredLeagues(response.data))
-                .catch(error => console.error('Error fetching leagues:', error));
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => setFilteredLeagues(response.data))
+                .catch((error) => console.error('Error fetching leagues:', error));
         } else {
             setFilteredLeagues([]);
+            setSelectedLeague(null);
         }
-    }, [leagueSearchQuery, isEditingLeague]);
+    }, [leagueSearchQuery, selectedLeague]);
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
         setLeagueSearchQuery(league.name);
         setFilteredLeagues([]);
-        setIsEditingLeague(true); // Stop showing suggestions after selecting a league
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
 
+        //Wyświetlanie błędu przy próbie wyszukania pustej wartości
+        // if (!searchQuery.trim()) {
+        //     setTeams([]);
+        //     setErrorMessage('You are trying to search for an empty value.');
+        //     setNoResultsMessage('');
+        //     return;
+        // }
+
         axios.get(`http://localhost:8080/api/teams/search?query=${searchQuery}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
-                console.log(response.data);
                 setTeams(response.data);
+                setCurrentPage(1);
+                setErrorMessage('');
                 setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
             .catch(error => {
@@ -72,10 +101,8 @@ const TeamSearchAndEditForm = () => {
         });
         setSelectedLeague(team.league);
         setLeagueSearchQuery(team.league ? team.league.name : '');
-        setIsEditingLeague(false);
         setPictureFile(null);
     };
-
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
@@ -137,11 +164,21 @@ const TeamSearchAndEditForm = () => {
                 <Button variant="primary" type="submit">Search</Button>
             </Form>
 
-            {teams.length > 0 ? (
+            {errorMessage && (
+                <Alert variant="danger" className="text-center">
+                    {errorMessage}
+                </Alert>
+            )}
+
+            {noResultsMessage && (
+                <p className="text-center text-muted">{noResultsMessage}</p>
+            )}
+
+            {currentResults.length > 0 && (
                 <div className="mb-4">
                     <h3 className="text-center mb-3">Teams found:</h3>
                     <Container>
-                        {teams.map(team => (
+                        {currentResults.map(team => (
                             <React.Fragment key={team.id}>
                                 <Card className="mb-3 shadow-sm">
                                     <Card.Body>
@@ -153,7 +190,6 @@ const TeamSearchAndEditForm = () => {
                                                 <div>
                                                     <strong>ID:</strong> {team.id}<br />
                                                     <strong>Name:</strong> {team.name}<br />
-                                                    {console.log(`Team: ${team.name}, isClub: ${team.isClub}`)}
                                                     <strong>Type:</strong> {team.club ? "Club" : "National Team"}<br/>
                                                     <strong>League:</strong> {team.league ? team.league.name : 'No League'}
                                                 </div>
@@ -183,20 +219,22 @@ const TeamSearchAndEditForm = () => {
                                                 <Form.Control
                                                     type="text"
                                                     value={leagueSearchQuery}
-                                                    onChange={(e) => {
-                                                        setLeagueSearchQuery(e.target.value);
-                                                        setIsEditingLeague(true);
-                                                    }}
+                                                    onChange={(e) => setLeagueSearchQuery(e.target.value)}
                                                     placeholder="Search for a league"
                                                 />
-                                                {isEditingLeague && filteredLeagues.length > 0 && (
-                                                    <ul>
+                                                {filteredLeagues.length > 0 && !selectedLeague && (
+                                                    <ListGroup className="mt-2">
                                                         {filteredLeagues.map((league) => (
-                                                            <li key={league.id} onClick={() => handleLeagueSelect(league)}>
+                                                            <ListGroup.Item
+                                                                key={league.id}
+                                                                action
+                                                                onClick={() => handleLeagueSelect(league)}
+                                                                style={{ cursor: 'pointer' }}
+                                                            >
                                                                 {league.name}
-                                                            </li>
+                                                            </ListGroup.Item>
                                                         ))}
-                                                    </ul>
+                                                    </ListGroup>
                                                 )}
                                             </Form.Group>
                                             <Form.Group controlId="formIsClub" className="mb-3">
@@ -224,9 +262,13 @@ const TeamSearchAndEditForm = () => {
                             </React.Fragment>
                         ))}
                     </Container>
+
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
-            ) : (
-                <p className="text-center">{noResultsMessage}</p>
             )}
         </Container>
     );
