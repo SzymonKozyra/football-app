@@ -54,8 +54,6 @@ import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 import MainView from "./components/MainView";
-import MatchDetail from "./components/MatchDetail";
-import "./components/MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 
 
 
@@ -75,6 +73,7 @@ function App() {
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
     const [adminExists, setAdminExists] = useState(false);
+    const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -84,7 +83,8 @@ function App() {
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
             .then(response => setAdminExists(response.data))
-            .catch(error => console.error("Error checking if admin exists:", error));
+            .catch(error => console.error("Error checking if admin exists:", error))
+            .finally(() => setIsCheckingAdmin(false));
     }, []);
 
     useEffect(() => {
@@ -178,6 +178,10 @@ function App() {
         }
     }, []);
 
+    if (isCheckingAdmin) {
+        return null;
+    }
+
     if (!adminExists) {
         return (
             <div className="App">
@@ -255,11 +259,7 @@ function App() {
                     />
 
                     <Route path="/manage-events/:matchId" element={<EventManagement />} />
-                    {/* Route for the main view */}
-                    <Route path="/" element={<MainView />} />
 
-                    {/* Route for the match detail view */}
-                    <Route path="/match/:matchId" element={<MatchDetail />} />
                 </Routes>
         </div>
     );

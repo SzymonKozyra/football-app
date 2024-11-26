@@ -4,16 +4,9 @@ import { Form, Button, Container, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RegisterAdminForm = () => {
-    const [adminExists, setAdminExists] = useState(false);
     const [adminData, setAdminData] = useState({ email: '', username: '', password: '' });
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
-
-    useEffect(() => {
-        axios.get('http://localhost:8080/api/auth/check-admin')
-            .then(response => setAdminExists(response.data))
-            .catch(error => console.error('Error checking admin existence:', error));
-    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -31,15 +24,7 @@ const RegisterAdminForm = () => {
             });
     };
 
-    if (adminExists) {
-        return (
-            <Container className="mt-5">
-                <Alert variant="warning" className="text-center">
-                    Admin account already exists. Please log in.
-                </Alert>
-            </Container>
-        );
-    }
+
 
     return (
         <Container className="mt-5">

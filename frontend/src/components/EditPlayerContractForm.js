@@ -225,7 +225,7 @@ const EditPlayerContractForm = () => {
                                                     />
                                                 </Form.Group>
                                                 <Form.Group controlId="formEndDate" className="mb-3">
-                                                    <Form.Label>End Date</Form.Label>
+                                                    <Form.Label>End Date (optional)</Form.Label>
                                                     <Form.Control
                                                         type="date"
                                                         value={endDate}
@@ -234,7 +234,7 @@ const EditPlayerContractForm = () => {
                                                     />
                                                 </Form.Group>
                                                 <Form.Group controlId="formSalary" className="mb-3">
-                                                    <Form.Label>Salary</Form.Label>
+                                                    <Form.Label>Salary (optional)</Form.Label>
                                                     <Form.Control
                                                         type="number"
                                                         value={salary}
