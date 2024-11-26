@@ -15,11 +15,6 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             setMessage('The password reset link has been sent.');
             setMessageType('success');
             setIsEmailSent(true);
-            // setTimeout(() => {
-            //     setMessage('');
-            //     setEmail('');
-            //     setIsEmailSent(false);
-            // }, 4000);
         } catch (error) {
             setMessage('The link could not be sent. Check if the email is correct.');
             setMessageType('danger');

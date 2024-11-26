@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddInjuryForm = () => {
@@ -39,22 +39,28 @@ const AddInjuryForm = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        if (playerSearchQuery && token) {
-            axios.get(`http://localhost:8080/api/players/search?query=${playerSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredPlayers(response.data))
-                .catch(error => console.error('Error fetching players:', error));
+        if (playerSearchQuery) {
+            if (selectedPlayer && playerSearchQuery !== `${selectedPlayer.firstName} ${selectedPlayer.lastName}`) {
+                setSelectedPlayer(null); // Resetuj wybranego gracza, jeśli query się zmieni
+            }
+
+            const token = localStorage.getItem('jwtToken');
+            axios
+                .get(`http://localhost:8080/api/players/search?query=${playerSearchQuery}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => setFilteredPlayers(response.data))
+                .catch((error) => console.error('Error fetching players:', error));
         } else {
             setFilteredPlayers([]);
+            setSelectedPlayer(null); // Resetuj wybranego gracza, jeśli query jest puste
         }
-    }, [playerSearchQuery]);
+    }, [playerSearchQuery, selectedPlayer]);
 
     const handlePlayerSelect = (player) => {
         setSelectedPlayer(player);
         setPlayerSearchQuery(`${player.firstName} ${player.lastName}`);
-        setFilteredPlayers([]);
+        setFilteredPlayers([]); // Ukryj listę wyników po wyborze gracza
     };
 
     const handleSubmit = (e) => {
@@ -71,39 +77,41 @@ const AddInjuryForm = () => {
                 playerId: selectedPlayer?.id,
                 type: injuryType,
                 startDate: injuryStartDate,
-                endDate: injuryEndDate
+                endDate: injuryEndDate,
             };
 
-            axios.post('http://localhost:8080/api/injuries/add', injuryData, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => {
+            axios
+                .post('http://localhost:8080/api/injuries/add', injuryData, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then(() => {
                     alert('Injury added successfully');
                     resetForm();
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error adding injury:', error);
                     alert('Failed to add injury');
                 });
         } else {
             const formData = new FormData();
-            formData.append("file", file);
-            formData.append("type", fileType);
+            formData.append('file', file);
+            formData.append('type', fileType);
 
-            axios.post('http://localhost:8080/api/injuries/import', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`
-                }
-            })
-                .then(response => {
+            axios
+                .post('http://localhost:8080/api/injuries/import', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((response) => {
                     alert(response.data);
                     setDuplicateRecords(response.data.duplicates || []);
                     resetForm();
                 })
-                .catch(error => {
-                    console.error("Error importing injuries:", error);
-                    alert(error.response?.data || 'Failed to import coaches');
+                .catch((error) => {
+                    console.error('Error importing injuries:', error);
+                    alert(error.response?.data || 'Failed to import injuries');
                     setDuplicateRecords(error.response?.data?.duplicates || []);
                 });
         }
@@ -177,14 +185,19 @@ const AddInjuryForm = () => {
                                 onChange={(e) => setPlayerSearchQuery(e.target.value)}
                                 placeholder="Enter player's name"
                             />
-                            {filteredPlayers.length > 0 && (
-                                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                                    {filteredPlayers.map(player => (
-                                        <li key={player.id} onClick={() => handlePlayerSelect(player)} style={{ cursor: 'pointer', padding: '5px', borderBottom: '1px solid #ccc' }}>
+                            {filteredPlayers.length > 0 && !selectedPlayer && (
+                                <ListGroup className="mt-2">
+                                    {filteredPlayers.map((player) => (
+                                        <ListGroup.Item
+                                            key={player.id}
+                                            action
+                                            onClick={() => handlePlayerSelect(player)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
                                             {player.firstName} {player.lastName}
-                                        </li>
+                                        </ListGroup.Item>
                                     ))}
-                                </ul>
+                                </ListGroup>
                             )}
                         </Form.Group>
                     </>

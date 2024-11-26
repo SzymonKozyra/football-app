@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddTeamForm = () => {
@@ -15,18 +15,24 @@ const AddTeamForm = () => {
     const [fileType, setFileType] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
+        if (leagueSearchQuery) {
+            if (selectedLeague && leagueSearchQuery !== selectedLeague.name) {
+                setSelectedLeague(null);
+            }
 
-        if (leagueSearchQuery && token) {
-            axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(response => setFilteredLeagues(response.data))
-                .catch(error => console.error('Error fetching leagues:', error));
+            const token = localStorage.getItem('jwtToken');
+            axios
+                .get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => setFilteredLeagues(response.data))
+                .catch((error) => console.error('Error fetching leagues:', error));
         } else {
             setFilteredLeagues([]);
+            setSelectedLeague(null);
         }
-    }, [leagueSearchQuery]);
+    }, [leagueSearchQuery, selectedLeague]);
+
 
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
@@ -146,14 +152,19 @@ const AddTeamForm = () => {
                                 onChange={(e) => setLeagueSearchQuery(e.target.value)}
                                 placeholder="Search for a league"
                             />
-                            {filteredLeagues.length > 0 && (
-                                <ul>
+                            {filteredLeagues.length > 0 && !selectedLeague && (
+                                <ListGroup className="mt-2">
                                     {filteredLeagues.map((league) => (
-                                        <li key={league.id} onClick={() => handleLeagueSelect(league)}>
+                                        <ListGroup.Item
+                                            key={league.id}
+                                            action
+                                            onClick={() => handleLeagueSelect(league)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
                                             {league.name}
-                                        </li>
+                                        </ListGroup.Item>
                                     ))}
-                                </ul>
+                                </ListGroup>
                             )}
                         </Form.Group>
                     </>

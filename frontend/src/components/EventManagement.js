@@ -92,6 +92,7 @@ const EventManagement = ({ matchId, matchDetails }) => {
                 minute: eventData.minute,
                 partOfGame: eventData.partOfGame,
                 matchId,
+                dateTime: eventData.dateTime || null, // Dodanie dateTime
             },
         ];
 
@@ -102,6 +103,7 @@ const EventManagement = ({ matchId, matchDetails }) => {
                 minute: eventData.minute,
                 partOfGame: eventData.partOfGame,
                 matchId,
+                dateTime: eventData.dateTime || null, // Dodanie dateTime
             });
         }
 
@@ -116,6 +118,7 @@ const EventManagement = ({ matchId, matchDetails }) => {
                 minute: eventData.minute,
                 partOfGame: eventData.partOfGame,
                 matchId,
+                dateTime: eventData.dateTime || null, // Dodanie dateTime
             });
         }
 
@@ -125,11 +128,12 @@ const EventManagement = ({ matchId, matchDetails }) => {
             })
             .then(() => {
                 alert('Event(s) added successfully');
-                setEventData({ type: 'GOAL', playerId: '', assistingPlayerId: '', subOffPlayerId: '', minute: '', partOfGame: 'FIRST_HALF' });
+                setEventData({ type: 'GOAL', playerId: '', assistingPlayerId: '', subOffPlayerId: '', minute: '', partOfGame: 'FIRST_HALF', dateTime: '' });
                 fetchEvents();
             })
             .catch((error) => console.error('Error adding event(s):', error));
     };
+
 
     const handleDeleteEvent = (eventId) => {
         if (!window.confirm('Are you sure you want to delete this event?')) {
@@ -162,10 +166,31 @@ const EventManagement = ({ matchId, matchDetails }) => {
             </>
         );
 
-        if (eventData.type === 'MATCH_START' || eventData.type === 'MATCH_END') {
+        if (eventData.type === 'MATCH_END') {
             return null; // Brak pól w formularzu
         }
 
+        const isDateTimeOnlyEvent = [
+            'MATCH_START',
+            'SECOND_HALF_START',
+            'OT_FIRST_HALF_START',
+            'OT_SECOND_HALF_START',
+            'PENALTIES_START',
+        ].includes(eventData.type);
+        if (isDateTimeOnlyEvent) {
+            return (
+                <Form.Group controlId="formDateTime" className="mb-3">
+                    <Form.Label>Event DateTime</Form.Label>
+                    <Form.Control
+                        type="datetime-local"
+                        value={eventData.dateTime}
+                        onChange={(e) => setEventData({ ...eventData, dateTime: e.target.value })}
+                        step="1"
+                        required
+                    />
+                </Form.Group>
+            );
+        }
         return (
             <>
                 {commonFields}
@@ -251,6 +276,21 @@ const EventManagement = ({ matchId, matchDetails }) => {
                         </Form.Group>
                     </>
                 )}
+                {eventData.type === 'MATCH_START' ||
+                    eventData.type === 'SECOND_HALF_START' ||
+                    eventData.type === 'OT_FIRST_HALF_START' ||
+                    eventData.type === 'OT_SECOND_HALF_START' ||
+                    eventData.type === 'PENALTIES_START'&& (
+
+                    <Form.Group controlId="formDateTime" className="mb-3">
+                    <Form.Label>Event DateTime</Form.Label>
+                    <Form.Control
+                        type="datetime-local"
+                        value={eventData.dateTime}
+                        onChange={(e) => setEventData({ ...eventData, dateTime: e.target.value })}
+                    />
+                </Form.Group>
+                    )}
             </>
         );
     };

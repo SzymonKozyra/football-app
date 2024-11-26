@@ -4,6 +4,8 @@ import { Container, Form, Button, Card, Row, Col, ListGroup } from 'react-bootst
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EventManagement from "./EventManagement";
 import { useNavigate } from 'react-router-dom';
+import UsePagination from './UsePagination';
+import PaginationComponent from './PaginationComponent';
 
 const MatchSearchAndEditForm = () => {
     const navigate = useNavigate();
@@ -51,11 +53,19 @@ const MatchSearchAndEditForm = () => {
     const [stadiumSearchQuery, setStadiumSearchQuery] = useState('');
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
 
+    const [selectedReferee, setSelectedReferee] = useState(null);
+    const [selectedStadium, setSelectedStadium] = useState(null);
+    const [selectedLeague, setSelectedLeague] = useState(null);
+    const [selectedHomeTeam, setSelectedHomeTeam] = useState(null);
+    const [selectedAwayTeam, setSelectedAwayTeam] = useState(null);
+
+
 
     const [showManageEvents, setShowManageEvents] = useState(false); // Toggle state for Manage Events view
 
-
-
+    const [noResultsMessage, setNoResultsMessage] = useState('');
+    const [teamError, setTeamError] = useState('');
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(matches, 10);
 
 
     const token = localStorage.getItem('jwtToken');
@@ -67,9 +77,92 @@ const MatchSearchAndEditForm = () => {
             .then(response => {
                 const sortedMatches = response.data.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
                 setMatches(sortedMatches);
+                setCurrentPage(1);
+                setNoResultsMessage(response.data.length === 0 ? 'No results found.' : '');
             })
             .catch(error => console.error('Error fetching matches:', error));
     }, []);
+
+    useEffect(() => {
+        if (homeTeamSearchQuery) {
+            if (selectedHomeTeam && homeTeamSearchQuery !== selectedHomeTeam.name) {
+                setSelectedHomeTeam(null);
+            }
+
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/teams/search?query=${homeTeamSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => setFilteredHomeTeams(response.data))
+                .catch(error => console.error('Error fetching home teams:', error));
+        } else {
+            setFilteredHomeTeams([]);
+        }
+    }, [homeTeamSearchQuery, selectedHomeTeam]);
+
+    useEffect(() => {
+        if (awayTeamSearchQuery) {
+            if (selectedAwayTeam && awayTeamSearchQuery !== selectedAwayTeam.name) {
+                setSelectedAwayTeam(null);
+            }
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/teams/search?query=${awayTeamSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => setFilteredAwayTeams(response.data))
+                .catch(error => console.error('Error fetching away teams:', error));
+        } else {
+            setFilteredAwayTeams([]);
+        }
+    }, [awayTeamSearchQuery, selectedAwayTeam]);
+
+    useEffect(() => {
+        if (refereeSearchQuery) {
+            if (selectedReferee && refereeSearchQuery !== `${selectedReferee.firstName} ${selectedReferee.lastName}`) {
+                setSelectedReferee(null);
+            }
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/referees/search?query=${refereeSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => setFilteredReferees(response.data))
+                .catch(error => console.error('Error fetching referees:', error));
+        } else {
+            setFilteredReferees([]);
+        }
+    }, [refereeSearchQuery, selectedReferee]);
+
+    useEffect(() => {
+        if (stadiumSearchQuery) {
+            if (selectedStadium && stadiumSearchQuery !== selectedStadium.name) {
+                setSelectedStadium(null);
+            }
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/stadiums/search?query=${stadiumSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => setFilteredStadiums(response.data))
+                .catch(error => console.error('Error fetching stadiums:', error));
+        } else {
+            setFilteredStadiums([]);
+        }
+    }, [stadiumSearchQuery, selectedStadium]);
+
+    useEffect(() => {
+        if (leagueSearchQuery) {
+            if (selectedLeague && leagueSearchQuery !== selectedLeague.name) {
+                setSelectedLeague(null);
+            }
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => setFilteredLeagues(response.data))
+                .catch(error => console.error('Error fetching leagues:', error));
+        } else {
+            setFilteredLeagues([]);
+        }
+    }, [leagueSearchQuery, selectedLeague]);
 
     const handleEditClick = (match) => {
         setSelectedMatch(match.id);
@@ -107,10 +200,22 @@ const MatchSearchAndEditForm = () => {
         setStadiumSearchQuery(match.stadium.name);
         setLeagueSearchQuery(match.league.name);
 
+        setSelectedHomeTeam(match.homeTeam);
+        setSelectedAwayTeam(match.awayTeam);
+        setSelectedReferee(match.referee);
+        setSelectedStadium(match.stadium);
+        setSelectedLeague(match.league);
     };
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
+
+        if (selectedHomeTeam && selectedAwayTeam && selectedHomeTeam.id === selectedAwayTeam.id) {
+            setTeamError('Home Team and Away Team cannot be the same.');
+            return;
+        } else {
+            setTeamError('');
+        }
 
         const updatedMatch = {
             ...editData,
@@ -158,30 +263,32 @@ const MatchSearchAndEditForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Search and Edit Matches</h1>
-            {matches.length > 0 ? (
+            {currentResults.length > 0 && (
                 <div>
                     <h3 className="text-center mb-3">Matches:</h3>
                     <Container>
-                        {matches.map(match => (
+                        {currentResults.map(match => (
                             <React.Fragment key={match.id}>
                                 <Card className="mb-3 shadow-sm">
                                     <Card.Body className="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <strong>ID:</strong> {match.id}<br />
-                                            <strong>Date:</strong> {new Date(match.dateTime).toLocaleString()}<br />
-                                            <strong>Round:</strong> {match.round}<br />
-                                            <strong>Status:</strong> {match.status}<br />
-                                            <strong>Home Team:</strong> {match.homeTeam ? match.homeTeam.name : 'N/A'}<br />
+                                            <strong>ID:</strong> {match.id}<br/>
+                                            <strong>Date:</strong> {new Date(match.dateTime).toLocaleString()}<br/>
+                                            <strong>Round:</strong> {match.round}<br/>
+                                            <strong>Status:</strong> {match.status}<br/>
+                                            <strong>Home
+                                                Team:</strong> {match.homeTeam ? match.homeTeam.name : 'N/A'}<br/>
                                             <strong>Away Team:</strong> {match.awayTeam ? match.awayTeam.name : 'N/A'}
                                         </div>
-                                        <Button variant="outline-primary" onClick={() => handleEditClick(match)}>Edit</Button>
-                                        <Button
-                                            variant="outline-secondary"
-                                            onClick={() => handleManageEventsClick(match)}
-                                        >
-                                            Manage Events
-                                        </Button>
-
+                                        <div className="d-flex gap-2">
+                                            <Button variant="outline-primary" onClick={() => handleEditClick(match)}>
+                                                Edit
+                                            </Button>
+                                            <Button variant="outline-secondary"
+                                                    onClick={() => handleManageEventsClick(match)}>
+                                                Manage Events
+                                            </Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
 
@@ -232,13 +339,17 @@ const MatchSearchAndEditForm = () => {
                                                     onChange={(e) => setHomeTeamSearchQuery(e.target.value)}
                                                     required
                                                 />
-                                                {filteredHomeTeams.length > 0 && (
+                                                {filteredHomeTeams.length > 0 && !selectedHomeTeam && (
                                                     <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                                                         {filteredHomeTeams.map((team) => (
                                                             <ListGroup.Item
                                                                 key={team.id}
                                                                 action
-                                                                onClick={() => setEditData({ ...editData, homeTeam: team.id })}
+                                                                onClick={() => {
+                                                                    setEditData({ ...editData, homeTeam: team.id });
+                                                                    setSelectedHomeTeam(team);
+                                                                    setHomeTeamSearchQuery(team.name);
+                                                                }}
                                                             >
                                                                 {team.name}
                                                             </ListGroup.Item>
@@ -256,13 +367,17 @@ const MatchSearchAndEditForm = () => {
                                                     onChange={(e) => setAwayTeamSearchQuery(e.target.value)}
                                                     required
                                                 />
-                                                {filteredAwayTeams.length > 0 && (
+                                                {filteredAwayTeams.length > 0 && !selectedAwayTeam && (
                                                     <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                                                         {filteredAwayTeams.map((team) => (
                                                             <ListGroup.Item
                                                                 key={team.id}
                                                                 action
-                                                                onClick={() => setEditData({ ...editData, awayTeam: team.id })}
+                                                                onClick={() => {
+                                                                    setEditData({ ...editData, awayTeam: team.id });
+                                                                    setSelectedAwayTeam(team);
+                                                                    setAwayTeamSearchQuery(team.name);
+                                                                }}
                                                             >
                                                                 {team.name}
                                                             </ListGroup.Item>
@@ -280,15 +395,19 @@ const MatchSearchAndEditForm = () => {
                                                     onChange={(e) => setRefereeSearchQuery(e.target.value)}
                                                     required
                                                 />
-                                                {filteredReferees.length > 0 && (
+                                                {filteredReferees.length > 0 && !selectedReferee && (
                                                     <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredReferees.map((ref) => (
+                                                        {filteredReferees.map((referee) => (
                                                             <ListGroup.Item
-                                                                key={ref.id}
+                                                                key={referee.id}
                                                                 action
-                                                                onClick={() => setEditData({ ...editData, referee: ref.id })}
+                                                                onClick={() => {
+                                                                    setEditData({ ...editData, referee: referee.id });
+                                                                    setSelectedReferee(referee);
+                                                                    setRefereeSearchQuery(`${referee.firstName} ${referee.lastName}`);
+                                                                }}
                                                             >
-                                                                {ref.firstName} {ref.lastName}
+                                                                {referee.firstName} {referee.lastName}
                                                             </ListGroup.Item>
                                                         ))}
                                                     </ListGroup>
@@ -304,15 +423,19 @@ const MatchSearchAndEditForm = () => {
                                                     onChange={(e) => setStadiumSearchQuery(e.target.value)}
                                                     required
                                                 />
-                                                {filteredStadiums.length > 0 && (
+                                                {filteredStadiums.length > 0 && !selectedStadium && (
                                                     <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredStadiums.map((stad) => (
+                                                        {filteredStadiums.map((stadium) => (
                                                             <ListGroup.Item
-                                                                key={stad.id}
+                                                                key={stadium.id}
                                                                 action
-                                                                onClick={() => setEditData({ ...editData, stadium: stad.id })}
+                                                                onClick={() => {
+                                                                    setEditData({ ...editData, stadium: stadium.id });
+                                                                    setSelectedStadium(stadium);
+                                                                    setStadiumSearchQuery(stadium.name);
+                                                                }}
                                                             >
-                                                                {stad.name}
+                                                                {stadium.name}
                                                             </ListGroup.Item>
                                                         ))}
                                                     </ListGroup>
@@ -326,16 +449,21 @@ const MatchSearchAndEditForm = () => {
                                                     placeholder="Search for a league"
                                                     value={leagueSearchQuery}
                                                     onChange={(e) => setLeagueSearchQuery(e.target.value)}
+                                                    required
                                                 />
-                                                {filteredLeagues.length > 0 && (
+                                                {filteredLeagues.length > 0 && !selectedLeague && (
                                                     <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredLeagues.map((lg) => (
+                                                        {filteredLeagues.map((league) => (
                                                             <ListGroup.Item
-                                                                key={lg.id}
+                                                                key={league.id}
                                                                 action
-                                                                onClick={() => setEditData({ ...editData, league: lg.id })}
+                                                                onClick={() => {
+                                                                    setEditData({ ...editData, league: league.id });
+                                                                    setSelectedLeague(league);
+                                                                    setLeagueSearchQuery(league.name);
+                                                                }}
                                                             >
-                                                                {lg.name}
+                                                                {league.name}
                                                             </ListGroup.Item>
                                                         ))}
                                                     </ListGroup>
@@ -524,16 +652,26 @@ const MatchSearchAndEditForm = () => {
                                             <Button variant="primary" type="submit" className="w-100">
                                                 Save Changes
                                             </Button>
+                                            {teamError && <p style={{ color: 'red', marginTop: '10px' }}>{teamError}</p>}
                                         </Form>
                                     </div>
                                 )}
                             </React.Fragment>
                         ))}
                     </Container>
+
                 </div>
-            ) : (
-                <p className="text-center">No matches found.</p>
             )}
+
+            {noResultsMessage && (
+                <p className="text-center text-muted">{noResultsMessage}</p>
+            )}
+
+            <PaginationComponent
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+            />
         </Container>
     );
 };

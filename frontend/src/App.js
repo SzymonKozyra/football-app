@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Alert } from 'react-bootstrap';
+import {Alert} from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
-import { useLocation, Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import {Navigate, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddLeagueForm from './components/AddLeagueForm';
 
@@ -54,6 +54,8 @@ import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 import MainView from "./components/MainView";
+import MatchDetail from "./components/MatchDetail";
+import "./components/MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 
 
 
@@ -139,14 +141,13 @@ function App() {
 
     const handleNewPasswordSubmit = async (newPassword) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
-                token, // token should be in the state or retrieved from the URL
+            const response = await
+                axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
+                token,
                 password: newPassword,
             });
-
             if (response.status === 200) {
                 console.log("Password reset successfully!");
-                //toggleModal('isNewPasswordOpen');
             }
         } catch (error) {
             console.error("Error resetting password:", error);
@@ -180,8 +181,8 @@ function App() {
     if (!adminExists) {
         return (
             <div className="App">
-                <h1>Register Admin</h1>
-                <RegisterAdminForm />
+                <h4>There are no admin accounts registered. You have to register one below to continue.</h4>
+                <RegisterAdminForm/>
             </div>
         );
     }
@@ -229,10 +230,11 @@ function App() {
                     isOpen={modals.isPasswordResetOpen}
                     onClose={() => toggleModal('isPasswordResetOpen')}
                 />
+
                 <NewPasswordModal
                     isOpen={modals.isNewPasswordOpen}
                     onClose={() => toggleModal('isNewPasswordOpen')}
-                    onSubmit={handleNewPasswordSubmit} // Pass the function here
+                    onSubmit={handleNewPasswordSubmit}
                     token={token}
                 />
 
@@ -253,7 +255,11 @@ function App() {
                     />
 
                     <Route path="/manage-events/:matchId" element={<EventManagement />} />
+                    {/* Route for the main view */}
+                    <Route path="/" element={<MainView />} />
 
+                    {/* Route for the match detail view */}
+                    <Route path="/match/:matchId" element={<MatchDetail />} />
                 </Routes>
         </div>
     );

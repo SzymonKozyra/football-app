@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RegisterAdminForm = () => {
     const [adminExists, setAdminExists] = useState(false);
@@ -7,68 +9,86 @@ const RegisterAdminForm = () => {
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
 
-        useEffect(() => {
-            // Sprawdź, czy konto admina już istnieje
-            axios.get('http://localhost:8080/api/auth/check-admin')
-                .then(response => setAdminExists(response.data))
-                .catch(error => console.error('Error checking admin existence:', error));
-        }, []);
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/auth/check-admin')
+            .then(response => setAdminExists(response.data))
+            .catch(error => console.error('Error checking admin existence:', error));
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.post('http://localhost:8080/api/auth/register-admin', adminData)
             .then(() => {
                 setMessage('Admin account created successfully.');
-                setMessageType('success')
+                setMessageType('success');
                 setTimeout(() => {
                     window.location.href = "/login";
                 }, 3000);
             })
             .catch(error => {
-                setMessage(error.response.data);
+                setMessage(error.response?.data || 'An error occurred');
                 setMessageType('error');
             });
     };
 
     if (adminExists) {
-        return <div>Admin account already exists. Please log in.</div>;
+        return (
+            <Container className="mt-5">
+                <Alert variant="warning" className="text-center">
+                    Admin account already exists. Please log in.
+                </Alert>
+            </Container>
+        );
     }
 
     return (
-        <div>
-            <h1>Create Admin Account</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email</label>
-                    <input
+        <Container className="mt-5">
+            {message && (
+                <Alert variant={messageType === 'success' ? 'success' : 'danger'} dismissible
+                       onClose={() => setMessage('')}>
+                    {message}
+                </Alert>
+            )}
+            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+                <h1 className="text-center mb-4">Register Admin</h1>
+                <Form.Group controlId="formEmail" className="mb-3">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
                         type="email"
+                        placeholder="Enter email"
                         value={adminData.email}
-                        onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
+                        onChange={(e) => setAdminData({...adminData, email: e.target.value})}
                         required
                     />
-                </div>
-                <div>
-                    <label>Username</label>
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formUsername" className="mb-3">
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
                         type="text"
+                        placeholder="Enter username"
                         value={adminData.username}
-                        onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
+                        onChange={(e) => setAdminData({...adminData, username: e.target.value})}
                         required
                     />
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formPassword" className="mb-3">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
                         type="password"
+                        placeholder="Enter password"
                         value={adminData.password}
-                        onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
+                        onChange={(e) => setAdminData({...adminData, password: e.target.value})}
                         required
                     />
-                </div>
-                <button type="submit">Create Admin</button>
-            </form>
-            {message && <p className={`message ${messageType}`}>{message}</p>}
-        </div>
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100">
+                    Create Admin
+                </Button>
+            </Form>
+        </Container>
     );
 };
 

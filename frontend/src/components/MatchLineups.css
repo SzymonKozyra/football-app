@@ -1,0 +1,65 @@
+.match-lineups {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.combined-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.part-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 0px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.combined-lineup {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.team-lineup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.team-lineup.home-team {
+    align-items: flex-start;
+}
+
+.team-lineup.away-team {
+    align-items: flex-end;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-row.left-align {
+    justify-content: flex-start;
+}
+
+.player-row.right-align {
+    justify-content: flex-end;
+}
+
+.player-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+hr{
+    margin-top: 0;
+}

@@ -11,7 +11,11 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData, onOpenPasswo
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
+                email,
+                password
+            });
+            console.log(response.data);
             const { token, email: responseEmail, role = 'USER' } = response.data;
 
             localStorage.setItem('jwtToken', token);

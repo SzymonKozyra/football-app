@@ -31,6 +31,7 @@ public class TeamController {
 //            return ResponseEntity.badRequest().body(e.getMessage());
 //        }
 //    }
+
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addTeam(

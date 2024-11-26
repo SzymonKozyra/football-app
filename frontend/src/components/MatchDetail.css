@@ -1,0 +1,179 @@
+/* Stylizacja modala */
+.custom-modal .modal-dialog .custom-modal-content {
+    /*max-width: 900px !important;*/
+    /*width: 100% !important;*/
+}
+
+.modal-content{
+    position: relative;
+    flex-direction: column;
+    width: 150% !important;
+    color: var(--bs-modal-color);
+    pointer-events: auto;
+    background-color: var(--bs-modal-bg);
+    background-clip: padding-box;
+    border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+    border-radius: var(--bs-modal-border-radius);
+    outline: 0;
+}
+
+.custom-modal .modal-content {
+    padding: 20px !important;
+    /*max-width: 900px !important;*/
+}
+.match-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px; /* Powiększamy tekst w nagłówku */
+}
+
+.match-detail-flag {
+    width: 25px; /* Powiększamy flagę */
+    height: 20px;
+    border-radius: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+.match-detail-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Wyrównanie elementów do środka osi pionowej */
+    text-align: center;
+    padding: 20px 0;
+    gap: 30px; /* Większa przestrzeń między sekcjami */
+}
+
+
+.team-section {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Odstęp między gwiazdką a sekcją drużyny */
+    text-align: center;
+    flex: 1; /* Równomierna szerokość sekcji */
+    justify-content: space-between; /* Rozkład gwiazdki i drużyny */
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.team-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.match-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Wyrównanie wyniku do środka osi pionowej */
+    height: 100%; /* Upewniamy się, że sekcja "rozciąga się" na całą dostępną przestrzeń */
+}
+
+.match-score {
+    font-size: 46px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 60px; /* Dodanie przestrzeni, jeśli potrzebne */
+}
+
+.match-vs {
+    font-size: 24px;
+    font-weight: bold;
+    color: gray;
+}
+.match-date {
+    font-size: 16px;
+    color: gray;
+    width: 150px;
+    margin-bottom: 0px;
+}
+
+.match-detail-body .bi {
+    font-size: 24px; /* Zwiększa rozmiar gwiazdek */
+    cursor: pointer;
+    margin-bottom: 40px;
+}
+
+.match-events {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.event-list {
+    list-style: none; /* Remove default bullets */
+    padding: 0;       /* Remove default padding */
+    margin: 0;        /* Remove default margin */
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between; /* Ensure proper alignment */
+    align-items: center;
+    padding: 7px 0;  /* Optional: add vertical spacing between events */
+}
+
+.home-event {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.away-event {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.event-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+}
+
+.part-label {
+    font-size: 12px; /* Smaller font for part-of-game labels */
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+
+hr {
+    margin-top: 0;
+}
+.minute{
+    min-width: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    justify-content: center; /* Wyśrodkowanie przycisków */
+    gap: 10px; /* Odstępy między przyciskami */
+    margin-top: 20px; /* Dodanie przestrzeni nad przyciskami */
+    margin-bottom: 20px; /* Dodanie przestrzeni pod przyciskami */
+}
+
+.custom-tab-button {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px; /* Powiększenie przycisków */
+    border-radius: 5px;
+    border: none;
+    background-color: #f0f0f0; /* Kolor tła */
+    color: #333; /* Kolor tekstu */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.custom-tab-button:hover {
+    background-color: #e0e0e0; /* Jaśniejszy kolor przy najechaniu */
+    transform: scale(1.05); /* Efekt powiększenia */
+}
+
+.custom-tab-button.active {
+    background-color: #007bff; /* Kolor aktywnego przycisku */
+    color: #fff; /* Kolor tekstu aktywnego przycisku */
+}

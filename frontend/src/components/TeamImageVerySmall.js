@@ -42,7 +42,7 @@ const TeamImageVerySmall = ({ team }) => {
             src={imageUrl}
             alt={team.name}
             className="team-picture"
-            style={{ width: '20px', height: '20px', objectFit: 'cover', borderRadius: '4px' }}
+            style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px' }}
         />
     );
 };

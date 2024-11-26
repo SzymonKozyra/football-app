@@ -30,6 +30,7 @@ public class EventController {
 
     @GetMapping("/match/{matchId}")
     public ResponseEntity<List<Event>> getEventsForMatch(@PathVariable Long matchId) {
+
         return ResponseEntity.ok(eventService.getEventsForMatch(matchId));
     }
 

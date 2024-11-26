@@ -140,7 +140,7 @@
     margin-top: 10px;
 }
 
-.team-picture, .player-picture, .league-picture, .coach-picture {
+img {
     width: 100px;
     height: 100px;
     object-fit: contain;
