@@ -458,7 +458,7 @@ const AddBetForm = () => {
                     <Form.Label>Search for Match</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Enter team name"
+                        placeholder="Search match by team name"
                         value={matchSearchQuery}
                         onChange={handleMatchSearch}
                     />

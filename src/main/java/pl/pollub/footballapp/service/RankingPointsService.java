@@ -20,8 +20,10 @@ public class RankingPointsService {
     private UserRepository userRepository;
 
     @Autowired
-    public RankingPointsService(RankingPointsRepository rankingPointsRepository) {
+    public RankingPointsService(RankingPointsRepository rankingPointsRepository, RankingRepository rankingRepository, UserRepository userRepository) {
         this.rankingPointsRepository = rankingPointsRepository;
+        this.rankingRepository = rankingRepository;
+        this.userRepository = userRepository;
     }
 
     public List<RankingPoints> getRankingPointsByRankingId(Long rankingId) {
@@ -45,18 +47,28 @@ public class RankingPointsService {
                 .orElseThrow(() -> new IllegalStateException("No active ranking found"));
 
         RankingPoints rankingPoints = rankingPointsRepository.findByUserIdAndRankingId(userId, activeRanking.getId())
-                .orElseGet(() -> {
-                    RankingPoints newPoints = new RankingPoints();
-                    newPoints.setUser(new User()); // Jeśli User jest relacją ManyToOne, trzeba wczytać obiekt User
-                    newPoints.setRanking(activeRanking);
-                    newPoints.setPoints(0);
-                    newPoints.setLastUpdated(LocalDateTime.now());
-                    return newPoints;
-                });
+        .orElseGet(() -> {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            RankingPoints newPoints = new RankingPoints();
+//            newPoints.setUser(new User()); // Jeśli User jest relacją ManyToOne, trzeba wczytać obiekt User
+            newPoints.setUser(user);
+            newPoints.setRanking(activeRanking);
+            newPoints.setPoints(0);
+            newPoints.setLastUpdated(LocalDateTime.now());
+            return newPoints;
+        });
 
         // Aktualizuj punkty
         rankingPoints.setPoints(rankingPoints.getPoints() + pointsToAdd);
         rankingPoints.setLastUpdated(LocalDateTime.now());
         rankingPointsRepository.save(rankingPoints);
     }
+
+    public String getUserNameById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        return user.getUsername(); // lub user.getEmail();
+    }
+
 }

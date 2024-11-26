@@ -128,6 +128,7 @@ public class BetController {
 
 
 
+    //@PostMapping("/check/{matchId}")
     @PostMapping("/check")
     public ResponseEntity<String> checkBetResults(@RequestParam Long matchId) {
         betService.checkBetResults(matchId);

@@ -34,5 +34,21 @@ public class RankingController {
     public ResponseEntity<?> createRanking(@RequestBody RankingRequest rankingRequest) {
         return rankingService.createRanking(rankingRequest);
     }
+
+    @GetMapping("/{rankingId}")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<Ranking> getRankingById(@PathVariable Long rankingId) {
+        Ranking ranking = rankingService.getRankingById(rankingId);
+        return ResponseEntity.ok(ranking);
+    }
+
+    @PutMapping("/{rankingId}/edit")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> editRanking(
+            @PathVariable Long rankingId,
+            @RequestBody RankingRequest rankingRequest) {
+        rankingService.updateRanking(rankingId, rankingRequest);
+        return ResponseEntity.ok("Ranking updated successfully");
+    }
 }
 

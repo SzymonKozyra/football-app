@@ -1,11 +1,13 @@
 package pl.pollub.footballapp.service;
 
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import pl.pollub.footballapp.MatchStatus;
 import pl.pollub.footballapp.model.*;
 import pl.pollub.footballapp.repository.*;
 import pl.pollub.footballapp.requests.BetRequest;
@@ -22,11 +24,14 @@ public class BetService {
     private RankingRepository rankingRepository;
     private RankingPointsService rankingPointsService;
 
-    public BetService(BetRepository betRepository, UserRepository userRepository, MatchRepository matchRepository, RankingRepository rankingRepository) {
+    @Autowired
+    public BetService(BetRepository betRepository, UserRepository userRepository, MatchRepository matchRepository, RankingRepository rankingRepository, RankingPointsService rankingPointsService, RankingPointsRepository rankingPointsRepository) {
         this.betRepository = betRepository;
         this.userRepository = userRepository;
         this.matchRepository = matchRepository;
         this.rankingRepository = rankingRepository;
+        this.rankingPointsService = rankingPointsService;
+        this.rankingPointsRepository = rankingPointsRepository;
     }
 
 //    public Bet addBet(Bet bet) {
@@ -205,8 +210,11 @@ public class BetService {
     public void checkBetResults(Long matchId) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("Match not found"));
+        ///////
+        System.out.println("Match status from database: " + match.getStatus());
 
-        if (!match.getStatus().equals("finished")) {
+        //if (!match.getStatus().equals("FINISHED")) {
+        if (!match.getStatus().equals(MatchStatus.FINISHED)) {
             throw new IllegalStateException("Match is not finished yet");
         }
 

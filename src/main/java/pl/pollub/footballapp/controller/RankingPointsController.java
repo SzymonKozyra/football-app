@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.RankingPoints;
 import pl.pollub.footballapp.service.RankingPointsService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ranking-points")
@@ -19,11 +22,26 @@ public class RankingPointsController {
         this.rankingPointsService = rankingPointsService;
     }
 
+//    @GetMapping("/{rankingId}")
+//    public ResponseEntity<List<RankingPoints>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
+//        List<RankingPoints> points = rankingPointsService.getRankingPointsByRankingId(rankingId);
+//        return ResponseEntity.ok(points);
+//    }
     @GetMapping("/{rankingId}")
-    public ResponseEntity<List<RankingPoints>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
+    public ResponseEntity<List<Map<String, Object>>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
         List<RankingPoints> points = rankingPointsService.getRankingPointsByRankingId(rankingId);
-        return ResponseEntity.ok(points);
+
+        List<Map<String, Object>> response = points.stream().map(point -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("userName", point.getUser().getUsername());
+            map.put("points", point.getPoints());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
+
+
 
 //    @PutMapping("/update")
 //    public ResponseEntity<RankingPoints> updateRankingPoints(

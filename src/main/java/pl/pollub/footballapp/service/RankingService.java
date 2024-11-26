@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,21 @@ public class RankingService {
         rankingRepository.save(ranking);
         return ResponseEntity.ok("Ranking added successfully");
     }
+
+    public Ranking getRankingById(Long rankingId) {
+        return rankingRepository.findById(rankingId)
+                .orElseThrow(() -> new EntityNotFoundException("Ranking not found with ID: " + rankingId));
+    }
+
+    public void updateRanking(Long rankingId, RankingRequest rankingRequest) {
+        Ranking ranking = rankingRepository.findById(rankingId)
+                .orElseThrow(() -> new EntityNotFoundException("Ranking not found with ID: " + rankingId));
+
+        ranking.setName(rankingRequest.getName());
+        ranking.setStartDate(rankingRequest.getStartDate());
+        ranking.setEndDate(rankingRequest.getEndDate());
+        rankingRepository.save(ranking);
+    }
+
 }
 

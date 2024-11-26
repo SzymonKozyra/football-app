@@ -5,6 +5,7 @@ public class BetRequest {
     private Long matchId;
     private Integer homeScore;
     private Integer awayScore;
+    private boolean isCorrect;
 
     public Long getUserId() {
         return userId;
@@ -36,5 +37,13 @@ public class BetRequest {
 
     public void setAwayScore(Integer awayScore) {
         this.awayScore = awayScore;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public void setIsCorrect(boolean correct) {
+        isCorrect = correct;
     }
 }
