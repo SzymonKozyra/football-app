@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ListGroup, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddCoachContractForm = () => {
@@ -209,41 +209,6 @@ const AddCoachContractForm = () => {
                     Add Contract
                 </Button>
             </Form>
-
-            <Accordion className="mt-4">
-                <Accordion.Item eventKey="0">
-                    <Accordion.Header>File Format Templates</Accordion.Header>
-                    <Accordion.Body className="text-start">
-                        <h5>JSON Template</h5>
-                        <pre>
-                {`[
-    {
-        "coachId": 1,
-        "teamId": 1,
-        "start_date": "2005-05-13",
-        "end_date": "2005-08-13",
-        "salary": 50000.00,
-        "transferFee": 10000.00
-    },
-    {
-        "coachId": 2,
-        "teamId": 3,
-        "start_date": "2009-05-13",
-        "end_date": "2009-08-13",
-        "salary": 60000.00,
-        "transferFee": 12000.00
-    }
-]`}
-            </pre>
-                        <h5>CSV Template</h5>
-                        <pre>
-                {`startDate,endDate,salary,transferFee,coachId,teamId,isActive
-1,1,2009-05-13,2009-08-13,50000.00,10000.00
-2,3,2005-05-13,2005-08-13,60000.00,12000.00`}
-            </pre>
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
         </Container>
     );
 };

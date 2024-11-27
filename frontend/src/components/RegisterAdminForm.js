@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { Form, Button, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RegisterAdminForm = () => {
     const [adminData, setAdminData] = useState({ email: '', username: '', password: '' });
-    const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.post('http://localhost:8080/api/auth/register-admin', adminData)
             .then(() => {
-                setMessage('Admin account created successfully.');
-                setMessageType('success');
-                setTimeout(() => {
-                    window.location.href = "/login";
-                }, 3000);
+                alert('Admin account created successfully.');
+                window.location.href = "/login";
             })
             .catch(error => {
-                setMessage(error.response?.data || 'An error occurred');
-                setMessageType('error');
+                alert(error.response?.data || 'An error occurred');
             });
     };
 
@@ -28,14 +22,11 @@ const RegisterAdminForm = () => {
 
     return (
         <Container className="mt-5">
-            {message && (
-                <Alert variant={messageType === 'success' ? 'success' : 'danger'} dismissible
-                       onClose={() => setMessage('')}>
-                    {message}
-                </Alert>
-            )}
+            <div className="text-center mb-4">
+                <h4>There is no admin account registered. You have to register one below to continue.</h4>
+            </div>
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
-                <h1 className="text-center mb-4">Register Admin</h1>
+            <h1 className="text-center mb-4">Register Admin</h1>
                 <Form.Group controlId="formEmail" className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control

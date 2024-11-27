@@ -1,5 +1,5 @@
 .App {
-    padding-top: calc(80px);
+    padding-top: calc(100px);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -156,7 +156,7 @@ img {
     /*left: 50%;*/
     /*transform: translateX(-50%);*/
     /*position: absolute;*/
-    z-index: 1050;
+    z-index: 1100;
 }
 
 .main-content {

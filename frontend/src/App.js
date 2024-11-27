@@ -185,7 +185,6 @@ function App() {
     if (!adminExists) {
         return (
             <div className="App">
-                <h4>There are no admin accounts registered. You have to register one below to continue.</h4>
                 <RegisterAdminForm/>
             </div>
         );
@@ -199,13 +198,10 @@ function App() {
                     loginData={loginData}
                     onLogout={handleLogout}
                     setIsLoggedIn={setIsLoggedIn}
-                    setMessage={setMessage}
                     onOpenLogin={() => toggleModal('isLoginOpen')}
                     onOpenRegistration={() => toggleModal('isRegistrationOpen')}
                     onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-                    openAddModeratorModal={() => toggleModal('isAddModeratorOpen')}
-                    openAddAdminModal={() => toggleModal('isAddAdminOpen')}
-                    onModeSwitch={handleModeSwitch} // Pass handleModeSwitch to Navbar
+                    onModeSwitch={handleModeSwitch}
                     currentMode={currentMode}
                 />
             </div>
@@ -216,7 +212,6 @@ function App() {
                 {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
                 {currentMode === 'moderator' && <ModeratorView />}
                 {currentMode === 'user' && <MainView />}
-                {/*{currentMode === 'user' && <MainView />}*/}
             </div>
                 <RegistrationModal
                     isOpen={modals.isRegistrationOpen}

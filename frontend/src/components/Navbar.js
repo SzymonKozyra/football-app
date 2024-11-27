@@ -5,23 +5,15 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Navbar.css';
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, openAddModeratorModal, openAddAdminModal, currentMode, setCurrentMode, onModeSwitch }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, loginData, onLogout, onOpenLogin, onOpenRegistration, onOpenPasswordReset, onModeSwitch, currentMode }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
-
-    const handleModeSwitch = () => {
-        if (loginData.role === 'ROLE_ADMIN') {
-            setCurrentMode(currentMode === 'admin' ? 'user' : 'admin');
-        } else if (loginData.role === 'ROLE_MODERATOR') {
-            setCurrentMode(currentMode === 'moderator' ? 'user' : 'moderator');
-        }
-    };
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
                 <Link to="/" className="navbar-logo">
-                    <img src="/assets/logo.png" alt="Logo" height={200}/>
+                    <img src="/assets/logo.png" alt="Logo" />
                 </Link>
                 <div className="d-flex align-items-center">
                     {isLoggedIn && (loginData.role === 'ROLE_ADMIN' || loginData.role === 'ROLE_MODERATOR') && (
@@ -49,8 +41,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, loginData, onLogout, onOpenLogin, o
                         <>
                             <button onClick={onOpenLogin} className="btn btn-primary me-2 navbar-btn">Login</button>
                             <button onClick={onOpenRegistration} className="btn btn-dark navbar-btn">Register</button>
-                            {/*<button onClick={onOpenPasswordReset} className="navbar-btn">Password reset</button>*/}
-
                         </>
                     )}
                 </div>
