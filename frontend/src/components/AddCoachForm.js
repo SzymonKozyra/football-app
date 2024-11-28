@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion} from 'react-bootstrap';
+import {Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddCoachForm = () => {
@@ -13,8 +13,8 @@ const AddCoachForm = () => {
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    // Set age limit to 25+
     const getTodayDate = () => {
         const today = new Date();
         const year = today.getFullYear() - 25;
@@ -51,8 +51,7 @@ const AddCoachForm = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
-                    // Uzyskaj wiadomość z odpowiedzi i wyświetl jako alert
-                    alert(response.data); // Zawiera wiadomość "Coach added successfully"
+                    alert(response.data);
                     setFirstName('');
                     setLastName('');
                     setDateOfBirth('');
@@ -60,10 +59,11 @@ const AddCoachForm = () => {
                     setSelectedCountry('');
                 })
                 .catch(error => {
-                    // Sprawdź, czy wiadomość jest w `error.response`
-                    const errorMessage = error.response && error.response.data ? error.response.data : 'Failed to add coach';
-                    console.error('Error adding coach:', errorMessage);
-                    alert(errorMessage); // Wyświetl wiadomość błędu z backendu
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding coach');
+                    }
                 });
         } else {
             const formData = new FormData();
@@ -74,7 +74,7 @@ const AddCoachForm = () => {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
             })
                 .then(response => {
-                    alert(response.data); // Display the backend message here
+                    alert(response.data);
                     setFile(null);
                     setFileType('');
                 })
@@ -88,6 +88,7 @@ const AddCoachForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Coach</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

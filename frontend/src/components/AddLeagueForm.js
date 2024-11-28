@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddLeagueForm = () => {
@@ -12,6 +12,7 @@ const AddLeagueForm = () => {
     const [file, setFile] = useState(null);
     const [manualEntry, setManualEntry] = useState(true); // Default to manual entry
     const [isEditionValid, setIsEditionValid] = useState(true);
+    const [alertMessage, setAlertMessage] = useState(null);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')
@@ -23,7 +24,7 @@ const AddLeagueForm = () => {
         e.preventDefault();
 
         if (!isEditionValid) {
-            alert('Edycja musi być w formacie liczba/liczba, np. 23/24');
+            alert('Edition must be in format number/number, e.g. 23/24');
             return;
         }
 
@@ -50,8 +51,13 @@ const AddLeagueForm = () => {
                     setEdition('');
                 })
                 .catch(error => {
-                    console.error('Error adding league:', error);
-                    alert('Failed to add league');
+//                    console.error('Error adding league:', error);
+//                    alert('Failed to add league');
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding league');
+                    }
                 });
         } else {
             const formData = new FormData();
@@ -88,6 +94,7 @@ const AddLeagueForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add League</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

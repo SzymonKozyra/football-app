@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, ListGroup, Alert } from 'react-bootstrap';
 
 const AddRankingForm = () => {
     const [name, setName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [message, setMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -22,16 +23,23 @@ const AddRankingForm = () => {
             headers: { Authorization: `Bearer ${token}` },
         })
         .then(() => {
-            alert('Ranking addes successfully!');
+            alert('Ranking added successfully!');
             setName('');
             setStartDate('');
             setEndDate('');
         })
-        .catch((error) => console.error('Error adding ranking:', error));
+        .catch(error => {
+            if (error.response && error.response.data) {
+                setAlertMessage(error.response.data);
+            } else {
+                setAlertMessage('An error occurred while adding ranking');
+            }
+        });
     };
 
     return (
         <div className="container mt-4">
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <h2>Dodaj Ranking</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">

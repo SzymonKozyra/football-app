@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, ListGroup, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddCoachContractForm = () => {
@@ -15,6 +15,7 @@ const AddCoachContractForm = () => {
     const [filteredTeams, setFilteredTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (searchQuery) {
@@ -85,11 +86,17 @@ const AddCoachContractForm = () => {
         axios.post('http://localhost:8080/api/coach-contracts/add', contractData, {
             headers: { Authorization: `Bearer ${token}` },
         })
-            .then(() => {
-                alert('Coach contract added successfully');
-                resetForm();
-            })
-            .catch(error => console.error('Error adding contract:', error));
+        .then(() => {
+            alert('Coach contract added successfully');
+            resetForm();
+        })
+        .catch(error => {
+            if (error.response && error.response.data) {
+                setAlertMessage(error.response.data);
+            } else {
+                setAlertMessage('An error occurred while adding contract');
+            }
+        });
     };
 
     const resetForm = () => {
@@ -114,7 +121,7 @@ const AddCoachContractForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Coach Contract</h1>
-
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Form.Group controlId="formCoachSearch" className="mb-3">
                     <Form.Label>Search Coach</Form.Label>
