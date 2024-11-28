@@ -13,7 +13,7 @@ const AddCoachForm = () => {
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const getTodayDate = () => {
         const today = new Date();

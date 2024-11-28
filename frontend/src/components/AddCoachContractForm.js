@@ -15,7 +15,7 @@ const AddCoachContractForm = () => {
     const [filteredTeams, setFilteredTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [error, setError] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         if (searchQuery) {

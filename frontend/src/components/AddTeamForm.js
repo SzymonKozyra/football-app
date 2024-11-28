@@ -13,7 +13,7 @@ const AddTeamForm = () => {
     const [file, setFile] = useState(null);  // For importing teams
     const [pictureFile, setPictureFile] = useState(null);  // For uploading picture in manual entry
     const [fileType, setFileType] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         if (leagueSearchQuery) {

@@ -13,7 +13,7 @@ const AddInjuryForm = () => {
     const [playerSearchQuery, setPlayerSearchQuery] = useState('');
     const [filteredPlayers, setFilteredPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const [duplicateRecords, setDuplicateRecords] = useState([]);
 

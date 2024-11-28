@@ -11,7 +11,7 @@ const AddBetForm = () => {
     const [homeScore, setHomeScore] = useState('');
     const [awayScore, setAwayScore] = useState('');
     const [userId, setUserId] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const token = localStorage.getItem('jwtToken');
 

@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddPlayerForm = () => {
     const [manualEntry, setManualEntry] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
     const [playerData, setPlayerData] = useState({
         firstName: '',
         lastName: '',

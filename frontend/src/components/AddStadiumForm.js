@@ -13,7 +13,7 @@ const AddStadiumForm = () => {
     const [fileType, setFileType] = useState('');
     const [file, setFile] = useState(null);
     const [manualEntry, setManualEntry] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')

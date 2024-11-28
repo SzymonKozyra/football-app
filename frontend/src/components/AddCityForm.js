@@ -10,7 +10,7 @@ const AddCityForm = () => {
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/countries')

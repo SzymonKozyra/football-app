@@ -7,7 +7,7 @@ const AddRankingForm = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [message, setMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
