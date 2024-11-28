@@ -147,7 +147,7 @@ const RankingView = () => {
                     <Form.Label>Szukaj użytkownika</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Wpisz nazwę użytkownika"
+                        placeholder="Search username"
                         value={searchQuery}
                         onChange={handleSearchChange}
                     />

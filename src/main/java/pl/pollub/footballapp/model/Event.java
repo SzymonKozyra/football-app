@@ -6,7 +6,7 @@ import pl.pollub.footballapp.EventType;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "events")
+//@Table(name = "events")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
