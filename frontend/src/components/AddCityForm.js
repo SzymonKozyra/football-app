@@ -42,8 +42,11 @@ const AddCityForm = () => {
                     setSelectedCountry('');
                 })
                 .catch(error => {
-                    console.error('Error adding city:', error);
-                    alert('Failed to add city');
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding coach');
+                    }
                 });
         } else {
             const formData = new FormData();
