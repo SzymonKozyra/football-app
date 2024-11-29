@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.League;
 import pl.pollub.footballapp.model.Country;
+import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.repository.CountryRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.requests.LeagueRequest;
@@ -122,5 +123,24 @@ public class LeagueService {
         return leagueRepository.findAll();
     }
 
+
+    public Optional<League> getLeagueById(Long id) {
+        return leagueRepository.findById(id);
+    }
+
+    public League setWinner(Long leagueId, Team winner) {
+        return leagueRepository.findById(leagueId)
+                .map(league -> {
+                    league.setWinner(winner);
+                    return leagueRepository.save(league);
+                })
+                .orElseThrow(() -> new RuntimeException("League with ID " + leagueId + " not found"));
+    }
+
+    public Team getWinner(Long leagueId) {
+        return leagueRepository.findById(leagueId)
+                .map(League::getWinner)
+                .orElseThrow(() -> new RuntimeException("League with ID " + leagueId + " not found"));
+    }
 
 }

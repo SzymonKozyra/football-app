@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.EventType;
 import pl.pollub.footballapp.MatchStatus;
-import pl.pollub.footballapp.model.Event;
-import pl.pollub.footballapp.model.Match;
-import pl.pollub.footballapp.model.MatchSquad;
-import pl.pollub.footballapp.model.Player;
+import pl.pollub.footballapp.model.*;
 import pl.pollub.footballapp.repository.EventRepository;
 import pl.pollub.footballapp.repository.MatchRepository;
 import pl.pollub.footballapp.repository.MatchSquadRepository;
@@ -27,6 +24,9 @@ public class EventService {
     private final PlayerRepository playerRepository;
     @Autowired
     private MatchSquadRepository matchSquadRepository;
+
+    @Autowired
+    private LeagueService leagueService;
 
     @Autowired
     public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository) {
@@ -130,6 +130,10 @@ public class EventService {
                 match.setStatus(MatchStatus.FINISHED);
                 match.setDuration(calculateMatchDurationFromEvents(eventRepository.findByMatchId(match.getId())));
                 calculateMinutesPlayed(match.getId());
+                if (match.getStage().getName().equals("Finał")) {
+                    Team winner = match.getHomeGoals() > match.getAwayGoals() ? match.getHomeTeam() : match.getAwayTeam();
+                    leagueService.setWinner(match.getLeague().getId(), winner);
+                }
                 break;
 
             case SUB_IN:

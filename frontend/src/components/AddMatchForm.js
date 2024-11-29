@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ListGroup, Modal } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ListGroup, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -53,6 +53,14 @@ const AddMatchForm = () => {
     const handleModalShow = () => setShowModal(true);
     const [teamError, setTeamError] = useState('');
     const [newMatchId, setNewMatchId] = useState(null);
+
+
+    const [stageType, setStageType] = useState('OTHER'); // Typ fazy: GROUP_STAGE, KNOCKOUT_STAGE, OTHER
+    const [groupOptions, setGroupOptions] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
+    const [stageOptions, setStageOptions] = useState([]);
+    const [selectedStage, setSelectedStage] = useState(null);
 
     const resetForm = () => {
         if(matchStatus !== 'UPCOMING') {
@@ -173,11 +181,56 @@ const AddMatchForm = () => {
     //     }
     // }, [newMatchId]);
 
+
+    // Pobieranie grup dla fazy grupowej
+    useEffect(() => {
+        if (stageType === 'GROUP_STAGE' && selectedLeague) {
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/leagueGroups/league/${selectedLeague.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(response => {
+                    setGroupOptions(response.data);
+                    console.log("Group options:", response.data);
+                    if (response.data.length > 0) {
+                        setSelectedGroup(response.data[0]); // Automatyczny wybór pierwszej grupy
+                    }
+                })
+                .catch(error => console.error('Error fetching groups:', error));
+        } else {
+            setGroupOptions([]);
+        }
+    }, [stageType, selectedLeague]);
+
+    // Pobieranie nazw faz pucharowych
+    useEffect(() => {
+        if (stageType === 'KNOCKOUT_STAGE') {
+            const token = localStorage.getItem('jwtToken');
+            axios.get('http://localhost:8080/api/leagueStages', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(response => setStageOptions(response.data))
+                .catch(error => console.error('Error fetching stages:', error));
+        } else {
+            setStageOptions([]);
+        }
+    }, [stageType]);
+
+
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
+        // Ustaw tylko nazwę ligi w polu wyszukiwania
         setLeagueSearchQuery(league.name);
         setFilteredLeagues([]);
+
+        // Resetuj fazy i grupy
+        setStageType('OTHER');
+        setGroupOptions([]);
+        setSelectedGroup(null);
+        setStageOptions([]);
+        setSelectedStage(null);
     };
+
     const handleRefereeSelect = (referee) => {
         setSelectedReferee(referee);
         setRefereeSearchQuery(`${referee.firstName} ${referee.lastName}`);
@@ -240,9 +293,12 @@ const AddMatchForm = () => {
                 homeFouls,
                 awayFouls,
             }),
+            ...(stageType === 'GROUP_STAGE' && { group: { id: selectedGroup.id } }),
+            ...(stageType === 'KNOCKOUT_STAGE' && { stage: selectedStage })
+
         };
         console.log("Sending match data to backend:", JSON.stringify(matchData, null, 2)); // Logowanie danych przed wysłaniem
-
+        console.log("STAGEType: ", stageType);
         try {
             const response = await axios.post('http://localhost:8080/api/matches/add', matchData, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -413,32 +469,82 @@ const AddMatchForm = () => {
                         placeholder="Search for a league"
                         value={leagueSearchQuery}
                         onChange={(e) => setLeagueSearchQuery(e.target.value)}
+                        required
                     />
                     {filteredLeagues.length > 0 && !selectedLeague && (
                         <ListGroup>
-                            {filteredLeagues.map((lg) => (
+                            {filteredLeagues.map((league) => (
                                 <ListGroup.Item
-                                    key={lg.id}
+                                    key={league.id}
                                     action
-                                    onClick={() => handleLeagueSelect(lg)}
+                                    onClick={() => handleLeagueSelect(league)}
                                 >
-                                    {lg.name}
+                                    {league.name}
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
                     )}
                 </Form.Group>
 
-                {/*<Form.Group controlId="formDuration" className="mb-3">*/}
-                {/*    <Form.Label>Duration (minutes)</Form.Label>*/}
-                {/*    <Form.Control*/}
-                {/*        type="number"*/}
-                {/*        value={duration}*/}
-                {/*        onChange={(e) => setDuration(parseInt(e.target.value))}*/}
-                {/*        min="0"*/}
-                {/*        required*/}
-                {/*    />*/}
-                {/*</Form.Group>*/}
+                <Form.Group controlId="formStageType" className="mb-3">
+                    <Form.Label>Stage Type</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={stageType}
+                        onChange={(e) => setStageType(e.target.value)}
+                        required
+                    >
+                        <option value="OTHER">Other</option>
+                        <option value="GROUP_STAGE">Group Stage</option>
+                        <option value="KNOCKOUT_STAGE">Knockout Stage</option>
+                    </Form.Control>
+                </Form.Group>
+
+                {stageType === 'GROUP_STAGE' && (
+                    <Form.Group controlId="formGroup" className="mb-3">
+                        <Form.Label>Group</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={selectedGroup?.id || ''}
+                            onChange={(e) => {
+                                const group = groupOptions.find(g => g.id.toString() === e.target.value);
+                                setSelectedGroup(group);
+                            }}
+                        >
+                            <option value="" disabled>Select a group</option>
+                            {groupOptions.map((group) => (
+                                <option key={group.id} value={group.id}>
+                                    {group.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                )}
+
+                {stageType === 'KNOCKOUT_STAGE' && (
+                    <Form.Group controlId="formStage" className="mb-3">
+                        <Form.Label>Knockout Stage</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={selectedStage?.id || ''}
+                            onChange={(e) => {
+                                const stage = stageOptions.find(s => s.id.toString() === e.target.value);
+                                setSelectedStage(stage);
+                            }}
+                        >
+                            <option value="" disabled>Select a stage</option>
+                            {stageOptions.map((stage) => (
+                                <option key={stage.id} value={stage.id}>
+                                    {stage.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                )}
+
+
 
                 {matchStatus !== 'UPCOMING' && (
                     <>

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import pl.pollub.footballapp.MatchStatus;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Match {
@@ -90,6 +89,12 @@ public class Match {
 
     private int homeFouls;
     private int awayFouls;
+
+    @ManyToOne
+    private LeagueGroup group;
+
+    @ManyToOne
+    private LeagueGroup stage; // Zmieniono z Phase na Stage
 
     public Long getId() {
         return id;
@@ -298,5 +303,21 @@ public class Match {
 
     public void setAwayTeam(Team awayTeam) {
         this.awayTeam = awayTeam;
+    }
+
+    public LeagueGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(LeagueGroup group) {
+        this.group = group;
+    }
+
+    public LeagueGroup getStage() {
+        return stage;
+    }
+
+    public void setStage(LeagueGroup stage) {
+        this.stage = stage;
     }
 }

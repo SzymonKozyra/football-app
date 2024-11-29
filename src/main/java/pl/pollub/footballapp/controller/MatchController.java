@@ -34,7 +34,7 @@ public class MatchController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('MODERATOR')")
+            @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Match>> getAllMatches() {
         return ResponseEntity.ok(matchService.getAllMatches());
     }

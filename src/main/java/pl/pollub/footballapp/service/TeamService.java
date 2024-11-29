@@ -6,8 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pl.pollub.footballapp.model.LeagueGroup;
+import pl.pollub.footballapp.model.Match;
 import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.model.League;
+import pl.pollub.footballapp.repository.LeagueGroupRepository;
+import pl.pollub.footballapp.repository.MatchRepository;
 import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.requests.TeamRequest;
@@ -15,9 +19,7 @@ import pl.pollub.footballapp.service.importer.DataImporter;
 import pl.pollub.footballapp.service.importer.ImporterFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TeamService {
@@ -33,6 +35,12 @@ public class TeamService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private MatchRepository matchRepository;
+
+    @Autowired
+    private LeagueGroupRepository leagueGroupRepository;
 
     public String addTeam(TeamRequest teamRequest) {
         League league = leagueRepository.findById(teamRequest.getLeagueId())
@@ -163,5 +171,44 @@ public class TeamService {
 
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
+    }
+
+    public Map<Team, Integer> calculateGroupPoints(Long groupId) {
+        LeagueGroup group = leagueGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        List<Team> teams = teamRepository.findByGroup(group);
+        Map<Team, Integer> points = new HashMap<>();
+
+        for (Team team : teams) {
+            List<Match> matches = matchRepository.findByGroupAndHomeTeamOrGroupAndAwayTeam(group, team, group, team);
+
+            int teamPoints = 0;
+            for (Match match : matches) {
+                if (match.getHomeTeam().equals(team)) {
+                    teamPoints += calculatePoints(match.getHomeGoals(), match.getAwayGoals());
+                } else if (match.getAwayTeam().equals(team)) {
+                    teamPoints += calculatePoints(match.getAwayGoals(), match.getHomeGoals());
+                }
+            }
+            points.put(team, teamPoints);
+        }
+        return points;
+    }
+
+    private int calculatePoints(int teamGoals, int opponentGoals) {
+        if (teamGoals > opponentGoals) return 3; // Wygrana
+        if (teamGoals == opponentGoals) return 1; // Remis
+        return 0; // Przegrana
+    }
+
+    public void assignTeamsToGroup(Long groupId, List<Long> teamIds) {
+        LeagueGroup group = leagueGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        List<Team> teams = teamRepository.findAllById(teamIds);
+        teams.forEach(team -> team.setGroup(group));
+
+        teamRepository.saveAll(teams);
     }
 }

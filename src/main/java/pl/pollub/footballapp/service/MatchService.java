@@ -48,6 +48,8 @@ public class MatchService {
                     match.setReferee(updatedMatch.getReferee());
                     match.setStadium(updatedMatch.getStadium());
                     match.setLeague(updatedMatch.getLeague());
+                    match.setGroup(updatedMatch.getGroup());
+                    match.setStage(updatedMatch.getStage()); // Zmieniono na stage
                     match.setRound(updatedMatch.getRound());
                     match.setDuration(90); // Stała wartość
                     match.setStatus(updatedMatch.getStatus());
