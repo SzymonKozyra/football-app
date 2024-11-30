@@ -23,38 +23,12 @@ public class BetController {
 
     private BetService betService;
     private BetRepository betRepository;
-
     @Autowired
-    public BetController(BetService betService) {
+    public BetController(BetService betService, BetRepository betRepository) {
         this.betService = betService;
+        this.betRepository = betRepository;
     }
 
-//    private BetService betService;
-//    private UserService userService;
-//    private MatchService matchService;
-//    public BetController(BetService betService, UserService userService, MatchService matchService) {
-//        this.betService = betService;
-//        this.userService = userService;
-//        this.matchService = matchService;
-//    }
-
-//    @PostMapping("/add/{matchId}")
-//    public ResponseEntity<Bet> addBet(
-//            @PathVariable Long matchId,
-//            @RequestParam int homeScore,
-//            @RequestParam int awayScore,
-//            Authentication authentication
-//    ) {
-////        return ResponseEntity.ok(betService.addBet(matchId, homeScore, awayScore, authentication));
-//        Bet createdBet = betService.addBet(matchId, homeScore, awayScore, authentication);
-//        return ResponseEntity.ok(createdBet);
-//    }
-
-
-//    @GetMapping
-//    public ResponseEntity<List<Bet>> getAllBets() {
-//        return ResponseEntity.ok(betService.getAllBets());
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Bet> getBetById(@PathVariable Long id) {
@@ -67,65 +41,11 @@ public class BetController {
         return ResponseEntity.noContent().build();
     }
 
-
-//    @PostMapping("/place")
-//    public ResponseEntity<Bet> placeBet(@RequestParam Long userId,
-//                                        @RequestParam Long matchId,
-//                                        @RequestParam int homeScore,
-//                                        @RequestParam int awayScore) {
-////        Bet bet = betService.placeBet(userId, matchId, homeScore, awayScore);
-////        return ResponseEntity.ok(bet);
-//        try {
-//            Bet bet = betService.placeBet(
-//                    betRequest.getUserId(),
-//                    betRequest.getMatchId(),
-//                    betRequest.getHomeScore(),
-//                    betRequest.getAwayScore()
-//            );
-//            return ResponseEntity.ok(bet);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//    }
-
-//    PRAWIE DZIALA
-//    @PostMapping("/place")
-//    public ResponseEntity<?> placeBet(@RequestBody BetRequest betRequest) {
-//        return betService.placeBet(betRequest);
-//    }
-//    PRAWIE DZIALA
-//    @PostMapping("/place")
-//    public ResponseEntity<?> placeBet(@RequestBody BetRequest betRequest, Authentication authentication) {
-//        try {
-//            String username = authentication.getName(); // Pobranie nazwy użytkownika z JWT
-//            betService.placeBet(username, betRequest.getMatchId(), betRequest.getHomeScore(), betRequest.getAwayScore());
-//            return ResponseEntity.ok("Bet placed successfully");
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
-
-
-//    @PostMapping("/add")
-//    @PreAuthorize("hasRole('MODERATOR')")
-//    public ResponseEntity<?> addBet(@RequestBody Map<String, Long> payload) {
-//        Long userId = payload.get("userId");
-//        Long matchId = payload.get("matchId");
-//
-//        Bet bet = new Bet();
-//        betService.addBet(bet, userId, matchId);
-//        return ResponseEntity.ok("Bet added successfully");
-//    }
-
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addBet(@RequestBody BetRequest request) {
         return betService.addBet(request);
     }
-
-
-
 
 
     //@PostMapping("/check/{matchId}")
@@ -140,7 +60,6 @@ public class BetController {
         List<Bet> bets = betService.getUserBets(userId);
         return ResponseEntity.ok(bets);
     }
-
 
 
 

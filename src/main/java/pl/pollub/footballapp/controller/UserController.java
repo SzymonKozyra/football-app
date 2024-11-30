@@ -12,9 +12,14 @@ import pl.pollub.footballapp.service.UserService;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
-    @Autowired
     private UserService userService;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {

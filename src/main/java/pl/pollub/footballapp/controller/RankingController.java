@@ -14,13 +14,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rankings")
 public class RankingController {
-
     private final RankingService rankingService;
 
     @Autowired
     public RankingController(RankingService rankingService) {
         this.rankingService = rankingService;
     }
+
+
+
 
     @GetMapping
     public ResponseEntity<List<Ranking>> getAllRankings() {

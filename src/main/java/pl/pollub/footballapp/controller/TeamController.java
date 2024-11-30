@@ -18,11 +18,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
-
-    @Autowired
     private TeamService teamService;
+    @Autowired
+    public TeamController(TeamService teamService) {
+        this.teamService = teamService;
+    }
 
-//    @PostMapping("/add")
+
+
+    //    @PostMapping("/add")
 //    @PreAuthorize("hasRole('MODERATOR')")
 //    public ResponseEntity<?> addTeam(@RequestBody TeamRequest teamRequest) {
 //        try {

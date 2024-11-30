@@ -15,9 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/injuries")
 public class InjuryController {
-
-    @Autowired
     private InjuryService injuryService;
+    @Autowired
+    public InjuryController(InjuryService injuryService) {
+        this.injuryService = injuryService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

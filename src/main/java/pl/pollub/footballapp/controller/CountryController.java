@@ -15,9 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/countries")
 public class CountryController {
-
-    @Autowired
     private CountryRepository countryRepository;
+    @Autowired
+    public CountryController(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Country>> getAllCountries() {

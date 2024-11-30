@@ -16,9 +16,11 @@ import java.util.List;
 @RequestMapping("/api/leagues")
 @CrossOrigin(origins = "http://localhost:3000")
 public class LeagueController {
-
-    @Autowired
     private LeagueService leagueService;
+    @Autowired
+    public LeagueController(LeagueService leagueService) {
+        this.leagueService = leagueService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

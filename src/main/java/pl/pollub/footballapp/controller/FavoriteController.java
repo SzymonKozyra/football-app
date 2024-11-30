@@ -15,9 +15,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/favorites")
 public class FavoriteController {
-
-    @Autowired
     private FavoriteService favoriteService;
+    @Autowired
+    public FavoriteController(FavoriteService favoriteService) {
+        this.favoriteService = favoriteService;
+    }
+
 
     @GetMapping("/{userId}")
     public ResponseEntity<Map<String, List<?>>> getUserFavorites(@PathVariable Long userId) {

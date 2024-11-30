@@ -30,12 +30,18 @@ import pl.pollub.footballapp.util.JwtUtil;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
-    @Autowired
     private UserService userService;
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private JwtUtil jwtUtil;
+    private UserDetailsService userDetailsService;
+    @Autowired
+    public AuthController(UserService userService, UserRepository userRepository, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -52,8 +58,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {

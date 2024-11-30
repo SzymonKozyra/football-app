@@ -16,9 +16,14 @@ import java.util.List;
 @RequestMapping("/api/stadiums")
 @CrossOrigin(origins = "http://localhost:3000")
 public class StadiumController {
-
-    @Autowired
     private StadiumService stadiumService;
+    @Autowired
+    public StadiumController(StadiumService stadiumService) {
+        this.stadiumService = stadiumService;
+    }
+
+
+
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

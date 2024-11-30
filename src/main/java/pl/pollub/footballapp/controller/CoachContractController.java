@@ -13,9 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/coach-contracts")
 public class CoachContractController {
-
-    @Autowired
     private CoachContractService coachContractService;
+    @Autowired
+    public CoachContractController(CoachContractService coachContractService) {
+        this.coachContractService = coachContractService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
