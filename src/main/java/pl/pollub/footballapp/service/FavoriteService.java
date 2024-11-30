@@ -13,15 +13,20 @@ import java.util.List;
 
 @Service
 public class FavoriteService {
-
-    @Autowired
     private FavoriteTeamRepository favoriteTeamRepository;
-
-    @Autowired
     private FavoriteLeagueRepository favoriteLeagueRepository;
-
-    @Autowired
     private FavoriteMatchRepository favoriteMatchRepository;
+    @Autowired
+    public FavoriteService(FavoriteTeamRepository favoriteTeamRepository, FavoriteLeagueRepository favoriteLeagueRepository, FavoriteMatchRepository favoriteMatchRepository) {
+        this.favoriteTeamRepository = favoriteTeamRepository;
+        this.favoriteLeagueRepository = favoriteLeagueRepository;
+        this.favoriteMatchRepository = favoriteMatchRepository;
+    }
+
+
+
+
+
 
     public List<FavoriteTeam> getFavoriteTeamsByUserId(Long userId) {
         return favoriteTeamRepository.findFavoriteTeamsByUserId(userId);

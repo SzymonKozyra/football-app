@@ -14,13 +14,14 @@ import java.util.List;
 
 @Component
 public class MatchStatusUpdater {
-
     private final MatchRepository matchRepository;
-
     @Autowired
     public MatchStatusUpdater(MatchRepository matchRepository) {
         this.matchRepository = matchRepository;
     }
+
+
+
 
     // every 15 minutes (in ms:  15*60*1000=900000)
     @Scheduled(fixedRate = 900000)

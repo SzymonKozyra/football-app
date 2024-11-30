@@ -19,15 +19,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class PlayerContractService {
-
-    @Autowired
     private PlayerContractRepository playerContractRepository;
-
-    @Autowired
     private PlayerRepository playerRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    public PlayerContractService(PlayerContractRepository playerContractRepository, PlayerRepository playerRepository, TeamRepository teamRepository) {
+        this.playerContractRepository = playerContractRepository;
+        this.playerRepository = playerRepository;
+        this.teamRepository = teamRepository;
+    }
+
+
+
+
 
     public ResponseEntity<?> addPlayerContract(PlayerContractRequest request) {
         boolean hasActiveContract = playerContractRepository.existsByPlayerIdAndIsActive(request.getPlayerId(), true);

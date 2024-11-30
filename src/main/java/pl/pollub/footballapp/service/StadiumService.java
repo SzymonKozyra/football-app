@@ -21,18 +21,21 @@ import java.util.*;
 
 @Service
 public class StadiumService {
-
-    @Autowired
     private StadiumRepository stadiumRepository;
-
-    @Autowired
     private CityRepository cityRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public StadiumService(StadiumRepository stadiumRepository, CityRepository cityRepository, CountryRepository countryRepository, ImporterFactory importerFactory) {
+        this.stadiumRepository = stadiumRepository;
+        this.cityRepository = cityRepository;
+        this.countryRepository = countryRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
+
 
     public ResponseEntity<?> addStadium(StadiumRequest stadiumRequest) {
         Country country = countryRepository.findByName(stadiumRequest.getCountryName())

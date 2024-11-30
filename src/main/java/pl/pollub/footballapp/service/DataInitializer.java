@@ -13,9 +13,15 @@ import java.util.List;
 
 @Service
 public class DataInitializer {
-
-    @Autowired
     private CountryRepository countryRepository;
+    @Autowired
+    public DataInitializer(CountryRepository countryRepository, PositionRepository positionRepository) {
+        this.countryRepository = countryRepository;
+        this.positionRepository = positionRepository;
+    }
+
+
+
 
     @PostConstruct
     public void initializeCountries() {

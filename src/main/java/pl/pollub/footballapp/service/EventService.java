@@ -19,21 +19,22 @@ import java.util.Optional;
 
 @Service
 public class EventService {
-    @Autowired
     private final EventRepository eventRepository;
-    @Autowired
     private final MatchRepository matchRepository;
-    @Autowired
     private final PlayerRepository playerRepository;
-    @Autowired
     private MatchSquadRepository matchSquadRepository;
 
     @Autowired
-    public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository) {
+    public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository, MatchSquadRepository matchSquadRepository) {
         this.eventRepository = eventRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
+        this.matchSquadRepository = matchSquadRepository;
     }
+
+
+
+
 
     public Event addEvent(EventRequest eventRequest) {
         Event event = new Event();

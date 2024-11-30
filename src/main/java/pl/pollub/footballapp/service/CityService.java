@@ -17,15 +17,18 @@ import java.util.*;
 
 @Service
 public class CityService {
-
-    @Autowired
     private CityRepository cityRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public CityService(CityRepository cityRepository, CountryRepository countryRepository, ImporterFactory importerFactory) {
+        this.cityRepository = cityRepository;
+        this.countryRepository = countryRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
 
     public ResponseEntity<?> addCity(City cityRequest) {
         Optional<Country> country = countryRepository.findByName(cityRequest.getCountry().getName());

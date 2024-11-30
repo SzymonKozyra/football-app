@@ -15,15 +15,17 @@ import java.util.List;
 
 @Service
 public class CoachContractService {
-
-    @Autowired
     private CoachContractRepository coachContractRepository;
-
-    @Autowired
     private CoachRepository coachRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    public CoachContractService(CoachContractRepository coachContractRepository, CoachRepository coachRepository, TeamRepository teamRepository) {
+        this.coachContractRepository = coachContractRepository;
+        this.coachRepository = coachRepository;
+        this.teamRepository = teamRepository;
+    }
+
+
 
 
     public ResponseEntity<?> addCoachContract(CoachContractRequest request) {

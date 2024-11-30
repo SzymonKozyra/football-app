@@ -16,13 +16,15 @@ public class ContractStatusUpdater {
 
     private final PlayerContractRepository playerContractRepository;
     private final CoachContractRepository coachContractRepository;
-
     @Autowired
     public ContractStatusUpdater(PlayerContractRepository playerContractRepository,
                                  CoachContractRepository coachContractRepository) {
         this.playerContractRepository = playerContractRepository;
         this.coachContractRepository = coachContractRepository;
     }
+
+
+
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void updateContractStatuses() {

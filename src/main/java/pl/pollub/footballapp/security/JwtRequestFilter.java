@@ -28,14 +28,17 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-    @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
+
+
 
 
     @Override

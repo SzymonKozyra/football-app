@@ -20,15 +20,19 @@ import java.util.Optional;
 
 @Service
 public class InjuryService {
-
-    @Autowired
     private InjuryRepository injuryRepository;
-
-    @Autowired
     private PlayerRepository playerRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public InjuryService(InjuryRepository injuryRepository, PlayerRepository playerRepository, ImporterFactory importerFactory) {
+        this.injuryRepository = injuryRepository;
+        this.playerRepository = playerRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
+
 
     public ResponseEntity<?> addInjury(InjuryRequest injuryRequest) {
         Player player = playerRepository.findById(injuryRequest.getPlayerId())

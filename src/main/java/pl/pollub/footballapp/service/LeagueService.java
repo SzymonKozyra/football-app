@@ -18,15 +18,19 @@ import java.util.*;
 
 @Service
 public class LeagueService {
-
-    @Autowired
     private LeagueRepository leagueRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public LeagueService(LeagueRepository leagueRepository, CountryRepository countryRepository, ImporterFactory importerFactory) {
+        this.leagueRepository = leagueRepository;
+        this.countryRepository = countryRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
+
 
     public ResponseEntity<?> addLeague(LeagueRequest leagueRequest) {
         Country country = countryRepository.findByName(leagueRequest.getCountryName())
