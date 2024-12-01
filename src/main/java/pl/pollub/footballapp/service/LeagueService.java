@@ -33,11 +33,15 @@ public class LeagueService {
         Country country = countryRepository.findByName(leagueRequest.getCountryName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
 
-        boolean leagueExists = leagueRepository.existsByNameAndCountry(leagueRequest.getName(), country);
+        // Sprawdź, czy istnieje liga z tą samą nazwą, krajem i edycją
+        boolean leagueExists = leagueRepository.existsByNameAndCountryAndEdition(
+                leagueRequest.getName(), country, leagueRequest.getEdition());
+
         if (leagueExists) {
-            return ResponseEntity.badRequest().body("League already exists");
+            return ResponseEntity.badRequest().body("League with the same name, country, and edition already exists");
         }
 
+        // Utwórz i zapisz nową ligę
         League league = new League();
         league.setName(leagueRequest.getName());
         league.setCountry(country);
@@ -46,6 +50,7 @@ public class LeagueService {
         leagueRepository.save(league);
         return ResponseEntity.ok("League added successfully");
     }
+
 
 
     public ResponseEntity<?> importLeagues(MultipartFile file, String fileType) throws IOException {
@@ -64,10 +69,11 @@ public class LeagueService {
 
             Country country = countryOptional.get();
 
-            boolean leagueExists = leagueRepository.existsByNameAndCountry(leagueRequest.getName(), country);
+            boolean leagueExists = leagueRepository.existsByNameAndCountryAndEdition(
+                    leagueRequest.getName(), country, leagueRequest.getEdition());
             if (leagueExists) {
-                duplicateIndices.add(i + 1);  // Add 1 to make indices user-friendly (1-based index)
-                continue;  // Skip adding this league
+                duplicateIndices.add(i + 1);  // Dodaj do listy duplikatów
+                continue;  // Pomijaj dodanie tej ligi
             }
 
             League league = new League();

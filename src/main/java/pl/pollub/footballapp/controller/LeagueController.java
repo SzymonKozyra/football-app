@@ -1,16 +1,21 @@
 package pl.pollub.footballapp.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.pollub.footballapp.model.Country;
 import pl.pollub.footballapp.model.League;
+import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.requests.LeagueRequest;
 import pl.pollub.footballapp.service.LeagueService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/leagues")
@@ -19,6 +24,11 @@ public class LeagueController {
 
     @Autowired
     private LeagueService leagueService;
+    @Autowired
+    private LeagueRepository leagueRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(LeagueController.class);
+
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
@@ -72,5 +82,48 @@ public class LeagueController {
     public ResponseEntity<List<League>> getAllLeagues() {
         return ResponseEntity.ok(leagueService.getAllLeagues());
     }
+
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<String>> getDistinctCountries() {
+        logger.info("Received request to get distinct countries");
+        List<Country> distinctCountries = leagueRepository.findDistinctCountries();
+        logger.debug("Distinct countries fetched: {}", distinctCountries);
+        List<String> countryNames = distinctCountries.stream()
+                .map(Country::getName)
+                .collect(Collectors.toList());
+        logger.debug("Country names mapped: {}", countryNames);
+        return ResponseEntity.ok(countryNames);
+    }
+
+    @GetMapping("/byCountry")
+    public ResponseEntity<List<League>> getLeaguesByCountry(@RequestParam String country) {
+        logger.info("Received request to get leagues for country: {}", country);
+        List<League> leagues = leagueRepository.findByCountryName(country);
+        logger.debug("Leagues fetched for country {}: {}", country, leagues);
+        return ResponseEntity.ok(leagues);
+    }
+
+    @GetMapping("/editions")
+    public ResponseEntity<List<String>> getEditions(
+            @RequestParam String leagueName,
+            @RequestParam String country) {
+        logger.info("Received request to get editions for league: {}, country: {}", leagueName, country);
+        List<String> editions = leagueRepository.findEditionsByNameAndCountry(leagueName, country);
+        logger.debug("Editions fetched for league {} in country {}: {}", leagueName, country, editions);
+        return ResponseEntity.ok(editions);
+    }
+
+
+    @GetMapping("/getByDetails")
+    public ResponseEntity<League> getLeagueByDetails(
+            @RequestParam String country,
+            @RequestParam String name,
+            @RequestParam String edition) {
+        League league = leagueRepository.findByCountryNameAndNameAndEdition(country, name, edition)
+                .orElseThrow(() -> new RuntimeException("League not found"));
+        return ResponseEntity.ok(league);
+    }
+
 
 }
