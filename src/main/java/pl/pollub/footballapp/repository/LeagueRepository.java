@@ -18,4 +18,17 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     List<League> findByNameContaining(@Param("query") String query, Sort sort);
 
     Optional<Object> findByName(String leagueName);
+
+    boolean existsByNameAndCountryAndEdition(String name, Country country, String edition);
+
+    @Query("SELECT DISTINCT l.country FROM League l")
+    List<Country> findDistinctCountries();
+
+    @Query("SELECT l FROM League l WHERE l.country.name = :countryName")
+    List<League> findByCountryName(@Param("countryName") String countryName);
+
+    @Query("SELECT DISTINCT l.edition FROM League l WHERE l.name = :leagueName AND l.country.name = :countryName")
+    List<String> findEditionsByNameAndCountry(@Param("leagueName") String leagueName, @Param("countryName") String countryName);
+
+    Optional<League> findByCountryNameAndNameAndEdition(String country, String name, String edition);
 }

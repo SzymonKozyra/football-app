@@ -25,8 +25,12 @@ const AddMatchForm = () => {
     const [selectedReferee, setSelectedReferee] = useState(null);
     const [selectedStadium, setSelectedStadium] = useState(null);
     const [selectedLeague, setSelectedLeague] = useState(null);
+    const [showLeagueModal, setShowLeagueModal] = useState(false);
 
     const [round, setRound] = useState('');
+    const [isBetable, setIsBetable] = useState(false);
+
+
     const [duration, setDuration] = useState(0);
     const [matchStatus, setMatchStatus] = useState('UPCOMING');
     const [homeGoals, setHomeGoals] = useState(0);
@@ -53,6 +57,106 @@ const AddMatchForm = () => {
     const handleModalShow = () => setShowModal(true);
     const [teamError, setTeamError] = useState('');
     const [newMatchId, setNewMatchId] = useState(null);
+
+
+    const [stageType, setStageType] = useState('OTHER'); // Typ fazy: GROUP_STAGE, KNOCKOUT_STAGE, OTHER
+    const [groupOptions, setGroupOptions] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
+    const [stageOptions, setStageOptions] = useState([]);
+    const [selectedStage, setSelectedStage] = useState(null);
+
+    // Modal-related states
+    const [countries, setCountries] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [leagues, setLeagues] = useState([]);
+    const [selectedLeagueName, setSelectedLeagueName] = useState(null);
+    const [editions, setEditions] = useState([]);
+    const [selectedEdition, setSelectedEdition] = useState(null);
+
+
+
+    // Fetch distinct countries when modal opens
+    const handleOpenLeagueModal = () => {
+        // Resetuj stany związane z wyborem
+        setSelectedCountry(null);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+        setCountries([]); // Możesz zostawić puste lub pobrać na nowo w tym miejscu
+        setLeagues([]);
+        setEditions([]);
+
+        // Pobierz kraje z serwera
+        const token = localStorage.getItem('jwtToken');
+        axios.get('http://localhost:8080/api/leagues/countries', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(response => setCountries(response.data))
+            .catch(error => console.error('Error fetching countries:', error));
+
+        setShowLeagueModal(true); // Pokaż modal
+    };
+
+    // Fetch leagues for a selected country
+    const handleSelectCountry = (country) => {
+        setSelectedCountry(country);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken'); // Pobierz token JWT z localStorage
+
+        axios.get(`http://localhost:8080/api/leagues/byCountry?country=${country}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Dodaj token do nagłówka
+            },
+        })
+            .then(response => {
+                // Usuń duplikaty lig po nazwie
+                const uniqueLeagues = response.data.filter(
+                    (league, index, self) =>
+                        index === self.findIndex((l) => l.name === league.name)
+                );
+                setLeagues(uniqueLeagues);
+            })
+            .catch(error => console.error('Error fetching leagues:', error));
+    };
+
+    const handleSelectLeagueName = (leagueName) => {
+        setSelectedLeagueName(leagueName);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken'); // Pobierz token JWT z localStorage
+
+        axios.get(`http://localhost:8080/api/leagues/editions?leagueName=${leagueName}&country=${selectedCountry}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Dodaj token do nagłówków
+            },
+        })
+            .then(response => setEditions(response.data))
+            .catch(error => console.error('Error fetching editions:', error));
+    };
+
+    // Finalize league selection
+    const handleSelectEdition = (edition) => {
+        setSelectedEdition(edition);
+
+        const token = localStorage.getItem('jwtToken');
+
+        // Pobierz pełny obiekt ligi z bazy
+        axios.get(`http://localhost:8080/api/leagues/getByDetails?country=${selectedCountry}&name=${selectedLeagueName}&edition=${edition}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                setSelectedLeague(response.data); // Ustaw pełny obiekt ligi
+                setShowLeagueModal(false); // Zamknij modal
+            })
+            .catch(error => {
+                console.error('Error fetching league by details:', error);
+                alert('Failed to fetch league details');
+            });
+    };
 
     const resetForm = () => {
         if(matchStatus !== 'UPCOMING') {
@@ -173,11 +277,54 @@ const AddMatchForm = () => {
     //     }
     // }, [newMatchId]);
 
+
+    // Pobieranie grup dla fazy grupowej
+    useEffect(() => {
+        if (stageType === 'GROUP_STAGE' && selectedLeague) {
+            const token = localStorage.getItem('jwtToken');
+            axios.get(`http://localhost:8080/api/leagueGroups/league/${selectedLeague.id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(response => {
+                    setGroupOptions(response.data);
+                    console.log("Group options:", response.data);
+                    if (response.data.length > 0) {
+                        setSelectedGroup(response.data[0]); // Automatyczny wybór pierwszej grupy
+                    }
+                })
+                .catch(error => console.error('Error fetching groups:', error));
+        } else {
+            setGroupOptions([]);
+        }
+    }, [stageType, selectedLeague]);
+
+    // Pobieranie nazw faz pucharowych
+    useEffect(() => {
+
+        const token = localStorage.getItem('jwtToken');
+        axios.get('http://localhost:8080/api/leagueStages', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => setStageOptions(response.data))
+            .catch(error => console.error('Error fetching stages:', error));
+
+    }, [stageType]);
+
+
     const handleLeagueSelect = (league) => {
         setSelectedLeague(league);
+        // Ustaw tylko nazwę ligi w polu wyszukiwania
         setLeagueSearchQuery(league.name);
         setFilteredLeagues([]);
+
+        // Resetuj fazy i grupy
+        setStageType('OTHER');
+        setGroupOptions([]);
+        setSelectedGroup(null);
+        setStageOptions([]);
+        setSelectedStage(null);
     };
+
     const handleRefereeSelect = (referee) => {
         setSelectedReferee(referee);
         setRefereeSearchQuery(`${referee.firstName} ${referee.lastName}`);
@@ -201,26 +348,31 @@ const AddMatchForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (selectedHomeTeam && selectedAwayTeam && selectedHomeTeam.id === selectedAwayTeam.id) {
             setTeamError('Home Team and Away Team cannot be the same.');
             return;
         } else {
             setTeamError('');
         }
+
         const token = localStorage.getItem('jwtToken');
 
+        // Zbuduj obiekt danych meczu
         const matchData = {
             dateTime,
-            referee: { id: selectedReferee.id },
-            stadium: { id: selectedStadium.id },
-            league: { id: selectedLeague.id },
-            homeTeam: { id: selectedHomeTeam.id },
-            awayTeam: { id: selectedAwayTeam.id },
+            referee: { id: selectedReferee?.id }, // Sprawdzenie, czy referee został wybrany
+            stadium: { id: selectedStadium?.id }, // Sprawdzenie, czy stadium został wybrany
+            league: { id: selectedLeague?.id }, // Dodanie ID ligi
+            homeTeam: { id: selectedHomeTeam?.id }, // Sprawdzenie, czy homeTeam został wybrany
+            awayTeam: { id: selectedAwayTeam?.id }, // Sprawdzenie, czy awayTeam został wybrany
             round,
+            isBetable,
             duration: 90,
             status: matchStatus,
 
-            ...(matchStatus !== 'UPCOMING' && { // Dodaj statystyki tylko jeśli status to nie UPCOMING
+            // Statystyki, dodawane tylko dla statusów innych niż "UPCOMING"
+            ...(matchStatus !== 'UPCOMING' && {
                 homeGoals,
                 awayGoals,
                 homePossession,
@@ -240,28 +392,29 @@ const AddMatchForm = () => {
                 homeFouls,
                 awayFouls,
             }),
+            // Dane fazy grupowej
+            ...(stageType === 'GROUP_STAGE' && { stage: selectedStage, group: { id: selectedGroup?.id } }),
+            // Dane fazy pucharowej
+            ...(stageType === 'KNOCKOUT_STAGE' && { stage: selectedStage }),
         };
-        console.log("Sending match data to backend:", JSON.stringify(matchData, null, 2)); // Logowanie danych przed wysłaniem
+
+        console.log("Wysyłane dane meczu:", JSON.stringify(matchData, null, 2));
 
         try {
             const response = await axios.post('http://localhost:8080/api/matches/add', matchData, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("Backend response:", response.data);
-            const newMatchIdLocal = response.data.id;
-            const newMatchIdLocal2 = response.data.id;
-            console.log("newMatchIdLocal:", newMatchIdLocal);
-            console.log("newMatchIdLocal2:", newMatchIdLocal2);
-            setNewMatchId(response.data);
-            console.log("newMatchId:", newMatchId);
-            handleModalShow();
-            resetForm();
+
+            console.log("Odpowiedź backendu:", response.data);
+
+            setNewMatchId(response.data?.id); // Zapisz ID nowego meczu
+            handleModalShow(); // Otwórz modal po dodaniu meczu
+            resetForm(); // Zresetuj formularz
         } catch (error) {
-            console.error('Error adding match:', error);
+            console.error('Błąd podczas dodawania meczu:', error);
             alert('Failed to add match');
         }
     };
-
     const handleAddMatchSquad = () => {
         console.log("New match ID before navigation:", newMatchId);
         handleModalClose();
@@ -406,39 +559,124 @@ const AddMatchForm = () => {
                     )}
                 </Form.Group>
 
-                <Form.Group controlId="formLeague" className="mb-3">
-                    <Form.Label>League</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Search for a league"
-                        value={leagueSearchQuery}
-                        onChange={(e) => setLeagueSearchQuery(e.target.value)}
-                    />
-                    {filteredLeagues.length > 0 && !selectedLeague && (
-                        <ListGroup>
-                            {filteredLeagues.map((lg) => (
-                                <ListGroup.Item
-                                    key={lg.id}
-                                    action
-                                    onClick={() => handleLeagueSelect(lg)}
-                                >
-                                    {lg.name}
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup>
-                    )}
-                </Form.Group>
-
-                {/*<Form.Group controlId="formDuration" className="mb-3">*/}
-                {/*    <Form.Label>Duration (minutes)</Form.Label>*/}
+                {/*<Form.Group controlId="formLeague" className="mb-3">*/}
+                {/*    <Form.Label>League</Form.Label>*/}
                 {/*    <Form.Control*/}
-                {/*        type="number"*/}
-                {/*        value={duration}*/}
-                {/*        onChange={(e) => setDuration(parseInt(e.target.value))}*/}
-                {/*        min="0"*/}
+                {/*        type="text"*/}
+                {/*        placeholder="Search for a league"*/}
+                {/*        value={leagueSearchQuery}*/}
+                {/*        onChange={(e) => setLeagueSearchQuery(e.target.value)}*/}
                 {/*        required*/}
                 {/*    />*/}
+                {/*    {filteredLeagues.length > 0 && !selectedLeague && (*/}
+                {/*        <ListGroup>*/}
+                {/*            {filteredLeagues.map((league) => (*/}
+                {/*                <ListGroup.Item*/}
+                {/*                    key={league.id}*/}
+                {/*                    action*/}
+                {/*                    onClick={() => handleLeagueSelect(league)}*/}
+                {/*                >*/}
+                {/*                    {league.name}*/}
+                {/*                </ListGroup.Item>*/}
+                {/*            ))}*/}
+                {/*        </ListGroup>*/}
+                {/*    )}*/}
                 {/*</Form.Group>*/}
+
+                <Form.Group controlId="formLeague" className="mb-3">
+                    <Form.Label>League</Form.Label>
+
+                    <Button variant="outline-primary" onClick={handleOpenLeagueModal} className="w-100">
+                        {selectedLeague
+                            ? `${selectedLeague.name} (${selectedLeague.country?.name || 'Unknown Country'}, Edition: ${selectedLeague.edition})`
+                            : 'Select League'}
+                    </Button>
+                </Form.Group>
+
+                <Form.Group controlId="formStageType" className="mb-3">
+                    <Form.Label>Stage Type</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={stageType}
+                        onChange={(e) => {
+                            const selectedType = e.target.value;
+                            setStageType(selectedType);
+
+                            if (selectedType === 'GROUP_STAGE') {
+                                // Znajdź obiekt GROUP w stageOptions
+                                const groupStage = stageOptions.find(stage => stage.id === 1);
+                                if (groupStage) {
+                                    setSelectedStage(groupStage); // Ustaw GROUP jako selectedStage
+                                } else {
+                                    console.error('Group stage not found in stageOptions');
+                                }
+                            } else {
+                                setSelectedStage(null); // Resetuj stage, jeśli wybrano inny typ
+                            }
+                        }}
+                        required
+                    >
+                        <option value="OTHER">Other</option>
+                        <option value="GROUP_STAGE">Group Stage</option>
+                        <option value="KNOCKOUT_STAGE">Knockout Stage</option>
+                    </Form.Control>
+                </Form.Group>
+
+                {stageType === 'GROUP_STAGE' && (
+                    <Form.Group controlId="formGroup" className="mb-3">
+                        <Form.Label>Group</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={selectedGroup?.id || ''}
+                            onChange={(e) => {
+                                const group = groupOptions.find(g => g.id.toString() === e.target.value);
+                                setSelectedGroup(group);
+                            }}
+                        >
+                            <option value="" disabled>Select a group</option>
+                            {groupOptions.map((group) => (
+                                <option key={group.id} value={group.id}>
+                                    {group.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                )}
+
+                {stageType === 'KNOCKOUT_STAGE' && (
+                    <Form.Group controlId="formStage" className="mb-3">
+                        <Form.Label>Knockout Stage</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={selectedStage?.id || ''}
+                            onChange={(e) => {
+                                const stage = stageOptions.find(s => s.id.toString() === e.target.value);
+                                setSelectedStage(stage);
+                            }}
+                        >
+                            <option value="" disabled>Select a stage</option>
+                            {stageOptions.map((stage) => (
+                                <option key={stage.id} value={stage.id}>
+                                    {stage.name}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                )}
+
+                <Form.Group controlId="formIsBetable" className="mb-3">
+                    <Form.Label>Is Betable</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={isBetable} // Domyślnie false
+                        onChange={(e) => setIsBetable(e.target.value === "true")}
+                    >
+                        <option value="false">False</option>
+                        <option value="true">True</option>
+                    </Form.Control>
+                </Form.Group>
 
                 {matchStatus !== 'UPCOMING' && (
                     <>
@@ -657,6 +895,56 @@ const AddMatchForm = () => {
 
                 {teamError && <p style={{ color: 'red', marginTop: '10px' }}>{teamError}</p>}
             </Form>
+
+            {/* League Selection Modal */}
+            <Modal show={showLeagueModal} onHide={() => setShowLeagueModal(false)} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select League</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Country Selection */}
+                    {!selectedCountry && (
+                        <>
+                            <h5>Select Country</h5>
+                            <ListGroup>
+                                {countries.map(country => (
+                                    <ListGroup.Item key={country} action onClick={() => handleSelectCountry(country)}>
+                                        {country}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+
+                    {/* League Name Selection */}
+                    {selectedCountry && !selectedLeagueName && (
+                        <>
+                            <h5>Select League in {selectedCountry}</h5>
+                            <ListGroup>
+                                {leagues.map(league => (
+                                    <ListGroup.Item key={league.name} action onClick={() => handleSelectLeagueName(league.name)}>
+                                        {league.name}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+
+                    {/* Edition Selection */}
+                    {selectedLeagueName && !selectedEdition && (
+                        <>
+                            <h5>Select Edition for {selectedLeagueName}</h5>
+                            <ListGroup>
+                                {editions.map(edition => (
+                                    <ListGroup.Item key={edition} action onClick={() => handleSelectEdition(edition)}>
+                                        Edition: {edition}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+                </Modal.Body>
+            </Modal>
 
             <Modal show={showModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>

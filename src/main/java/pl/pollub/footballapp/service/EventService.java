@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.EventType;
 import pl.pollub.footballapp.MatchStatus;
-import pl.pollub.footballapp.model.Event;
-import pl.pollub.footballapp.model.Match;
-import pl.pollub.footballapp.model.MatchSquad;
-import pl.pollub.footballapp.model.Player;
+import pl.pollub.footballapp.model.*;
 import pl.pollub.footballapp.repository.EventRepository;
 import pl.pollub.footballapp.repository.MatchRepository;
 import pl.pollub.footballapp.repository.MatchSquadRepository;
@@ -23,6 +20,9 @@ public class EventService {
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
     private MatchSquadRepository matchSquadRepository;
+
+    @Autowired
+    private LeagueService leagueService;
 
     @Autowired
     public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository, MatchSquadRepository matchSquadRepository) {

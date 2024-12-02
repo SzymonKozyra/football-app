@@ -14,12 +14,18 @@ public class Team {
     private String picture;
     private BigDecimal value = BigDecimal.ZERO;
     private boolean isClub;
+    @ManyToOne
+    private LeagueGroup group;
+
+
 
     @ManyToOne
     @JoinColumn(name = "league_id")
     private League league;
 
     // Getters and setters
+
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
@@ -32,4 +38,15 @@ public class Team {
     public void setIsClub(boolean club) { isClub = club; }
     public League getLeague() { return league; }
     public void setLeague(League league) { this.league = league; }
+    public void setClub(boolean club) {
+        isClub = club;
+    }
+
+    public LeagueGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(LeagueGroup group) {
+        this.group = group;
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.League;
 import pl.pollub.footballapp.model.Country;
+import pl.pollub.footballapp.model.Team;
 import pl.pollub.footballapp.repository.CountryRepository;
 import pl.pollub.footballapp.repository.LeagueRepository;
 import pl.pollub.footballapp.requests.LeagueRequest;
@@ -36,11 +37,15 @@ public class LeagueService {
         Country country = countryRepository.findByName(leagueRequest.getCountryName())
                 .orElseThrow(() -> new RuntimeException("Country not found"));
 
-        boolean leagueExists = leagueRepository.existsByNameAndCountry(leagueRequest.getName(), country);
+        // Sprawdź, czy istnieje liga z tą samą nazwą, krajem i edycją
+        boolean leagueExists = leagueRepository.existsByNameAndCountryAndEdition(
+                leagueRequest.getName(), country, leagueRequest.getEdition());
+
         if (leagueExists) {
-            return ResponseEntity.badRequest().body("League already exists");
+            return ResponseEntity.badRequest().body("League with the same name, country, and edition already exists");
         }
 
+        // Utwórz i zapisz nową ligę
         League league = new League();
         league.setName(leagueRequest.getName());
         league.setCountry(country);
@@ -49,6 +54,7 @@ public class LeagueService {
         leagueRepository.save(league);
         return ResponseEntity.ok("League added successfully");
     }
+
 
 
     public ResponseEntity<?> importLeagues(MultipartFile file, String fileType) throws IOException {
@@ -67,10 +73,11 @@ public class LeagueService {
 
             Country country = countryOptional.get();
 
-            boolean leagueExists = leagueRepository.existsByNameAndCountry(leagueRequest.getName(), country);
+            boolean leagueExists = leagueRepository.existsByNameAndCountryAndEdition(
+                    leagueRequest.getName(), country, leagueRequest.getEdition());
             if (leagueExists) {
-                duplicateIndices.add(i + 1);  // Add 1 to make indices user-friendly (1-based index)
-                continue;  // Skip adding this league
+                duplicateIndices.add(i + 1);  // Dodaj do listy duplikatów
+                continue;  // Pomijaj dodanie tej ligi
             }
 
             League league = new League();
@@ -126,5 +133,24 @@ public class LeagueService {
         return leagueRepository.findAll();
     }
 
+
+    public Optional<League> getLeagueById(Long id) {
+        return leagueRepository.findById(id);
+    }
+
+    public League setWinner(Long leagueId, Team winner) {
+        return leagueRepository.findById(leagueId)
+                .map(league -> {
+                    league.setWinner(winner);
+                    return leagueRepository.save(league);
+                })
+                .orElseThrow(() -> new RuntimeException("League with ID " + leagueId + " not found"));
+    }
+
+    public Team getWinner(Long leagueId) {
+        return leagueRepository.findById(leagueId)
+                .map(League::getWinner)
+                .orElseThrow(() -> new RuntimeException("League with ID " + leagueId + " not found"));
+    }
 
 }

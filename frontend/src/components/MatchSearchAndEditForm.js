@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Form, Button, Card, Row, Col, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ListGroup, Modal, Alert, Card } from 'react-bootstrap';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EventManagement from "./EventManagement";
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,7 @@ const MatchSearchAndEditForm = () => {
         awayTeam: null,
         round: '',
         status: 'UPCOMING',
+        isBetable: false,
         homeGoals: 0,
         awayGoals: 0,
         homePossession: 0,
@@ -59,6 +61,34 @@ const MatchSearchAndEditForm = () => {
     const [selectedHomeTeam, setSelectedHomeTeam] = useState(null);
     const [selectedAwayTeam, setSelectedAwayTeam] = useState(null);
 
+    const [matchStatus, setMatchStatus] = useState('UPCOMING');
+    const [dateTime, setDateTime] = useState('');
+    const [round, setRound] = useState('');
+    const [stageType, setStageType] = useState('OTHER');
+    const [selectedGroup, setSelectedGroup] = useState(null);
+    const [selectedStage, setSelectedStage] = useState(null);
+    const [homeGoals, setHomeGoals] = useState(0);
+    const [awayGoals, setAwayGoals] = useState(0);
+    const [homePossession, setHomePossession] = useState(0);
+    const [awayPossession, setAwayPossession] = useState(0);
+    const [homePasses, setHomePasses] = useState(0);
+    const [awayPasses, setAwayPasses] = useState(0);
+    const [homeAccuratePasses, setHomeAccuratePasses] = useState(0);
+    const [awayAccuratePasses, setAwayAccuratePasses] = useState(0);
+    const [homeShots, setHomeShots] = useState(0);
+    const [awayShots, setAwayShots] = useState(0);
+    const [homeShotsOnGoal, setHomeShotsOnGoal] = useState(0);
+    const [awayShotsOnGoal, setAwayShotsOnGoal] = useState(0);
+    const [homeCorners, setHomeCorners] = useState(0);
+    const [awayCorners, setAwayCorners] = useState(0);
+    const [homeOffside, setHomeOffside] = useState(0);
+    const [awayOffside, setAwayOffside] = useState(0);
+    const [homeFouls, setHomeFouls] = useState(0);
+    const [awayFouls, setAwayFouls] = useState(0);
+
+    const [stageOptions, setStageOptions] = useState([]);
+    const [groupOptions, setGroupOptions] = useState([]);
+
 
 
     const [showManageEvents, setShowManageEvents] = useState(false); // Toggle state for Manage Events view
@@ -68,6 +98,17 @@ const MatchSearchAndEditForm = () => {
     const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(matches, 10);
 
 
+    // Modal-related states
+    const [countries, setCountries] = useState([]);
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [leagues, setLeagues] = useState([]);
+    const [selectedLeagueName, setSelectedLeagueName] = useState(null);
+    const [editions, setEditions] = useState([]);
+    const [selectedEdition, setSelectedEdition] = useState(null);
+
+    const [showLeagueModal, setShowLeagueModal] = useState(false);
+
+
     const token = localStorage.getItem('jwtToken');
 
     useEffect(() => {
@@ -75,6 +116,7 @@ const MatchSearchAndEditForm = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
+                console.log("Fetched matches:", response.data); // Debugowanie danych
                 const sortedMatches = response.data.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
                 setMatches(sortedMatches);
                 setCurrentPage(1);
@@ -175,6 +217,8 @@ const MatchSearchAndEditForm = () => {
             awayTeam: match.awayTeam ? match.awayTeam.id : null,
             round: match.round,
             status: match.status,
+            isBetable: match.isBetable,
+
             homeGoals: match.homeGoals || 0,
             awayGoals: match.awayGoals || 0,
             homePossession: match.homePossession || 0,
@@ -224,6 +268,8 @@ const MatchSearchAndEditForm = () => {
             league: { id: editData.league },
             homeTeam: { id: editData.homeTeam },
             awayTeam: { id: editData.awayTeam },
+            isBetable: { id: editData.isBetable},
+
         };
 
         axios.put(`http://localhost:8080/api/matches/${selectedMatch}`, updatedMatch, {
@@ -249,6 +295,102 @@ const MatchSearchAndEditForm = () => {
         setShowManageEvents(true);
         //navigate(`/manage-events/${match.id}`);
     };
+
+    const handleHomeTeamSelect = (team) => {
+        setSelectedHomeTeam(team);
+        setEditData((prev) => ({ ...prev, homeTeam: team.id }));
+    };
+
+    const handleAwayTeamSelect = (team) => {
+        setSelectedAwayTeam(team);
+        setEditData((prev) => ({ ...prev, awayTeam: team.id }));
+    };
+
+    const handleRefereeSelect = (ref) => {
+        setSelectedReferee(ref);
+        setEditData((prev) => ({ ...prev, referee: ref.id }));
+    };
+
+    const handleStadiumSelect = (stadium) => {
+        setSelectedStadium(stadium);
+        setEditData((prev) => ({ ...prev, stadium: stadium.id }));
+    };
+
+// Fetch distinct countries when modal opens
+    const handleOpenLeagueModal = () => {
+        // Resetuj stany związane z wyborem
+        setSelectedCountry(null);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+        setCountries([]); // Możesz zostawić puste lub pobrać na nowo w tym miejscu
+        setLeagues([]);
+        setEditions([]);
+
+        // Pobierz kraje z serwera
+        const token = localStorage.getItem('jwtToken');
+        axios.get('http://localhost:8080/api/leagues/countries', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(response => setCountries(response.data))
+            .catch(error => console.error('Error fetching countries:', error));
+
+        setShowLeagueModal(true); // Pokaż modal
+    };
+    const handleSelectCountry = (country) => {
+        setSelectedCountry(country);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken');
+
+        axios.get(`http://localhost:8080/api/leagues/byCountry?country=${country}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => {
+                setLeagues(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching leagues:', error);
+                alert('Failed to load leagues');
+            });
+    };
+    const handleSelectLeagueName = (leagueName) => {
+        setSelectedLeagueName(leagueName);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken');
+
+        axios.get(`http://localhost:8080/api/leagues/editions?leagueName=${leagueName}&country=${selectedCountry}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => {
+                setEditions(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching editions:', error);
+                alert('Failed to load editions');
+            });
+    };
+    const handleSelectEdition = (edition) => {
+        setSelectedEdition(edition);
+
+        const token = localStorage.getItem('jwtToken');
+
+        axios.get(`http://localhost:8080/api/leagues/getByDetails?country=${selectedCountry}&name=${selectedLeagueName}&edition=${edition}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => {
+                setSelectedLeague(response.data);
+                setShowLeagueModal(false); // Zamknij modal po wyborze
+            })
+            .catch((error) => {
+                console.error('Error fetching league by details:', error);
+                alert('Failed to load league details');
+            });
+    };
+
 
     if (showManageEvents && selectedMatch) {
         return (
@@ -296,12 +438,13 @@ const MatchSearchAndEditForm = () => {
                                     <div className="p-4 border rounded shadow-sm bg-light mb-3">
                                         <h3 className="text-center mb-4">Edit Match</h3>
                                         <Form onSubmit={handleEditSubmit}>
+                                            {/* Match Status */}
                                             <Form.Group controlId="formMatchStatus" className="mb-3">
                                                 <Form.Label>Match Status</Form.Label>
                                                 <Form.Control
                                                     as="select"
                                                     value={editData.status}
-                                                    onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                                                    onChange={(e) => setEditData((prev) => ({ ...prev, status: e.target.value }))}
                                                     required
                                                 >
                                                     <option value="UPCOMING">UPCOMING</option>
@@ -310,25 +453,28 @@ const MatchSearchAndEditForm = () => {
                                                 </Form.Control>
                                             </Form.Group>
 
+                                            {/* Match Date and Time */}
                                             <Form.Group controlId="formDateTime" className="mb-3">
                                                 <Form.Label>Date and Time</Form.Label>
                                                 <Form.Control
                                                     type="datetime-local"
                                                     value={editData.dateTime}
-                                                    onChange={(e) => setEditData({ ...editData, dateTime: e.target.value })}
+                                                    onChange={(e) => setEditData((prev) => ({ ...prev, dateTime: e.target.value }))}
                                                     required
                                                 />
                                             </Form.Group>
 
+                                            {/* Match Round */}
                                             <Form.Group controlId="formRound" className="mb-3">
                                                 <Form.Label>Round</Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     value={editData.round}
-                                                    onChange={(e) => setEditData({ ...editData, round: e.target.value })}
+                                                    onChange={(e) => setEditData((prev) => ({ ...prev, round: e.target.value }))}
                                                     required
                                                 />
                                             </Form.Group>
+
 
                                             <Form.Group controlId="formHomeTeam" className="mb-3">
                                                 <Form.Label>Home Team</Form.Label>
@@ -340,16 +486,12 @@ const MatchSearchAndEditForm = () => {
                                                     required
                                                 />
                                                 {filteredHomeTeams.length > 0 && !selectedHomeTeam && (
-                                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                                    <ListGroup>
                                                         {filteredHomeTeams.map((team) => (
                                                             <ListGroup.Item
                                                                 key={team.id}
                                                                 action
-                                                                onClick={() => {
-                                                                    setEditData({ ...editData, homeTeam: team.id });
-                                                                    setSelectedHomeTeam(team);
-                                                                    setHomeTeamSearchQuery(team.name);
-                                                                }}
+                                                                onClick={() => handleHomeTeamSelect(team)}
                                                             >
                                                                 {team.name}
                                                             </ListGroup.Item>
@@ -368,16 +510,12 @@ const MatchSearchAndEditForm = () => {
                                                     required
                                                 />
                                                 {filteredAwayTeams.length > 0 && !selectedAwayTeam && (
-                                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                                    <ListGroup>
                                                         {filteredAwayTeams.map((team) => (
                                                             <ListGroup.Item
                                                                 key={team.id}
                                                                 action
-                                                                onClick={() => {
-                                                                    setEditData({ ...editData, awayTeam: team.id });
-                                                                    setSelectedAwayTeam(team);
-                                                                    setAwayTeamSearchQuery(team.name);
-                                                                }}
+                                                                onClick={() => handleAwayTeamSelect(team)}
                                                             >
                                                                 {team.name}
                                                             </ListGroup.Item>
@@ -396,18 +534,14 @@ const MatchSearchAndEditForm = () => {
                                                     required
                                                 />
                                                 {filteredReferees.length > 0 && !selectedReferee && (
-                                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredReferees.map((referee) => (
+                                                    <ListGroup>
+                                                        {filteredReferees.map((ref) => (
                                                             <ListGroup.Item
-                                                                key={referee.id}
+                                                                key={ref.id}
                                                                 action
-                                                                onClick={() => {
-                                                                    setEditData({ ...editData, referee: referee.id });
-                                                                    setSelectedReferee(referee);
-                                                                    setRefereeSearchQuery(`${referee.firstName} ${referee.lastName}`);
-                                                                }}
+                                                                onClick={() => handleRefereeSelect(ref)}
                                                             >
-                                                                {referee.firstName} {referee.lastName}
+                                                                {ref.firstName} {ref.lastName}
                                                             </ListGroup.Item>
                                                         ))}
                                                     </ListGroup>
@@ -424,99 +558,165 @@ const MatchSearchAndEditForm = () => {
                                                     required
                                                 />
                                                 {filteredStadiums.length > 0 && !selectedStadium && (
-                                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredStadiums.map((stadium) => (
+                                                    <ListGroup>
+                                                        {filteredStadiums.map((stad) => (
                                                             <ListGroup.Item
-                                                                key={stadium.id}
+                                                                key={stad.id}
                                                                 action
-                                                                onClick={() => {
-                                                                    setEditData({ ...editData, stadium: stadium.id });
-                                                                    setSelectedStadium(stadium);
-                                                                    setStadiumSearchQuery(stadium.name);
-                                                                }}
+                                                                onClick={() => handleStadiumSelect(stad)}
                                                             >
-                                                                {stadium.name}
+                                                                {stad.name}
                                                             </ListGroup.Item>
                                                         ))}
                                                     </ListGroup>
                                                 )}
                                             </Form.Group>
+
+                                            {/*<Form.Group controlId="formLeague" className="mb-3">*/}
+                                            {/*    <Form.Label>League</Form.Label>*/}
+                                            {/*    <Form.Control*/}
+                                            {/*        type="text"*/}
+                                            {/*        placeholder="Search for a league"*/}
+                                            {/*        value={leagueSearchQuery}*/}
+                                            {/*        onChange={(e) => setLeagueSearchQuery(e.target.value)}*/}
+                                            {/*        required*/}
+                                            {/*    />*/}
+                                            {/*    {filteredLeagues.length > 0 && !selectedLeague && (*/}
+                                            {/*        <ListGroup>*/}
+                                            {/*            {filteredLeagues.map((league) => (*/}
+                                            {/*                <ListGroup.Item*/}
+                                            {/*                    key={league.id}*/}
+                                            {/*                    action*/}
+                                            {/*                    onClick={() => handleLeagueSelect(league)}*/}
+                                            {/*                >*/}
+                                            {/*                    {league.name}*/}
+                                            {/*                </ListGroup.Item>*/}
+                                            {/*            ))}*/}
+                                            {/*        </ListGroup>*/}
+                                            {/*    )}*/}
+                                            {/*</Form.Group>*/}
 
                                             <Form.Group controlId="formLeague" className="mb-3">
                                                 <Form.Label>League</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Search for a league"
-                                                    value={leagueSearchQuery}
-                                                    onChange={(e) => setLeagueSearchQuery(e.target.value)}
-                                                    required
-                                                />
-                                                {filteredLeagues.length > 0 && !selectedLeague && (
-                                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                        {filteredLeagues.map((league) => (
-                                                            <ListGroup.Item
-                                                                key={league.id}
-                                                                action
-                                                                onClick={() => {
-                                                                    setEditData({ ...editData, league: league.id });
-                                                                    setSelectedLeague(league);
-                                                                    setLeagueSearchQuery(league.name);
-                                                                }}
-                                                            >
-                                                                {league.name}
-                                                            </ListGroup.Item>
-                                                        ))}
-                                                    </ListGroup>
-                                                )}
+
+                                                <Button
+                                                    variant="outline-primary"
+                                                    onClick={handleOpenLeagueModal}
+                                                    className="w-100"
+                                                >
+                                                    {selectedLeague
+                                                        ? `${selectedLeague.name} (${selectedLeague.country?.name || 'Unknown Country'}, Edition: ${selectedLeague.edition})`
+                                                        : 'Select League'}
+                                                </Button>
                                             </Form.Group>
 
+                                            {/* Stage Type */}
+                                            <Form.Group controlId="formStageType" className="mb-3">
+                                                <Form.Label>Stage Type</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    value={editData.stageType || 'OTHER'}
+                                                    onChange={(e) => {
+                                                        const selectedType = e.target.value;
+                                                        setEditData((prev) => ({
+                                                            ...prev,
+                                                            stageType: selectedType,
+                                                        }));
+
+                                                        if (selectedType === 'GROUP_STAGE') {
+                                                            const groupStage = stageOptions.find((stage) => stage.id === 1);
+                                                            setEditData((prev) => ({
+                                                                ...prev,
+                                                                selectedStage: groupStage || null,
+                                                            }));
+                                                        } else {
+                                                            setEditData((prev) => ({ ...prev, selectedStage: null }));
+                                                        }
+                                                    }}
+                                                    required
+                                                >
+                                                    <option value="OTHER">Other</option>
+                                                    <option value="GROUP_STAGE">Group Stage</option>
+                                                    <option value="KNOCKOUT_STAGE">Knockout Stage</option>
+                                                </Form.Control>
+                                            </Form.Group>
+
+                                            {/* Group Selection for Group Stage */}
+                                            {editData.stageType === 'GROUP_STAGE' && (
+                                                <Form.Group controlId="formGroup" className="mb-3">
+                                                    <Form.Label>Group</Form.Label>
+                                                    <Form.Control
+                                                        as="select"
+                                                        value={editData.selectedGroup?.id || ''}
+                                                        onChange={(e) => {
+                                                            const group = groupOptions.find((g) => g.id.toString() === e.target.value);
+                                                            setEditData((prev) => ({ ...prev, selectedGroup: group }));
+                                                        }}
+                                                        required
+                                                    >
+                                                        <option value="" disabled>Select a group</option>
+                                                        {groupOptions.map((group) => (
+                                                            <option key={group.id} value={group.id}>
+                                                                {group.name}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </Form.Group>
+                                            )}
+
+                                            {/* Knockout Stage Selection */}
+                                            {editData.stageType === 'KNOCKOUT_STAGE' && (
+                                                <Form.Group controlId="formStage" className="mb-3">
+                                                    <Form.Label>Knockout Stage</Form.Label>
+                                                    <Form.Control
+                                                        as="select"
+                                                        value={editData.selectedStage?.id || ''}
+                                                        onChange={(e) => {
+                                                            const stage = stageOptions.find((s) => s.id.toString() === e.target.value);
+                                                            setEditData((prev) => ({ ...prev, selectedStage: stage }));
+                                                        }}
+                                                        required
+                                                    >
+                                                        <option value="" disabled>Select a stage</option>
+                                                        {stageOptions.map((stage) => (
+                                                            <option key={stage.id} value={stage.id}>
+                                                                {stage.name}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </Form.Group>
+                                            )}
+                                            <Form.Group controlId="formIsBetable" className="mb-3">
+                                                <Form.Label>Is Betable</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    value={editData.isBetable} // Pobiera wartość ze stanu
+                                                    onChange={(e) => setEditData((prev) => ({ ...prev, isBetable: e.target.value === "true" }))}
+                                                >
+                                                    <option value="false">False</option>
+                                                    <option value="true">True</option>
+                                                </Form.Control>
+                                            </Form.Group>
+
+
+
+                                            {/* Match Statistics */}
                                             {editData.status !== 'UPCOMING' && (
                                                 <>
                                                     <Row>
                                                         <Col>
-                                                            <Form.Group controlId="formHomeGoals" className="mb-3">
-                                                                <Form.Label>Home Team Goals</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.homeGoals}
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...editData, homeGoals: parseInt(e.target.value) })
-                                                                    }
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                        </Col>
-                                                        <Col>
-                                                            <Form.Group controlId="formAwayGoals" className="mb-3">
-                                                                <Form.Label>Away Team Goals</Form.Label>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={editData.awayGoals}
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...editData, awayGoals: parseInt(e.target.value) })
-                                                                    }
-                                                                    min="0"
-                                                                    required
-                                                                />
-                                                            </Form.Group>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col>
-                                                            <h5 className="text-center">Home</h5>
                                                             <Form.Group controlId="formHomePossession" className="mb-3">
                                                                 <Form.Label>Home Possession (%)</Form.Label>
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.homePossession}
                                                                     onChange={(e) => {
-                                                                        const newHomePossession = parseFloat(e.target.value);
-                                                                        setEditData({
-                                                                            ...editData,
-                                                                            homePossession: newHomePossession,
-                                                                            awayPossession: 100 - newHomePossession,
-                                                                        });
+                                                                        const homePossession = parseFloat(e.target.value) || 0;
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homePossession,
+                                                                            awayPossession: 100 - homePossession,
+                                                                        }));
                                                                     }}
                                                                     min="0"
                                                                     max="100"
@@ -529,7 +729,7 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.homePasses}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, homePasses: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({ ...prev, homePasses: parseInt(e.target.value) || 0 }))
                                                                     }
                                                                     min="0"
                                                                     required
@@ -541,7 +741,10 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.homeAccuratePasses}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, homeAccuratePasses: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homeAccuratePasses: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     max={editData.homePasses}
@@ -554,7 +757,7 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.homeShots}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, homeShots: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({ ...prev, homeShots: parseInt(e.target.value) || 0 }))
                                                                     }
                                                                     min="0"
                                                                     required
@@ -566,28 +769,76 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.homeShotsOnGoal}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, homeShotsOnGoal: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homeShotsOnGoal: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     max={editData.homeShots}
                                                                     required
                                                                 />
                                                             </Form.Group>
+                                                            <Form.Group controlId="formHomeCorners" className="mb-3">
+                                                                <Form.Label>Home Corners</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.homeCorners}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homeCorners: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+                                                            <Form.Group controlId="formHomeOffside" className="mb-3">
+                                                                <Form.Label>Home Offside</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.homeOffside}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homeOffside: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+                                                            <Form.Group controlId="formHomeFouls" className="mb-3">
+                                                                <Form.Label>Home Fouls</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.homeFouls}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            homeFouls: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
                                                         </Col>
                                                         <Col>
-                                                            <h5 className="text-center">Away</h5>
+                                                            {/* Away Team Statistics */}
                                                             <Form.Group controlId="formAwayPossession" className="mb-3">
                                                                 <Form.Label>Away Possession (%)</Form.Label>
                                                                 <Form.Control
                                                                     type="number"
                                                                     value={editData.awayPossession}
                                                                     onChange={(e) => {
-                                                                        const newAwayPossession = parseFloat(e.target.value);
-                                                                        setEditData({
-                                                                            ...editData,
-                                                                            awayPossession: newAwayPossession,
-                                                                            homePossession: 100 - newAwayPossession,
-                                                                        });
+                                                                        const awayPossession = parseFloat(e.target.value) || 0;
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayPossession,
+                                                                            homePossession: 100 - awayPossession,
+                                                                        }));
                                                                     }}
                                                                     min="0"
                                                                     max="100"
@@ -600,7 +851,10 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.awayPasses}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, awayPasses: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayPasses: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     required
@@ -612,7 +866,10 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.awayAccuratePasses}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, awayAccuratePasses: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayAccuratePasses: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     max={editData.awayPasses}
@@ -625,7 +882,10 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.awayShots}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, awayShots: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayShots: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     required
@@ -637,10 +897,58 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.awayShotsOnGoal}
                                                                     onChange={(e) =>
-                                                                        setEditData({ ...editData, awayShotsOnGoal: parseInt(e.target.value) })
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayShotsOnGoal: parseInt(e.target.value) || 0,
+                                                                        }))
                                                                     }
                                                                     min="0"
                                                                     max={editData.awayShots}
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+                                                            <Form.Group controlId="formAwayCorners" className="mb-3">
+                                                                <Form.Label>Away Corners</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.awayCorners}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayCorners: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+                                                            <Form.Group controlId="formAwayOffside" className="mb-3">
+                                                                <Form.Label>Away Offside</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.awayOffside}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayOffside: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+                                                            <Form.Group controlId="formAwayFouls" className="mb-3">
+                                                                <Form.Label>Away Fouls</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.awayFouls}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev) => ({
+                                                                            ...prev,
+                                                                            awayFouls: parseInt(e.target.value) || 0,
+                                                                        }))
+                                                                    }
+                                                                    min="0"
                                                                     required
                                                                 />
                                                             </Form.Group>
@@ -648,7 +956,6 @@ const MatchSearchAndEditForm = () => {
                                                     </Row>
                                                 </>
                                             )}
-
                                             <Button variant="primary" type="submit" className="w-100">
                                                 Save Changes
                                             </Button>
@@ -672,7 +979,71 @@ const MatchSearchAndEditForm = () => {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
             />
+
+            <Modal show={showLeagueModal} onHide={() => setShowLeagueModal(false)} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select League</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {/* Kraj */}
+                    {!selectedCountry && (
+                        <>
+                            <h5>Select Country</h5>
+                            <ListGroup>
+                                {countries.map((country) => (
+                                    <ListGroup.Item
+                                        key={country}
+                                        action
+                                        onClick={() => handleSelectCountry(country)}
+                                    >
+                                        {country}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+
+                    {/* Liga */}
+                    {selectedCountry && !selectedLeagueName && (
+                        <>
+                            <h5>Select League in {selectedCountry}</h5>
+                            <ListGroup>
+                                {leagues.map((league) => (
+                                    <ListGroup.Item
+                                        key={league.name}
+                                        action
+                                        onClick={() => handleSelectLeagueName(league.name)}
+                                    >
+                                        {league.name}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+
+                    {/* Edycja */}
+                    {selectedLeagueName && !selectedEdition && (
+                        <>
+                            <h5>Select Edition for {selectedLeagueName}</h5>
+                            <ListGroup>
+                                {editions.map((edition) => (
+                                    <ListGroup.Item
+                                        key={edition}
+                                        action
+                                        onClick={() => handleSelectEdition(edition)}
+                                    >
+                                        Edition: {edition}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+                </Modal.Body>
+            </Modal>
+
         </Container>
+
+
     );
 };
 

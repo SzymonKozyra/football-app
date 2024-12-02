@@ -14,6 +14,8 @@ import pl.pollub.footballapp.service.TeamService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/teams")
@@ -131,5 +133,25 @@ public class TeamController {
     @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
     public ResponseEntity<List<Team>> getAllTeams() {
         return ResponseEntity.ok(teamService.getAllTeams());
+    }
+
+
+    @PostMapping("/group/{groupId}/assign")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<String> assignTeamsToGroup(@PathVariable Long groupId, @RequestBody List<Long> teamIds) {
+        teamService.assignTeamsToGroup(groupId, teamIds);
+        return ResponseEntity.ok("Teams assigned to group successfully");
+    }
+
+    @GetMapping("/group/{groupId}/points")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Map<String, Integer>> getGroupPoints(@PathVariable Long groupId) {
+        Map<Team, Integer> points = teamService.calculateGroupPoints(groupId);
+        Map<String, Integer> response = points.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getName(),
+                        Map.Entry::getValue
+                ));
+        return ResponseEntity.ok(response);
     }
 }

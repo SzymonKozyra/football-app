@@ -1,6 +1,9 @@
 package pl.pollub.footballapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class League {
@@ -12,6 +15,28 @@ public class League {
 
     private String edition;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "league")
+    private List<LeagueGroup> groups;
+
+    public List<LeagueGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<LeagueGroup> groups) {
+        this.groups = groups;
+    }
+
+    public Team getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Team winner) {
+        this.winner = winner;
+    }
+
+    @OneToOne
+    private Team winner;
     @ManyToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;

@@ -4,8 +4,10 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.model.Country;
+import pl.pollub.footballapp.model.LeagueStage;
 import pl.pollub.footballapp.model.Position;
 import pl.pollub.footballapp.repository.CountryRepository;
+import pl.pollub.footballapp.repository.LeagueStageRepository;
 import pl.pollub.footballapp.repository.PositionRepository;
 
 import java.util.Arrays;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 public class DataInitializer {
+
+    @Autowired
     private CountryRepository countryRepository;
     @Autowired
     public DataInitializer(CountryRepository countryRepository, PositionRepository positionRepository) {
@@ -22,6 +26,9 @@ public class DataInitializer {
 
 
 
+
+    @Autowired
+    private LeagueStageRepository leagueStageRepository;
 
     @PostConstruct
     public void initializeCountries() {

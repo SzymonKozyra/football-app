@@ -56,6 +56,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/matches/**").permitAll() // Pozwól na dostęp bez autoryzacji
                         .requestMatchers("/api/match-squad/first-squad/**").permitAll() // Pozwól na dostęp bez autoryzacji
                         .requestMatchers("/api/match-squad/substitutes/**").permitAll() // Pozwól na dostęp bez autoryzacji
+                        .requestMatchers("/api/leagues/countries").permitAll() // Pozwól na dostęp bez autoryzacji
+                        .requestMatchers("/api/leagues/**").permitAll() // Pozwól na dostęp bez autoryzacji
+                        .requestMatchers("/api/leagues/byCountry").permitAll() // Pozwól na dostęp bez autoryzacji
 
 
                         .anyRequest().authenticated()

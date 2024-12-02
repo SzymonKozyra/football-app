@@ -1,10 +1,10 @@
 package pl.pollub.footballapp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import pl.pollub.footballapp.MatchStatus;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Match {
@@ -90,6 +90,24 @@ public class Match {
 
     private int homeFouls;
     private int awayFouls;
+
+    @ManyToOne
+    private LeagueGroup group;
+
+    @ManyToOne
+    private LeagueStage stage; // Zmieniono z Phase na Stage
+
+    @JsonProperty("isBetable")
+    @Column(name = "is_betable")
+    private Boolean isBetable;
+
+    public Boolean getBetable() {
+        return isBetable;
+    }
+
+    public void setBetable(Boolean betable) {
+        isBetable = betable;
+    }
 
     public Long getId() {
         return id;
@@ -299,4 +317,39 @@ public class Match {
     public void setAwayTeam(Team awayTeam) {
         this.awayTeam = awayTeam;
     }
+
+    public LeagueGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(LeagueGroup group) {
+        this.group = group;
+    }
+
+    public LeagueStage getStage() {
+        return stage;
+    }
+
+    public void setStage(LeagueStage stage) {
+        this.stage = stage;
+    }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", referee=" + (referee != null ? referee.getId() : null) +
+                ", stadium=" + (stadium != null ? stadium.getId() : null) +
+                ", league=" + (league != null ? league.getId() : null) +
+                ", homeTeam=" + (homeTeam != null ? homeTeam.getId() : null) +
+                ", awayTeam=" + (awayTeam != null ? awayTeam.getId() : null) +
+                ", round='" + round + '\'' +
+                ", isBetable=" + isBetable +
+                ", duration=" + duration +
+                ", status=" + status +
+                ", stage=" + (stage != null ? stage.getId() + " (" + stage.getName() + ")" : null) +
+                '}';
+    }
+
 }

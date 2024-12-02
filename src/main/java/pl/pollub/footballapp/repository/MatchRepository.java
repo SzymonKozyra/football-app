@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.pollub.footballapp.MatchStatus;
+import pl.pollub.footballapp.model.LeagueGroup;
 import pl.pollub.footballapp.model.Match;
 import pl.pollub.footballapp.model.MatchSquad;
+import pl.pollub.footballapp.model.Team;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,4 +33,9 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findByTeamNameContaining(@Param("teamName") String teamName);
 
     List<Match> findAllByDateTimeBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    List<Match> findByGroupAndHomeTeamOrGroupAndAwayTeam(LeagueGroup group1, Team homeTeam, LeagueGroup group2, Team awayTeam);
+
+    @Query("SELECT m FROM Match m WHERE m.group = :group AND (m.homeTeam = :team OR m.awayTeam = :team)")
+    List<Match> findByGroupAndHomeTeamOrGroupAndAwayTeam(LeagueGroup group, Team team);
 }

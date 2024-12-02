@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddLeagueForm = () => {
@@ -24,7 +24,7 @@ const AddLeagueForm = () => {
         e.preventDefault();
 
         if (!isEditionValid) {
-            alert('Edition must be in format number/number, e.g. 23/24');
+            alert('Edycja ligi musi być w formacie [rok/rok+1] lub [rok], np. 2023/2024 lub 2024\n');
             return;
         }
 
@@ -87,8 +87,18 @@ const AddLeagueForm = () => {
     const handleEditionChange = (e) => {
         const value = e.target.value;
         setEdition(value);
-        const editionPattern = /^\d{2}\/\d{2}$/;
-        setIsEditionValid(editionPattern.test(value));
+
+        // Akceptowane formaty: rok (4 cyfry) lub rok/rok+1
+        const editionPattern = /^\d{4}(\/\d{4})?$/;
+        const isValid = editionPattern.test(value);
+
+        // Jeśli format to rok/rok+1, sprawdź poprawność logiczną
+        if (isValid && value.includes('/')) {
+            const [startYear, endYear] = value.split('/').map(Number);
+            setIsEditionValid(endYear === startYear + 1);
+        } else {
+            setIsEditionValid(isValid);
+        }
     };
 
     return (
@@ -162,7 +172,7 @@ const AddLeagueForm = () => {
                                 required
                             />
                             <Form.Control.Feedback type="invalid">
-                                Edycja musi być w formacie liczba/liczba, np. 23/24
+                                Edycja ligi musi być w formacie [rok/rok+1] lub [rok], np. 2023/2024 lub 2024
                             </Form.Control.Feedback>
                         </Form.Group>
                     </>
