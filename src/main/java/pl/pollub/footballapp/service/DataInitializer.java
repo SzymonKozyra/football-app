@@ -19,7 +19,17 @@ public class DataInitializer {
     @Autowired
     private CountryRepository countryRepository;
     @Autowired
+    public DataInitializer(CountryRepository countryRepository, PositionRepository positionRepository) {
+        this.countryRepository = countryRepository;
+        this.positionRepository = positionRepository;
+    }
+
+
+
+
+    @Autowired
     private LeagueStageRepository leagueStageRepository;
+
     @PostConstruct
     public void initializeCountries() {
         if (countryRepository.count() == 0) {
@@ -269,22 +279,4 @@ public class DataInitializer {
             positionRepository.saveAll(positions);
         }
     }
-
-    @PostConstruct
-    public void initializePhases() {
-        if (leagueStageRepository.count() == 0) {
-            List<String> phases = Arrays.asList(
-                    "GROUP", "1/256", "1/128", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "FINAL"
-            );
-
-            for (String phaseName : phases) {
-                leagueStageRepository.save(new LeagueStage(phaseName));
-            }
-            System.out.println("League stages initialized with default data.");
-        } else {
-            System.out.println("League stages table already populated.");
-        }
-    }
-
-
 }

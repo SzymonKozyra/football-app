@@ -16,9 +16,13 @@ import java.util.List;
 @RequestMapping("/api/referees")
 @CrossOrigin(origins = "http://localhost:3000")
 public class RefereeController {
-
-    @Autowired
     private RefereeService refereeService;
+    @Autowired
+    public RefereeController(RefereeService refereeService) {
+        this.refereeService = refereeService;
+    }
+
+
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

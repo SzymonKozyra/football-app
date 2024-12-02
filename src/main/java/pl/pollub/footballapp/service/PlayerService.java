@@ -22,17 +22,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class PlayerService {
-
-    @Autowired
     private PlayerRepository playerRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private PositionRepository positionRepository;
+    @Autowired
+    public PlayerService(PlayerRepository playerRepository, CountryRepository countryRepository, PositionRepository positionRepository) {
+        this.playerRepository = playerRepository;
+        this.countryRepository = countryRepository;
+        this.positionRepository = positionRepository;
+    }
 
-//    public void addPlayer(PlayerRequest playerRequest) {
+
+
+
+
+    //    public void addPlayer(PlayerRequest playerRequest) {
 //        Player player = createPlayerFromRequest(playerRequest);
 //        playerRepository.save(player);
 //    }

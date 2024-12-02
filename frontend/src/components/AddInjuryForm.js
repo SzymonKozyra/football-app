@@ -7,14 +7,13 @@ const AddInjuryForm = () => {
     const [importMode, setImportMode] = useState(false);
     const [fileType, setFileType] = useState('');
     const [file, setFile] = useState(null);
-
     const [injuryType, setInjuryType] = useState('');
     const [injuryStartDate, setInjuryStartDate] = useState('');
     const [injuryEndDate, setInjuryEndDate] = useState('');
-
     const [playerSearchQuery, setPlayerSearchQuery] = useState('');
     const [filteredPlayers, setFilteredPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const [duplicateRecords, setDuplicateRecords] = useState([]);
 
@@ -88,9 +87,12 @@ const AddInjuryForm = () => {
                     alert('Injury added successfully');
                     resetForm();
                 })
-                .catch((error) => {
-                    console.error('Error adding injury:', error);
-                    alert('Failed to add injury');
+                .catch(error => {
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('Error adding injury');
+                    }
                 });
         } else {
             const formData = new FormData();
@@ -120,6 +122,7 @@ const AddInjuryForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">{importMode ? 'Import Injuries' : 'Add Injury'}</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

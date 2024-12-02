@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
-
-    @Autowired
     private TeamService teamService;
+    @Autowired
+    public TeamController(TeamService teamService) {
+        this.teamService = teamService;
+    }
 
-//    @PostMapping("/add")
+
+
+    //    @PostMapping("/add")
 //    @PreAuthorize("hasRole('MODERATOR')")
 //    public ResponseEntity<?> addTeam(@RequestBody TeamRequest teamRequest) {
 //        try {
@@ -46,12 +51,25 @@ public class TeamController {
         System.out.println("Received leagueId: " + leagueId);
         System.out.println("Received picture: " + (picture != null ? picture.getOriginalFilename() : "No picture uploaded"));
 
+//        try {
+//            TeamRequest teamRequest = new TeamRequest(name, isClub, leagueId);
+//            String message = teamService.addTeamAndGetId(teamRequest, picture);
+//            return ResponseEntity.ok(message);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body("Error saving picture: " + e.getMessage());
+//        }
+        TeamRequest teamRequest = new TeamRequest(name, isClub, leagueId);
+
         try {
-            TeamRequest teamRequest = new TeamRequest(name, isClub, leagueId);
-            String message = teamService.addTeamAndGetId(teamRequest, picture);
-            return ResponseEntity.ok(message);
+            // Sprawdzenie istnienia zespołu i zapisanie nowego
+            ResponseEntity<?> response = teamService.addTeamAndGetId(teamRequest, picture);
+            return response; // Zwróć odpowiedź wygenerowaną przez serwis
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error saving picture: " + e.getMessage());
+            // Obsługa błędów związanych z plikiem
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving picture: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // Obsługa innych błędów, np. brakującej ligi
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

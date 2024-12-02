@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, ListGroup, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddTeamForm = () => {
@@ -13,6 +13,7 @@ const AddTeamForm = () => {
     const [file, setFile] = useState(null);  // For importing teams
     const [pictureFile, setPictureFile] = useState(null);  // For uploading picture in manual entry
     const [fileType, setFileType] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         if (leagueSearchQuery) {
@@ -69,8 +70,11 @@ const AddTeamForm = () => {
                     setPictureFile(null);
                 })
                 .catch(error => {
-                    console.error('Error adding team:', error);
-                    alert('Failed to add team');
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding bet');
+                    }
                 });
         } else {
             const importFormData = new FormData();
@@ -95,6 +99,7 @@ const AddTeamForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Team</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

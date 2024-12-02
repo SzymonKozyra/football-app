@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import pl.pollub.footballapp.model.PasswordResetToken;
@@ -19,12 +20,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class PasswordResetController {
-
     private final UserService userService;
     private final PasswordResetTokenService tokenService;
     private final PasswordResetTokenRepository tokenRepository;
     private final JavaMailSender mailSender;
-
+    @Autowired
     public PasswordResetController(UserService userService, PasswordResetTokenService tokenService, PasswordResetTokenRepository tokenRepository, JavaMailSender mailSender) {
         this.userService = userService;
         this.tokenService = tokenService;

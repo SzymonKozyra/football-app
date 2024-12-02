@@ -16,15 +16,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    public AdminController(UserRepository userRepository, UserService userService, PasswordResetTokenRepository passwordResetTokenRepository) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-moderator")

@@ -13,14 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @Service
 public class MatchSquadService {
-
     private final MatchSquadRepository matchSquadRepository;
     private static final Logger logger = LoggerFactory.getLogger(MatchSquadService.class);
-
     @Autowired
     public MatchSquadService(MatchSquadRepository matchSquadRepository) {
         this.matchSquadRepository = matchSquadRepository;
     }
+
+
+
 
     public MatchSquad addMatchSquad(MatchSquad matchSquad) {
         return matchSquadRepository.save(matchSquad);

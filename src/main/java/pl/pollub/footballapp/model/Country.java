@@ -3,7 +3,7 @@ package pl.pollub.footballapp.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "countries")
+//@Table(name = "countries")
 public class Country {
 
     @Id

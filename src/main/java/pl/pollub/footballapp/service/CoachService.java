@@ -23,15 +23,19 @@ import java.util.Optional;
 
 @Service
 public class CoachService {
-
-    @Autowired
     private CoachRepository coachRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public CoachService(CoachRepository coachRepository, CountryRepository countryRepository, ImporterFactory importerFactory) {
+        this.coachRepository = coachRepository;
+        this.countryRepository = countryRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
+
 
     public ResponseEntity<?> addCoach(Coach coachRequest) {
         Optional<Country> country = countryRepository.findByName(coachRequest.getCountry().getName());

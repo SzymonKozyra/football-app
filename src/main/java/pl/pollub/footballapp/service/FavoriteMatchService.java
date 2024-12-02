@@ -10,15 +10,19 @@ import pl.pollub.footballapp.repository.UserRepository;
 
 @Service
 public class FavoriteMatchService {
-
-    @Autowired
     private FavoriteMatchRepository favoriteMatchRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private MatchRepository matchRepository;
+    @Autowired
+    public FavoriteMatchService(FavoriteMatchRepository favoriteMatchRepository, UserRepository userRepository, MatchRepository matchRepository) {
+        this.favoriteMatchRepository = favoriteMatchRepository;
+        this.userRepository = userRepository;
+        this.matchRepository = matchRepository;
+    }
+
+
+
+
 
     @Transactional
     public FavoriteMatch addFavoriteMatch(FavoriteMatch favoriteMatch, Long userId, Long matchId) {

@@ -43,15 +43,17 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/players")
 public class PlayerController {
-
-    @Autowired
     private PlayerService playerService;
-
-    @Autowired
     private ImporterFactory importerFactory;
-
-    @Autowired
     private FileStorageService fileStorageService;
+    @Autowired
+    public PlayerController(PlayerService playerService, ImporterFactory importerFactory, FileStorageService fileStorageService) {
+        this.playerService = playerService;
+        this.importerFactory = importerFactory;
+        this.fileStorageService = fileStorageService;
+    }
+
+
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

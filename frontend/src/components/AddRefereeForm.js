@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddRefereeForm = () => {
@@ -12,6 +12,7 @@ const AddRefereeForm = () => {
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState('');
     const [manualEntry, setManualEntry] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const getTodayDate = () => {
         const today = new Date();
@@ -52,9 +53,11 @@ const AddRefereeForm = () => {
                     setSelectedCountry('');
                 })
                 .catch(error => {
-                    const errorMessage = error.response && error.response.data ? error.response.data : 'Failed to add referee';
-                    console.error('Error adding referee:', errorMessage);
-                    alert(errorMessage);
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding referee');
+                    }
                 });
         } else {
             const formData = new FormData();
@@ -80,6 +83,7 @@ const AddRefereeForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">{manualEntry ? 'Add Referee' : 'Import Referees'}</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

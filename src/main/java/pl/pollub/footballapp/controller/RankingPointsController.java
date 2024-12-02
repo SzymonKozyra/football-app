@@ -14,13 +14,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/ranking-points")
 public class RankingPointsController {
-
     private final RankingPointsService rankingPointsService;
 
     @Autowired
     public RankingPointsController(RankingPointsService rankingPointsService) {
         this.rankingPointsService = rankingPointsService;
     }
+
+
+
 
 //    @GetMapping("/{rankingId}")
 //    public ResponseEntity<List<RankingPoints>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
@@ -51,4 +53,5 @@ public class RankingPointsController {
 //        RankingPoints updatedPoints = rankingPointsService.updateRankingPoints(userId, rankingId, additionalPoints);
 //        return ResponseEntity.ok(updatedPoints);
 //    }
+
 }

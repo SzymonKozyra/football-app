@@ -21,6 +21,10 @@ public class EventController {
         this.eventService = eventService;
     }
 
+
+
+
+
     @PostMapping("/add")
     public ResponseEntity<Event> addEvent(@RequestBody EventRequest eventRequest) {
         System.out.println("Received EventRequest: " + eventRequest);

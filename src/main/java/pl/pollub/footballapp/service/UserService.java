@@ -12,14 +12,17 @@ import java.util.Optional;
 
 @Service
 public class UserService  implements UserDetailsService {
-    @Autowired
     private UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
+
+
+
+
 
     public User findByEmail(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);

@@ -14,17 +14,19 @@ import java.util.List;
 
 @Service
 public class RankingPointsService {
-
     private final RankingPointsRepository rankingPointsRepository;
     private RankingRepository rankingRepository;
     private UserRepository userRepository;
-
     @Autowired
     public RankingPointsService(RankingPointsRepository rankingPointsRepository, RankingRepository rankingRepository, UserRepository userRepository) {
         this.rankingPointsRepository = rankingPointsRepository;
         this.rankingRepository = rankingRepository;
         this.userRepository = userRepository;
     }
+
+
+
+
 
     public List<RankingPoints> getRankingPointsByRankingId(Long rankingId) {
         return rankingPointsRepository.findByRankingId(rankingId);

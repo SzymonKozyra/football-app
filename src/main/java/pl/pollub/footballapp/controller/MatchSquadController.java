@@ -20,19 +20,17 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/match-squad")
 public class MatchSquadController {
-
     private final MatchSquadService matchSquadService;
+    private PlayerRepository playerRepository;
+    private MatchRepository matchRepository;
 
     @Autowired
-    public MatchSquadController(MatchSquadService matchSquadService) {
+    public MatchSquadController(MatchSquadService matchSquadService, PlayerRepository playerRepository, MatchRepository matchRepository) {
         this.matchSquadService = matchSquadService;
+        this.playerRepository = playerRepository;
+        this.matchRepository = matchRepository;
     }
 
-    @Autowired
-    private PlayerRepository playerRepository;
-
-    @Autowired
-    private MatchRepository matchRepository;
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
 
     @PostMapping("/add")

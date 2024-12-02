@@ -23,18 +23,20 @@ import java.util.*;
 
 @Service
 public class TeamService {
-
-    @Autowired
     private TeamRepository teamRepository;
-
-    @Autowired
     private LeagueRepository leagueRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
-
-    @Autowired
     private FileStorageService fileStorageService;
+    @Autowired
+    public TeamService(TeamRepository teamRepository, LeagueRepository leagueRepository, ImporterFactory importerFactory, FileStorageService fileStorageService) {
+        this.teamRepository = teamRepository;
+        this.leagueRepository = leagueRepository;
+        this.importerFactory = importerFactory;
+        this.fileStorageService = fileStorageService;
+    }
+
+
+
 
     @Autowired
     private MatchRepository matchRepository;
@@ -101,28 +103,58 @@ public class TeamService {
         return teamRepository.findByNameContaining(normalizedQuery, sortById);
     }
 
-    public String addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {
+//    public String addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {
+//        Team team = new Team();
+//        team.setName(teamRequest.getName());
+//        team.setIsClub(teamRequest.isClub());
+//
+//        // Set league if provided
+//        if (teamRequest.getLeagueId() != null) {
+//            Optional<League> league = leagueRepository.findById(teamRequest.getLeagueId());
+//            league.ifPresent(team::setLeague);
+//        }
+//
+//        team = teamRepository.save(team);  // Save to generate ID
+//
+//        // Save the picture if provided
+//        if (picture != null) {
+//            String photoPath = fileStorageService.saveImage(picture, "team_" + team.getId(), "team");
+//            team.setPicture(photoPath);
+//            teamRepository.save(team);  // Save again to update with picture path
+//        }
+//
+//        return "Team added successfully";
+//    }
+    public ResponseEntity<?> addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {
+        // Search if league exists
+        Optional<League> league = Optional.empty();
+        if (teamRequest.getLeagueId() != null) {
+            league = leagueRepository.findById(teamRequest.getLeagueId());
+            if (league.isEmpty()) {
+                return ResponseEntity.badRequest().body("League not found");
+            }
+        }
+
+        if (league.isPresent() && teamRepository.existsByNameAndLeague(teamRequest.getName(), league.get())) {
+            return ResponseEntity.badRequest().body("Team already exists in this league");
+        }
+
         Team team = new Team();
         team.setName(teamRequest.getName());
         team.setIsClub(teamRequest.isClub());
+        league.ifPresent(team::setLeague);
 
-        // Set league if provided
-        if (teamRequest.getLeagueId() != null) {
-            Optional<League> league = leagueRepository.findById(teamRequest.getLeagueId());
-            league.ifPresent(team::setLeague);
-        }
+        team = teamRepository.save(team);
 
-        team = teamRepository.save(team);  // Save to generate ID
-
-        // Save the picture if provided
         if (picture != null) {
             String photoPath = fileStorageService.saveImage(picture, "team_" + team.getId(), "team");
             team.setPicture(photoPath);
-            teamRepository.save(team);  // Save again to update with picture path
+            teamRepository.save(team);  // Save again to update photo path
         }
 
-        return "Team added successfully";
+        return ResponseEntity.ok("Team added successfully with ID: " + team.getId());
     }
+
 
     public String updateTeam(Long id, TeamRequest teamRequest) {
         Team team = teamRepository.findById(id)

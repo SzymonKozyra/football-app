@@ -16,24 +16,25 @@ import java.util.Optional;
 
 @Service
 public class EventService {
-    @Autowired
     private final EventRepository eventRepository;
-    @Autowired
     private final MatchRepository matchRepository;
-    @Autowired
     private final PlayerRepository playerRepository;
-    @Autowired
     private MatchSquadRepository matchSquadRepository;
 
     @Autowired
     private LeagueService leagueService;
 
     @Autowired
-    public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository) {
+    public EventService(EventRepository eventRepository, MatchRepository matchRepository, PlayerRepository playerRepository, MatchSquadRepository matchSquadRepository) {
         this.eventRepository = eventRepository;
         this.matchRepository = matchRepository;
         this.playerRepository = playerRepository;
+        this.matchSquadRepository = matchSquadRepository;
     }
+
+
+
+
 
     public Event addEvent(EventRequest eventRequest) {
         Event event = new Event();
@@ -130,10 +131,6 @@ public class EventService {
                 match.setStatus(MatchStatus.FINISHED);
                 match.setDuration(calculateMatchDurationFromEvents(eventRepository.findByMatchId(match.getId())));
                 calculateMinutesPlayed(match.getId());
-                if (match.getStage().getName().equals("Finał")) {
-                    Team winner = match.getHomeGoals() > match.getAwayGoals() ? match.getHomeTeam() : match.getAwayTeam();
-                    leagueService.setWinner(match.getLeague().getId(), winner);
-                }
                 break;
 
             case SUB_IN:

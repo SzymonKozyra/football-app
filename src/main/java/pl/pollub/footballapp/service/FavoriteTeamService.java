@@ -13,15 +13,19 @@ import java.util.Optional;
 
 @Service
 public class FavoriteTeamService {
-
-    @Autowired
     private FavoriteTeamRepository favoriteTeamRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    public FavoriteTeamService(FavoriteTeamRepository favoriteTeamRepository, UserRepository userRepository, TeamRepository teamRepository) {
+        this.favoriteTeamRepository = favoriteTeamRepository;
+        this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
+    }
+
+
+
+
 
     @Transactional
     public FavoriteTeam addFavoriteTeam(Long userId, Long teamId) {

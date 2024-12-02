@@ -10,9 +10,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/favorite-leagues")
 public class FavoriteLeagueController {
-
-    @Autowired
     private FavoriteLeagueService favoriteLeagueService;
+    @Autowired
+    public FavoriteLeagueController(FavoriteLeagueService favoriteLeagueService) {
+        this.favoriteLeagueService = favoriteLeagueService;
+    }
 
     @PostMapping("/add")
     public ResponseEntity<?> addFavoriteLeague(@RequestBody Map<String, Long> payload) {

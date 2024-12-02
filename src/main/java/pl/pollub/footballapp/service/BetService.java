@@ -23,7 +23,6 @@ public class BetService {
     private MatchRepository matchRepository;
     private RankingRepository rankingRepository;
     private RankingPointsService rankingPointsService;
-
     @Autowired
     public BetService(BetRepository betRepository, UserRepository userRepository, MatchRepository matchRepository, RankingRepository rankingRepository, RankingPointsService rankingPointsService, RankingPointsRepository rankingPointsRepository) {
         this.betRepository = betRepository;
@@ -33,6 +32,9 @@ public class BetService {
         this.rankingPointsService = rankingPointsService;
         this.rankingPointsRepository = rankingPointsRepository;
     }
+
+
+
 
 //    public Bet addBet(Bet bet) {
 //        return betRepository.save(bet);

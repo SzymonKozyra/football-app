@@ -11,9 +11,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/favorite-matches")
 public class FavoriteMatchController {
-
-    @Autowired
     private FavoriteMatchService favoriteMatchService;
+    @Autowired
+    public FavoriteMatchController(FavoriteMatchService favoriteMatchService) {
+        this.favoriteMatchService = favoriteMatchService;
+    }
 
     @PostMapping("/add")
     public ResponseEntity<?> addFavoriteMatch(@RequestBody Map<String, Long> payload) {

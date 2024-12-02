@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ToggleButtonGroup, ToggleButton, Accordion, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddPlayerForm = () => {
     const [manualEntry, setManualEntry] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
     const [playerData, setPlayerData] = useState({
         firstName: '',
         lastName: '',
@@ -86,8 +87,11 @@ const AddPlayerForm = () => {
                     setFile(null);
                 })
                 .catch(error => {
-                    console.error("Error importing players:", error);
-                    alert("Failed to import players");
+                    if (error.response && error.response.data) {
+                        setAlertMessage(error.response.data);
+                    } else {
+                        setAlertMessage('An error occurred while adding bet');
+                    }
                 });
         }
     };
@@ -95,6 +99,7 @@ const AddPlayerForm = () => {
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Add Player</h1>
+            {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
                 <Row className="mb-3 justify-content-center">
                     <Col xs="auto">

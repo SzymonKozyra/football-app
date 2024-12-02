@@ -15,9 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cities")
 public class CityController {
-
-    @Autowired
     private CityService cityService;
+    @Autowired
+    public CityController(CityService cityService) {
+        this.cityService = cityService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

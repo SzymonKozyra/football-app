@@ -21,14 +21,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/leagues")
 @CrossOrigin(origins = "http://localhost:3000")
 public class LeagueController {
-
-    @Autowired
     private LeagueService leagueService;
     @Autowired
     private LeagueRepository leagueRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(LeagueController.class);
 
+    @Autowired
+    public LeagueController(LeagueService leagueService) {
+        this.leagueService = leagueService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")

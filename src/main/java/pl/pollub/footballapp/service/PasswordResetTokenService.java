@@ -14,12 +14,18 @@ import java.util.UUID;
 
 @Service
 public class PasswordResetTokenService {
-
-    @Autowired
     private PasswordResetTokenRepository tokenRepository;
-
-    @Autowired
     private UserRepository userRepository;
+    @Autowired
+    public PasswordResetTokenService(PasswordResetTokenRepository tokenRepository, UserRepository userRepository) {
+        this.tokenRepository = tokenRepository;
+        this.userRepository = userRepository;
+    }
+
+
+
+
+
     public String createToken(User user) {
         String token = UUID.randomUUID().toString();
         PasswordResetToken passwordResetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusHours(1));

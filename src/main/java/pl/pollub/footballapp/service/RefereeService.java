@@ -21,15 +21,19 @@ import java.util.List;
 
 @Service
 public class RefereeService {
-
-    @Autowired
     private RefereeRepository refereeRepository;
-
-    @Autowired
     private CountryRepository countryRepository;
-
-    @Autowired
     private ImporterFactory importerFactory;
+    @Autowired
+    public RefereeService(RefereeRepository refereeRepository, CountryRepository countryRepository, ImporterFactory importerFactory) {
+        this.refereeRepository = refereeRepository;
+        this.countryRepository = countryRepository;
+        this.importerFactory = importerFactory;
+    }
+
+
+
+
 
     public ResponseEntity<?> addReferee(RefereeRequest refereeRequest) {
         Country country = countryRepository.findByName(refereeRequest.getCountryName())

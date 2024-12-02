@@ -19,9 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
