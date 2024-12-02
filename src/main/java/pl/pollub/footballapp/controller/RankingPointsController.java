@@ -25,23 +25,25 @@ public class RankingPointsController {
 
 
 //    @GetMapping("/{rankingId}")
-//    public ResponseEntity<List<RankingPoints>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
+//    public ResponseEntity<List<Map<String, Object>>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
 //        List<RankingPoints> points = rankingPointsService.getRankingPointsByRankingId(rankingId);
-//        return ResponseEntity.ok(points);
+//
+//        List<Map<String, Object>> response = points.stream().map(point -> {
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("userName", point.getUser().getUsername());
+//            map.put("points", point.getPoints());
+//            return map;
+//        }).collect(Collectors.toList());
+//
+//        return ResponseEntity.ok(response);
 //    }
     @GetMapping("/{rankingId}")
     public ResponseEntity<List<Map<String, Object>>> getRankingPointsByRankingId(@PathVariable Long rankingId) {
-        List<RankingPoints> points = rankingPointsService.getRankingPointsByRankingId(rankingId);
-
-        List<Map<String, Object>> response = points.stream().map(point -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("userName", point.getUser().getUsername());
-            map.put("points", point.getPoints());
-            return map;
-        }).collect(Collectors.toList());
-
+        List<Map<String, Object>> response = rankingPointsService.getRankingPointsMappedByRankingId(rankingId);
         return ResponseEntity.ok(response);
     }
+
+
 
 
 

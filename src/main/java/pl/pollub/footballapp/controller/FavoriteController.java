@@ -22,13 +22,18 @@ public class FavoriteController {
     }
 
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Map<String, List<?>>> getUserFavorites(@PathVariable Long userId) {
-        Map<String, List<?>> favorites = new HashMap<>();
-        favorites.put("teams", favoriteService.getFavoriteTeamsByUserId(userId));
-        favorites.put("leagues", favoriteService.getFavoriteLeaguesByUserId(userId));
-        favorites.put("matches", favoriteService.getFavoriteMatchesByUserId(userId));
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<Map<String, List<?>>> getUserFavorites(@PathVariable Long userId) {
+//        Map<String, List<?>> favorites = new HashMap<>();
+//        favorites.put("teams", favoriteService.getFavoriteTeamsByUserId(userId));
+//        favorites.put("leagues", favoriteService.getFavoriteLeaguesByUserId(userId));
+//        favorites.put("matches", favoriteService.getFavoriteMatchesByUserId(userId));
+//
+//        return ResponseEntity.ok(favorites);
+//    }
 
-        return ResponseEntity.ok(favorites);
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserFavorites(@PathVariable Long userId) {
+        return favoriteService.getUserFavorites(userId);
     }
 }

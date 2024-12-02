@@ -13,91 +13,155 @@ import pl.pollub.footballapp.service.UserService;
 import java.util.List;
 import java.util.Optional;
 
+//@RestController
+//@RequestMapping("/api/admin")
+//public class AdminController {
+//    private UserRepository userRepository;
+//
+//    private UserService userService;
+//
+//    private PasswordResetTokenRepository passwordResetTokenRepository;
+//
+//    @Autowired
+//    public AdminController(UserRepository userRepository, UserService userService, PasswordResetTokenRepository passwordResetTokenRepository) {
+//        this.userRepository = userRepository;
+//        this.userService = userService;
+//        this.passwordResetTokenRepository = passwordResetTokenRepository;
+//    }
+//
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/add-moderator")
+//    public ResponseEntity<?> addModerator(@RequestBody User moderatorRequest) {
+//        if (userRepository.existsByEmail(moderatorRequest.getEmail())) {
+//            return ResponseEntity.badRequest().body("Email already in use");
+//        }
+//
+//        User moderator = new User();
+//        moderator.setEmail(moderatorRequest.getEmail());
+//        moderator.setPassword(userService.encodePassword(moderatorRequest.getPassword()));
+//        moderator.setUsername(moderatorRequest.getUsername());  // Add the username
+//        moderator.setRole(User.Role.ROLE_MODERATOR);
+//
+//        userRepository.save(moderator);
+//        return ResponseEntity.ok("Moderator added successfully");
+//    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/add-admin")
+//    public ResponseEntity<?> addAdmin(@RequestBody User adminRequest) {
+//        if (userRepository.existsByEmail(adminRequest.getEmail())) {
+//            return ResponseEntity.badRequest().body("Email already in use");
+//        }
+//
+//        User admin = new User();
+//        admin.setEmail(adminRequest.getEmail());
+//        admin.setPassword(userService.encodePassword(adminRequest.getPassword()));
+//        admin.setUsername(adminRequest.getUsername());  // Add the username
+//        admin.setRole(User.Role.ROLE_ADMIN);
+//
+//        userRepository.save(admin);
+//        return ResponseEntity.ok("Moderator added successfully");
+//    }
+//
+//
+//    @Transactional
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @DeleteMapping("/delete-user/{email}")
+//    public ResponseEntity<?> deleteUser(@PathVariable String email) {
+//        Optional<User> userOptional = userRepository.findByEmail(email);
+//        if (userOptional.isEmpty()) {
+//            return ResponseEntity.badRequest().body("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//
+//        passwordResetTokenRepository.deleteByUserId(user.getId());
+//
+//        userRepository.deleteByEmail(email);
+//        return ResponseEntity.ok("User deleted successfully");
+//    }
+//
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PutMapping("/change-password/{email}")
+//    public ResponseEntity<?> changePassword(@PathVariable String email, @RequestBody String newPassword) {
+//        Optional<User> userOptional = userRepository.findByEmail(email);
+//        if (userOptional.isEmpty()) {
+//            return ResponseEntity.badRequest().body("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//        user.setPassword(userService.encodePassword(newPassword));
+//        userRepository.save(user);
+//        return ResponseEntity.ok("Password updated successfully");
+//    }
+//
+//    @GetMapping("/users")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<List<User>> getUsers() {
+//        List<User> users = userRepository.findAll();
+//        return ResponseEntity.ok(users);
+//    }
+//}
+
+
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    private UserRepository userRepository;
-
-    private UserService userService;
-
-    private PasswordResetTokenRepository passwordResetTokenRepository;
+    private final UserService userService;
 
     @Autowired
-    public AdminController(UserRepository userRepository, UserService userService, PasswordResetTokenRepository passwordResetTokenRepository) {
-        this.userRepository = userRepository;
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-moderator")
     public ResponseEntity<?> addModerator(@RequestBody User moderatorRequest) {
-        if (userRepository.existsByEmail(moderatorRequest.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already in use");
+        try {
+            userService.addModerator(moderatorRequest);
+            return ResponseEntity.ok("Moderator added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        User moderator = new User();
-        moderator.setEmail(moderatorRequest.getEmail());
-        moderator.setPassword(userService.encodePassword(moderatorRequest.getPassword()));
-        moderator.setUsername(moderatorRequest.getUsername());  // Add the username
-        moderator.setRole(User.Role.ROLE_MODERATOR);
-
-        userRepository.save(moderator);
-        return ResponseEntity.ok("Moderator added successfully");
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-admin")
     public ResponseEntity<?> addAdmin(@RequestBody User adminRequest) {
-        if (userRepository.existsByEmail(adminRequest.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already in use");
+        try {
+            userService.addAdmin(adminRequest);
+            return ResponseEntity.ok("Admin added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        User admin = new User();
-        admin.setEmail(adminRequest.getEmail());
-        admin.setPassword(userService.encodePassword(adminRequest.getPassword()));
-        admin.setUsername(adminRequest.getUsername());  // Add the username
-        admin.setRole(User.Role.ROLE_ADMIN);
-
-        userRepository.save(admin);
-        return ResponseEntity.ok("Moderator added successfully");
     }
-
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete-user/{email}")
     public ResponseEntity<?> deleteUser(@PathVariable String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
+        try {
+            userService.deleteUserByEmail(email);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        User user = userOptional.get();
-
-        passwordResetTokenRepository.deleteByUserId(user.getId());
-
-        userRepository.deleteByEmail(email);
-        return ResponseEntity.ok("User deleted successfully");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/change-password/{email}")
     public ResponseEntity<?> changePassword(@PathVariable String email, @RequestBody String newPassword) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
+        try {
+            userService.changePassword(email, newPassword);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        User user = userOptional.get();
-        user.setPassword(userService.encodePassword(newPassword));
-        userRepository.save(user);
-        return ResponseEntity.ok("Password updated successfully");
     }
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 }

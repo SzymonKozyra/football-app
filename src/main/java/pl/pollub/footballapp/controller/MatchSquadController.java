@@ -20,36 +20,54 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/match-squad")
 public class MatchSquadController {
+//    private final MatchSquadService matchSquadService;
+//    private PlayerRepository playerRepository;
+//    private MatchRepository matchRepository;
+//
+//    @Autowired
+//    public MatchSquadController(MatchSquadService matchSquadService, PlayerRepository playerRepository, MatchRepository matchRepository) {
+//        this.matchSquadService = matchSquadService;
+//        this.playerRepository = playerRepository;
+//        this.matchRepository = matchRepository;
+//    }
     private final MatchSquadService matchSquadService;
-    private PlayerRepository playerRepository;
-    private MatchRepository matchRepository;
+
 
     @Autowired
-    public MatchSquadController(MatchSquadService matchSquadService, PlayerRepository playerRepository, MatchRepository matchRepository) {
+    public MatchSquadController(MatchSquadService matchSquadService) {
         this.matchSquadService = matchSquadService;
-        this.playerRepository = playerRepository;
-        this.matchRepository = matchRepository;
+
     }
 
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
 
+//    @PostMapping("/add")
+//    @PreAuthorize("hasRole('MODERATOR')")
+//    public ResponseEntity<MatchSquad> addMatchSquad(@RequestBody MatchSquadRequest request) {
+//        Match match = matchRepository.findById(request.getMatchId())
+//                .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + request.getMatchId()));
+//
+//        Player player = playerRepository.findById(request.getPlayerId())
+//                .orElseThrow(() -> new IllegalArgumentException("Player not found for ID: " + request.getPlayerId()));
+//
+//        MatchSquad matchSquad = new MatchSquad();
+//        matchSquad.setMatch(match); // Ustawienie pełnego obiektu meczu
+//        matchSquad.setPlayer(player); // Ustawienie pełnego obiektu zawodnika
+//        matchSquad.setHomeTeam(request.getHomeTeam());
+//        matchSquad.setFirstSquad(request.getFirstSquad());
+//
+//        MatchSquad savedMatchSquad = matchSquadService.addMatchSquad(matchSquad);
+//        return ResponseEntity.ok(savedMatchSquad);
+//    }
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<MatchSquad> addMatchSquad(@RequestBody MatchSquadRequest request) {
-        Match match = matchRepository.findById(request.getMatchId())
-                .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + request.getMatchId()));
-
-        Player player = playerRepository.findById(request.getPlayerId())
-                .orElseThrow(() -> new IllegalArgumentException("Player not found for ID: " + request.getPlayerId()));
-
-        MatchSquad matchSquad = new MatchSquad();
-        matchSquad.setMatch(match); // Ustawienie pełnego obiektu meczu
-        matchSquad.setPlayer(player); // Ustawienie pełnego obiektu zawodnika
-        matchSquad.setHomeTeam(request.getHomeTeam());
-        matchSquad.setFirstSquad(request.getFirstSquad());
-
-        MatchSquad savedMatchSquad = matchSquadService.addMatchSquad(matchSquad);
-        return ResponseEntity.ok(savedMatchSquad);
+        try {
+            MatchSquad matchSquad = matchSquadService.createMatchSquad(request);
+            return ResponseEntity.ok(matchSquad);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @GetMapping

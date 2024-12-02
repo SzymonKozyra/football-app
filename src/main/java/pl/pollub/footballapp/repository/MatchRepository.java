@@ -34,6 +34,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findAllByDateTimeBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 
+    List<Match> findByStatus(MatchStatus status);
+
     List<Match> findByGroupAndHomeTeamOrGroupAndAwayTeam(LeagueGroup group1, Team homeTeam, LeagueGroup group2, Team awayTeam);
 
     @Query("SELECT m FROM Match m WHERE m.group = :group AND (m.homeTeam = :team OR m.awayTeam = :team)")
