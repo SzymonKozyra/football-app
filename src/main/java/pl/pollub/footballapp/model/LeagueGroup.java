@@ -17,10 +17,6 @@ public class LeagueGroup {
     private League league;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "stage")
-    private List<Match> matches;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "group")
     private List<TeamGroupMembership> teamGroupMemberships;
 
@@ -62,13 +58,6 @@ public class LeagueGroup {
         this.league = league;
     }
 
-    public List<Match> getMatches() {
-        return matches;
-    }
-
-    public void setMatches(List<Match> matches) {
-        this.matches = matches;
-    }
 
     public List<TeamGroupMembership> getTeamGroupMemberships() { return teamGroupMemberships; }
     public void setTeamGroupMemberships(List<TeamGroupMembership> teamGroupMemberships) {

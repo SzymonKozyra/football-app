@@ -22,6 +22,7 @@ const MatchSearchAndEditForm = () => {
         awayTeam: null,
         round: '',
         status: 'UPCOMING',
+        isBetable: false,
         homeGoals: 0,
         awayGoals: 0,
         homePossession: 0,
@@ -216,6 +217,8 @@ const MatchSearchAndEditForm = () => {
             awayTeam: match.awayTeam ? match.awayTeam.id : null,
             round: match.round,
             status: match.status,
+            isBetable: match.isBetable,
+
             homeGoals: match.homeGoals || 0,
             awayGoals: match.awayGoals || 0,
             homePossession: match.homePossession || 0,
@@ -265,6 +268,8 @@ const MatchSearchAndEditForm = () => {
             league: { id: editData.league },
             homeTeam: { id: editData.homeTeam },
             awayTeam: { id: editData.awayTeam },
+            isBetable: { id: editData.isBetable},
+
         };
 
         axios.put(`http://localhost:8080/api/matches/${selectedMatch}`, updatedMatch, {
@@ -681,6 +686,17 @@ const MatchSearchAndEditForm = () => {
                                                     </Form.Control>
                                                 </Form.Group>
                                             )}
+                                            <Form.Group controlId="formIsBetable" className="mb-3">
+                                                <Form.Label>Is Betable</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    value={editData.isBetable} // Pobiera wartość ze stanu
+                                                    onChange={(e) => setEditData((prev) => ({ ...prev, isBetable: e.target.value === "true" }))}
+                                                >
+                                                    <option value="false">False</option>
+                                                    <option value="true">True</option>
+                                                </Form.Control>
+                                            </Form.Group>
 
 
 

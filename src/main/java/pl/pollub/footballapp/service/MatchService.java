@@ -53,6 +53,7 @@ public class MatchService {
                     match.setRound(updatedMatch.getRound());
                     match.setDuration(90); // Stała wartość
                     match.setStatus(updatedMatch.getStatus());
+                    match.setBetable(updatedMatch.getBetable());
 
 
                     match.setHomeGoals(updatedMatch.getHomeGoals());

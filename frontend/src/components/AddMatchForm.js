@@ -28,6 +28,9 @@ const AddMatchForm = () => {
     const [showLeagueModal, setShowLeagueModal] = useState(false);
 
     const [round, setRound] = useState('');
+    const [isBetable, setIsBetable] = useState(false);
+
+
     const [duration, setDuration] = useState(0);
     const [matchStatus, setMatchStatus] = useState('UPCOMING');
     const [homeGoals, setHomeGoals] = useState(0);
@@ -364,6 +367,7 @@ const AddMatchForm = () => {
             homeTeam: { id: selectedHomeTeam?.id }, // Sprawdzenie, czy homeTeam został wybrany
             awayTeam: { id: selectedAwayTeam?.id }, // Sprawdzenie, czy awayTeam został wybrany
             round,
+            isBetable,
             duration: 90,
             status: matchStatus,
 
@@ -662,7 +666,17 @@ const AddMatchForm = () => {
 
                 )}
 
-
+                <Form.Group controlId="formIsBetable" className="mb-3">
+                    <Form.Label>Is Betable</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={isBetable} // Domyślnie false
+                        onChange={(e) => setIsBetable(e.target.value === "true")}
+                    >
+                        <option value="false">False</option>
+                        <option value="true">True</option>
+                    </Form.Control>
+                </Form.Group>
 
                 {matchStatus !== 'UPCOMING' && (
                     <>

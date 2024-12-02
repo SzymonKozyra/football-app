@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import pl.pollub.footballapp.MatchStatus;
 
@@ -94,7 +95,19 @@ public class Match {
     private LeagueGroup group;
 
     @ManyToOne
-    private LeagueGroup stage; // Zmieniono z Phase na Stage
+    private LeagueStage stage; // Zmieniono z Phase na Stage
+
+    @JsonProperty("isBetable")
+    @Column(name = "is_betable")
+    private Boolean isBetable;
+
+    public Boolean getBetable() {
+        return isBetable;
+    }
+
+    public void setBetable(Boolean betable) {
+        isBetable = betable;
+    }
 
     public Long getId() {
         return id;
@@ -313,11 +326,30 @@ public class Match {
         this.group = group;
     }
 
-    public LeagueGroup getStage() {
+    public LeagueStage getStage() {
         return stage;
     }
 
-    public void setStage(LeagueGroup stage) {
+    public void setStage(LeagueStage stage) {
         this.stage = stage;
     }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", referee=" + (referee != null ? referee.getId() : null) +
+                ", stadium=" + (stadium != null ? stadium.getId() : null) +
+                ", league=" + (league != null ? league.getId() : null) +
+                ", homeTeam=" + (homeTeam != null ? homeTeam.getId() : null) +
+                ", awayTeam=" + (awayTeam != null ? awayTeam.getId() : null) +
+                ", round='" + round + '\'' +
+                ", isBetable=" + isBetable +
+                ", duration=" + duration +
+                ", status=" + status +
+                ", stage=" + (stage != null ? stage.getId() + " (" + stage.getName() + ")" : null) +
+                '}';
+    }
+
 }

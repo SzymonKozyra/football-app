@@ -48,6 +48,9 @@ public class MatchController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<Long> addMatch(@RequestBody Match match) {
+        System.out.println("Received Match object: " + match);
+
+
         League league = leagueRepository.findById(match.getLeague().getId())
                 .orElseThrow(() -> new RuntimeException("League not found"));
         match.setLeague(league);
@@ -61,6 +64,30 @@ public class MatchController {
                 .orElseThrow(() -> new RuntimeException("Home team not found")));
         match.setAwayTeam(teamRepository.findById(match.getAwayTeam().getId())
                 .orElseThrow(() -> new RuntimeException("Away team not found")));
+
+
+        if(!match.getBetable()){
+            System.out.println("BETABLE IS FALSE");
+        }else if (match.getBetable()){
+            System.out.println("BETABLE IS TRUE");
+        }else if (match.getBetable() == null){
+            System.out.println("BETABLE IS NULL");
+        }else{
+            System.out.println("BETABLE IS SOMETHING ELSE");
+        }
+
+        if (match.getBetable() == null) {
+            match.setBetable(false);
+        }
+        if(!match.getBetable()){
+            System.out.println("BETABLE IS FALSE");
+        }else if (match.getBetable()){
+            System.out.println("BETABLE IS TRUE");
+        }else if (match.getBetable() == null){
+            System.out.println("BETABLE IS NULL");
+        }else{
+            System.out.println("BETABLE IS SOMETHING ELSE");
+        }
 
         Match savedMatch = matchService.saveMatch(match);
         return ResponseEntity.ok(savedMatch.getId());
