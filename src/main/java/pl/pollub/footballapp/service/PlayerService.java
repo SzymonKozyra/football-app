@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pl.pollub.footballapp.model.Player;
 import pl.pollub.footballapp.model.Country;
 import pl.pollub.footballapp.model.Position;
@@ -12,43 +13,34 @@ import pl.pollub.footballapp.repository.PlayerRepository;
 import pl.pollub.footballapp.repository.PositionRepository;
 import pl.pollub.footballapp.requests.PlayerRequest;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import pl.pollub.footballapp.service.importer.DataImporter;
+import pl.pollub.footballapp.service.importer.ImporterFactory;
 
 
 @Service
 public class PlayerService {
-    private PlayerRepository playerRepository;
-    private CountryRepository countryRepository;
-    private PositionRepository positionRepository;
+    private final PlayerRepository playerRepository;
+    private final CountryRepository countryRepository;
+    private final PositionRepository positionRepository;
+    private final FileStorageService fileStorageService;
+
     @Autowired
-    public PlayerService(PlayerRepository playerRepository, CountryRepository countryRepository, PositionRepository positionRepository) {
+    public PlayerService(PlayerRepository playerRepository, CountryRepository countryRepository, PositionRepository positionRepository, FileStorageService fileStorageService) {
         this.playerRepository = playerRepository;
         this.countryRepository = countryRepository;
         this.positionRepository = positionRepository;
+        this.fileStorageService = fileStorageService;
     }
 
 
 
-
-
-    //    public void addPlayer(PlayerRequest playerRequest) {
-//        Player player = createPlayerFromRequest(playerRequest);
-//        playerRepository.save(player);
-//    }
-
-//    public void updatePlayer(Long id, PlayerRequest playerRequest) {
-//        Player existingPlayer = playerRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Player not found"));
-//
-//        Player updatedPlayer = createPlayerFromRequest(playerRequest);
-//        updatedPlayer.setId(existingPlayer.getId()); // retain existing ID
-//        playerRepository.save(updatedPlayer);
-//    }
 
     public void updatePlayer(Long id, PlayerRequest playerRequest) {
         Player existingPlayer = playerRepository.findById(id)
@@ -176,4 +168,48 @@ public class PlayerService {
     }
 
 
+
+    public void addPlayerWithPicture(String firstName, String lastName, String dateOfBirth, String nickname,
+                                     Long positionId, Long countryId, BigDecimal value, MultipartFile picture) {
+        PlayerRequest request = new PlayerRequest(firstName, lastName, dateOfBirth, nickname, positionId, countryId, value);
+        Long playerId = addPlayerAndGetId(request);
+
+        if (picture != null) {
+            try {
+                String photoPath = fileStorageService.saveImage(picture, "player_" + playerId, "player");
+                updatePlayerPhotoPath(playerId, photoPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error saving player picture: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    public void updatePlayerWithPicture(Long id, String firstName, String lastName, String dateOfBirth,
+                                        String nickname, Long positionId, Long countryId, BigDecimal value,
+                                        MultipartFile picture) {
+        PlayerRequest request = new PlayerRequest(firstName, lastName, dateOfBirth, nickname, positionId, countryId, value);
+
+        if (picture != null) {
+            try {
+                String photoPath = fileStorageService.saveImage(picture, "player_" + id, "player");
+                request.setPicture(photoPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error saving player picture: " + e.getMessage(), e);
+            }
+        }
+        updatePlayer(id, request);
+    }
+
+
+
+
+    public String importPlayers(MultipartFile file, String fileType, ImporterFactory importerFactory) {
+        try {
+            DataImporter importer = importerFactory.getImporterPlayer(fileType);
+            List<PlayerRequest> playerRequests = importer.importData(file.getInputStream());
+            return addPlayers(playerRequests);
+        } catch (IOException e) {
+            throw new RuntimeException("Error importing players: " + e.getMessage());
+        }
+    }
 }

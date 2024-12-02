@@ -31,4 +31,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findByTeamNameContaining(@Param("teamName") String teamName);
 
     List<Match> findAllByDateTimeBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    List<Match> findByStatus(MatchStatus status);
 }

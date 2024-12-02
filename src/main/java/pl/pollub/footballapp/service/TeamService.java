@@ -95,28 +95,7 @@ public class TeamService {
         return teamRepository.findByNameContaining(normalizedQuery, sortById);
     }
 
-//    public String addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {
-//        Team team = new Team();
-//        team.setName(teamRequest.getName());
-//        team.setIsClub(teamRequest.isClub());
-//
-//        // Set league if provided
-//        if (teamRequest.getLeagueId() != null) {
-//            Optional<League> league = leagueRepository.findById(teamRequest.getLeagueId());
-//            league.ifPresent(team::setLeague);
-//        }
-//
-//        team = teamRepository.save(team);  // Save to generate ID
-//
-//        // Save the picture if provided
-//        if (picture != null) {
-//            String photoPath = fileStorageService.saveImage(picture, "team_" + team.getId(), "team");
-//            team.setPicture(photoPath);
-//            teamRepository.save(team);  // Save again to update with picture path
-//        }
-//
-//        return "Team added successfully";
-//    }
+
     public ResponseEntity<?> addTeamAndGetId(TeamRequest teamRequest, MultipartFile picture) throws IOException {
         // Search if league exists
         Optional<League> league = Optional.empty();

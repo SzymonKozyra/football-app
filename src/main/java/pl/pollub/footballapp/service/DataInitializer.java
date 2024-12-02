@@ -89,7 +89,7 @@ public class DataInitializer {
                     new String[]{"Estonia", "ee"},
                     new String[]{"Eswatini", "sz"},
                     new String[]{"Ethiopia", "et"},
-                    new String[]{"Europe", "ww"},
+                    new String[]{"Europe", "eu"},
                     new String[]{"Fiji", "fj"},
                     new String[]{"Finland", "fi"},
                     new String[]{"France", "fr"},

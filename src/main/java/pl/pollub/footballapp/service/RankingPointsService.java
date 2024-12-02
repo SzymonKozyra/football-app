@@ -10,7 +10,10 @@ import pl.pollub.footballapp.repository.RankingRepository;
 import pl.pollub.footballapp.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RankingPointsService {
@@ -32,17 +35,18 @@ public class RankingPointsService {
         return rankingPointsRepository.findByRankingId(rankingId);
     }
 
-//    public RankingPoints updateRankingPoints(Long userId, Long rankingId, int additionalPoints) {
-//        RankingPoints rankingPoints = rankingPointsRepository.findByUserIdAndRankingId(userId, rankingId);
-//
-//        if (rankingPoints == null) {
-//            throw new IllegalArgumentException("Ranking points not found for user and ranking.");
-//        }
-//
-//        rankingPoints.setPoints(rankingPoints.getPoints() + additionalPoints);
-//        rankingPoints.setLastUpdated(LocalDateTime.now());
-//        return rankingPointsRepository.save(rankingPoints);
-//    }
+    public List<Map<String, Object>> getRankingPointsMappedByRankingId(Long rankingId) {
+        List<RankingPoints> points = getRankingPointsByRankingId(rankingId);
+
+        return points.stream()
+                .map(point -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("userName", point.getUser().getUsername());
+                    map.put("points", point.getPoints());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 
     public void updateRankingPoints(Long userId, int pointsToAdd) {
         Ranking activeRanking = rankingRepository.findByIsActiveTrue()
