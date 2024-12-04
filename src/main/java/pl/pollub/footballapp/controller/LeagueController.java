@@ -127,5 +127,13 @@ public class LeagueController {
         return ResponseEntity.ok(league);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<League> getLeagueById(@PathVariable Long id) {
+        return leagueService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 
 }

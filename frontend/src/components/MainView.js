@@ -12,15 +12,20 @@ import { Link } from 'react-router-dom'; // Import React Router Link
 import { Modal } from 'react-bootstrap';
 import MatchDetail from "./MatchDetail";
 import "./MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
-
+import LeagueView from "./LeagueView"; // Import LeagueView component
+import {useNavigate} from "react-router-dom";
+import Sidebar from "./Sidebar";
 const BASE_URL = 'http://localhost:8080';
 
 const MainView = () => {
+    const navigate = useNavigate(); // Call useNavigate at the top level
+
     const [favorites, setFavorites] = useState({
         matches: [],
         leagues: [],
         teams: [],
-    });       const [matches, setMatches] = useState([]);
+    });
+    const [matches, setMatches] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [userId, setUserId] = useState(null);
     const [isFavoritesReady, setIsFavoritesReady] = useState(false); // Flaga określająca gotowość
@@ -30,6 +35,8 @@ const MainView = () => {
 
     const [showModal, setShowModal] = useState(false); // Stan dla modala
     const [selectedMatch, setSelectedMatch] = useState(null); // Wybrany mecz dla modala
+
+    const [selectedLeagueId, setSelectedLeagueId] = useState(null); // New state for selected league
 
 
     const token = localStorage.getItem('jwtToken');
@@ -43,6 +50,24 @@ const MainView = () => {
     useEffect(() => {
         console.log("Favorites state updated:", favorites);
     }, [favorites]);
+
+    useEffect(() => {
+        if (selectedLeagueId === null) {
+            const fetchMatches = async () => {
+                try {
+                    const formattedDate = selectedDate.toISOString().split('T')[0];
+                    const matchesResponse = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setMatches(matchesResponse.data);
+                } catch (error) {
+                    console.error("Error fetching matches:", error);
+                }
+            };
+            fetchMatches();
+        }
+    }, [selectedDate, token, selectedLeagueId]);
+
     const fetchEventsForMatches = async (matches) => {
         // Fetch events for a list of matches and return updated matches
         return Promise.all(
@@ -59,6 +84,8 @@ const MainView = () => {
             })
         );
     };
+
+
     const calculateMatchMinute = (match) => {
         if (match.status === 'FINISHED') {
             return 'Finished';
@@ -204,11 +231,6 @@ const MainView = () => {
         fetchMatchesAndEvents();
     }, [selectedDate, token]);
 
-
-    useEffect(() => {
-        console.log("Stan favorites został zaktualizowany:", favorites);
-    }, [favorites]);
-
     // Otwórz modal z wybranym meczem
     const handleMatchClick = (match) => {
         console.log("Match clicked:", match); // Dodaj log
@@ -338,6 +360,16 @@ const MainView = () => {
         }
 
         return favorites[type]?.some(typeMap[type]) || false;
+    };
+
+    const handleLeagueClick = (leagueId) => {
+        navigate(`/league/${leagueId}`); // Use the navigate function here
+        // window.location.reload(); // Wymuszenie przeładowania
+
+    };
+
+    const handleBackToMainView = () => {
+        setSelectedLeagueId(null); // Resetuje id ligi i wraca do głównego widoku
     };
 
     const renderMatchesByLeague = () => {
@@ -525,90 +557,36 @@ const MainView = () => {
         <Container fluid>
             <Row>
                 <Col xs={3} className="bg-light border-right">
-                    <h5 className="mt-4">Ulubione rozgrywki</h5>
-                    <ListGroup>
-                        {favorites.leagues.map((league, index) => (
-                            <ListGroup.Item key={index} className="d-flex align-items-center">
-                                {/* Flaga kraju */}
-                                <img
-                                    src={`/assets/flags/${league.league.country.code}.svg`}
-                                    alt={league.league.country.name}
-                                    style={{
-                                        width: '20px',
-                                        height: '15px',
-                                        marginRight: '10px',
-                                        borderRadius: '2px',
-                                        boxShadow: '0 0 2px rgba(0, 0, 0, 0.2)',
-                                    }}
-                                />
-                                {league.league.name ? league.league.name : 'Brak nazwy'}
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
-
-                    <h5 className="mt-4">Ulubione drużyny</h5>
-                    <ListGroup>
-                        {favorites.teams.map((team) => (
-                            <ListGroup.Item key={team.id} className="d-flex align-items-center">
-                                {/* Herb drużyny */}
-                                <TeamImageVerySmall team={team.team} />
-                                <span style={{ marginLeft: '10px' }}>{team.team.name}</span>
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
-                    <h5 className="mt-4">Wszystkie ligi</h5>
-                    <ListGroup>
-                        {allLeagues.map((league) => (
-                            <ListGroup.Item key={league.id} className="d-flex justify-content-between align-items-center">
-                                {league.name}
-                                <i
-                                    className={`bi ${
-                                        isFavorite('leagues', league.id) ? 'bi-star-fill text-warning' : 'bi-star'
-                                    }`}
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => toggleFavorite('leagues', league)}
-                                ></i>
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
-
-                    <h5 className="mt-4">Wszystkie drużyny</h5>
-                    <ListGroup>
-                        {allTeams.map((team) => (
-                            <ListGroup.Item key={team.id} className="d-flex justify-content-between align-items-center">
-                                {team.name}
-                                <i
-                                    className={`bi ${isFavorite('teams', team.id) ? 'bi-star-fill text-warning' : 'bi-star'}`}
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => toggleFavorite('teams', team)}
-                                ></i>
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
+                    <Sidebar />
                 </Col>
 
                 <Col xs={9}>
-                    <div className="d-flex align-items-center justify-content-center mt-4">
-                        <Button variant="light" onClick={goToPreviousDay} style={{ marginRight: '5px' }}>
-                            <BiLeftArrow />
-                        </Button>
-                        <DatePicker
-                            selected={selectedDate}
-                            onChange={handleDateChange}
-                            dateFormat="dd/MM/yyyy"
-                            customInput={<Button variant="outline-dark">{selectedDate.toLocaleDateString()}</Button>}
-                        />
-                        <Button variant="light" onClick={goToNextDay} style={{ marginLeft: '5px' }}>
-                            <BiRightArrow />
-                        </Button>
-                    </div>
 
-                    {/* Favorites Section */}
-                    {renderFavorites()}
+                        <>
+                            <div className="d-flex align-items-center justify-content-center mt-4">
+                                <Button variant="light" onClick={goToPreviousDay} style={{ marginRight: '5px' }}>
+                                    <BiLeftArrow />
+                                </Button>
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={handleDateChange}
+                                    dateFormat="dd/MM/yyyy"
+                                    customInput={<Button variant="outline-dark">{selectedDate.toLocaleDateString()}</Button>}
+                                />
+                                <Button variant="light" onClick={goToNextDay} style={{ marginLeft: '5px' }}>
+                                    <BiRightArrow />
+                                </Button>
+                            </div>
 
-                    {/* All Matches by League */}
-                    {renderMatchesByLeague()}
+                            {/* Favorites Section */}
+                            {renderFavorites()}
+
+                            {/* All Matches by League */}
+                            {renderMatchesByLeague()}
+                        </>
+
                 </Col>
+
             </Row>
 
             {/* Modal Section */}

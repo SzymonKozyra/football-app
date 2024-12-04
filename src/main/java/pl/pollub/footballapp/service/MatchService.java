@@ -114,4 +114,9 @@ public class MatchService {
     public List<Match> searchMatchesByTeamName(String teamName) {
         return matchRepository.findByTeamName(teamName);
     }
+
+    public List<Match> getMatchesByLeague(Long leagueId) {
+        return matchRepository.findByLeagueId(leagueId);
+    }
+
 }

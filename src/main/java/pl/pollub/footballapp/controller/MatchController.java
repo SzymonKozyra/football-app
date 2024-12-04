@@ -163,4 +163,12 @@ public class MatchController {
         List<Match> matches = matchService.getMatchesByDate(date);
         return ResponseEntity.ok(matches);
     }
+
+    @GetMapping("/league/{leagueId}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<List<Match>> getMatchesByLeague(@PathVariable Long leagueId) {
+        List<Match> matches = matchService.getMatchesByLeague(leagueId);
+        return ResponseEntity.ok(matches);
+    }
+
 }

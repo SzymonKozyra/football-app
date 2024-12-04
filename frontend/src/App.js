@@ -54,9 +54,8 @@ import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import AddRankingForm from './components/AddRankingForm';
 import EventManagement from "./components/EventManagement";
 import MainView from "./components/MainView";
-
-
-
+import LeagueView from "./components/LeagueView";
+import LeaguePage from "./components/LeaguePage";
 function App() {
     const [modals, setModals] = useState({
         isRegistrationOpen: false,
@@ -69,16 +68,11 @@ function App() {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loginData, setLoginData] = useState({ email: '', role: '' });
-    const [token, setToken] = useState('');
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
     const [adminExists, setAdminExists] = useState(false);
     const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
     const location = useLocation();
-    const navigate = useNavigate();
-
-    const [currentMode, setCurrentMode] = useState('user'); // New state for tracking mode
-
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -101,72 +95,6 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const resetToken = searchParams.get('token');
-        if (resetToken) {
-            setToken(resetToken);
-            setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
-        }
-    }, [location.search]);
-
-    useEffect(() => {
-        // Initialize mode based on role
-        if (loginData.role === 'ROLE_ADMIN') {
-            setCurrentMode('admin');
-        } else if (loginData.role === 'ROLE_MODERATOR') {
-            setCurrentMode('moderator');
-        }
-    }, [loginData]);
-
-
-    const toggleModal = (modalName) => {
-        setModals((prevModals) => ({
-            ...prevModals,
-            [modalName]: !prevModals[modalName],
-        }));
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('jwtToken');
-        setIsLoggedIn(false);
-        setLoginData({ email: '', role: '' });
-        localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out');
-        setTimeout(() => {
-            setMessage('');
-        }, 2000);
-        navigate('/');
-        window.scrollTo(0, 0);
-        window.location.reload();
-    };
-
-    const handleNewPasswordSubmit = async (newPassword) => {
-        try {
-            const response = await
-                axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
-                token,
-                password: newPassword,
-            });
-            if (response.status === 200) {
-                console.log("Password reset successfully!");
-            }
-        } catch (error) {
-            console.error("Error resetting password:", error);
-        }
-    };
-
-    const handleModeSwitch = () => {
-        setCurrentMode((prevMode) => {
-            if (loginData.role === 'ROLE_ADMIN') {
-                return prevMode === 'admin' ? 'user' : 'admin';
-            } else if (loginData.role === 'ROLE_MODERATOR') {
-                return prevMode === 'moderator' ? 'user' : 'moderator';
-            }
-            return 'user';
-        });
-    };
-
-
-    useEffect(() => {
         const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
         if (logoutOrDeleteAccMessage) {
             setMessage(logoutOrDeleteAccMessage);
@@ -185,7 +113,7 @@ function App() {
     if (!adminExists) {
         return (
             <div className="App">
-                <RegisterAdminForm/>
+                <RegisterAdminForm />
             </div>
         );
     }
@@ -196,68 +124,36 @@ function App() {
                 <Navbar
                     isLoggedIn={isLoggedIn}
                     loginData={loginData}
-                    onLogout={handleLogout}
-                    setIsLoggedIn={setIsLoggedIn}
-                    onOpenLogin={() => toggleModal('isLoginOpen')}
-                    onOpenRegistration={() => toggleModal('isRegistrationOpen')}
-                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-                    onModeSwitch={handleModeSwitch}
-                    currentMode={currentMode}
+                    onLogout={() => {
+                        localStorage.removeItem('jwtToken');
+                        setIsLoggedIn(false);
+                        setLoginData({ email: '', role: '' });
+                    }}
                 />
             </div>
 
             {message && (<Alert variant={messageType} className="mb-3">{message}</Alert>)}
 
-            <div className="main-content">
-                {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
-                {currentMode === 'moderator' && <ModeratorView />}
-                {currentMode === 'user' && <MainView />}
-            </div>
-                <RegistrationModal
-                    isOpen={modals.isRegistrationOpen}
-                    onClose={() => toggleModal('isRegistrationOpen')}
-                    onOpenLogin={() => toggleModal('isLoginOpen')}
-                />
-                <LoginModal
-                    isOpen={modals.isLoginOpen}
-                    onClose={() => toggleModal('isLoginOpen')}
-                    setIsLoggedIn={setIsLoggedIn}
-                    setLoginData={setLoginData}
-                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-                />
-                <PasswordResetModal
-                    isOpen={modals.isPasswordResetOpen}
-                    onClose={() => toggleModal('isPasswordResetOpen')}
-                />
+            <Routes>
+                <Route path="/" element={<MainView />} />
+                <Route path="/league/:id" element={<LeaguePage />} />
+                {/* Inne trasy */}
+            </Routes>
 
-                <NewPasswordModal
-                    isOpen={modals.isNewPasswordOpen}
-                    onClose={() => toggleModal('isNewPasswordOpen')}
-                    onSubmit={handleNewPasswordSubmit}
-                    token={token}
-                />
-
-                <Routes>
-                    <Route path="/add-match" element={<AddMatchForm />} />
-                    <Route path="/add-match-squad/:matchId" element={<AddMatchSquadForm />} />
-                    <Route path="/add-players-match-squad/:matchSquadId" element={<AddPlayersMatchSquadForm />} />
-
-                    <Route
-                        path="/admin-panel"
-                        element={
-                            isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
-                                <AdminPanel/>
-                            ) : (
-                                <Navigate to="/" replace />
-                            )
-                        }
-                    />
-
-                    <Route path="/manage-events/:matchId" element={<EventManagement />} />
-
-                </Routes>
+            {/* Modale */}
+            <RegistrationModal
+                isOpen={modals.isRegistrationOpen}
+                onClose={() => setModals((prev) => ({ ...prev, isRegistrationOpen: false }))}
+            />
+            <LoginModal
+                isOpen={modals.isLoginOpen}
+                onClose={() => setModals((prev) => ({ ...prev, isLoginOpen: false }))}
+                setIsLoggedIn={setIsLoggedIn}
+                setLoginData={setLoginData}
+            />
         </div>
     );
 }
 
 export default App;
+
