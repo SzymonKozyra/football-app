@@ -38,9 +38,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
 
-
-
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {

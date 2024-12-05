@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import pl.pollub.footballapp.model.PasswordResetToken;
@@ -99,7 +100,11 @@ public class PasswordResetTokenService {
         }
 
         User user = resetToken.getUser();
-        user.setPassword(newPassword);
+
+        // Hashowanie hasła przed zapisaniem
+        String hashedPassword = new BCryptPasswordEncoder().encode(newPassword);
+        user.setPassword(hashedPassword);
+
         user.setResettingPassword(false);
         userRepository.save(user);
 

@@ -5,6 +5,13 @@ public class CityRequest {
     private String countryName;
 
     // Getters and setters
+    public CityRequest(String name, String countryName) {
+        this.name = name;
+        this.countryName = countryName;
+    }
+
+    public CityRequest() {
+    }
 
     public String getName() {
         return name;
