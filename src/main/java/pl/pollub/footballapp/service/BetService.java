@@ -1,12 +1,9 @@
 package pl.pollub.footballapp.service;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import pl.pollub.footballapp.MatchStatus;
 import pl.pollub.footballapp.model.*;
 import pl.pollub.footballapp.repository.*;
@@ -23,14 +20,16 @@ public class BetService {
     private MatchRepository matchRepository;
     private RankingRepository rankingRepository;
     private RankingPointsService rankingPointsService;
+    private NotificationService notificationService;
     @Autowired
-    public BetService(BetRepository betRepository, UserRepository userRepository, MatchRepository matchRepository, RankingRepository rankingRepository, RankingPointsService rankingPointsService, RankingPointsRepository rankingPointsRepository) {
+    public BetService(BetRepository betRepository, UserRepository userRepository, MatchRepository matchRepository, RankingRepository rankingRepository, RankingPointsService rankingPointsService, RankingPointsRepository rankingPointsRepository, NotificationService notificationService) {
         this.betRepository = betRepository;
         this.userRepository = userRepository;
         this.matchRepository = matchRepository;
         this.rankingRepository = rankingRepository;
         this.rankingPointsService = rankingPointsService;
         this.rankingPointsRepository = rankingPointsRepository;
+        this.notificationService = notificationService;
     }
 
 
@@ -187,6 +186,9 @@ public class BetService {
         bet.setAwayScore(request.getAwayScore());
 
         betRepository.save(bet);
+
+        notificationService.createBetNotification(user, match);
+
         return ResponseEntity.ok("Bet added successfully");
     }
 
