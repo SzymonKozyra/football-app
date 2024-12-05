@@ -25,6 +25,7 @@ import AddBetForm from '../components/AddBetForm';
 import EditBetForm from '../components/EditBetForm';
 import AddRankingForm from '../components/AddRankingForm';
 import RankingView from '../components/RankingView';
+import NotificationsView from '../components/NotificationsView';
 import EditRankingForm from '../components/EditRankingForm';
 
 
@@ -67,6 +68,7 @@ const ModeratorView = () => {
             case 'EditRankings': return <EditRankingForm/>;
 
             case 'RankingView': return <RankingView/>;
+            case 'NotificationsView': return <NotificationsView/>;
 
             default: return <p>Please select an option from the sidebar.</p>;
         }
@@ -118,6 +120,7 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditBets')}>Edit Bets</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditRankings')}>Edit Rankings</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('RankingView')}>RankingView</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('NotificationsView')}>NotificationsView</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>

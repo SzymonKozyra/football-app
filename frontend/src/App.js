@@ -37,6 +37,7 @@ import EditInjuryForm from "./components/EditInjuryForm";
 import AddBetForm from "./components/AddBetForm";
 import EditBetForm from "./components/EditBetForm";
 import RankingView from "./components/RankingView";
+import NotificationsView from "./components/NotificationsView";
 import EditRankingForm from "./components/EditRankingForm";
 
 //import AddTournamentForm from "./components/AddTournamentForm";
