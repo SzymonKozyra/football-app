@@ -2,6 +2,10 @@
 .custom-modal .modal-dialog .custom-modal-content {
     /*max-width: 900px !important;*/
     /*width: 100% !important;*/
+
+    max-width: 80%; /* Maksymalna szerokość dopasowana do ekranu */
+    margin: 0 auto; /* Wycentrowanie modalu */
+    padding: 10px;
 }
 
 .modal-content{
@@ -20,6 +24,9 @@
 .custom-modal .modal-content {
     padding: 20px !important;
     /*max-width: 900px !important;*/
+
+    width: 100%;
+    box-sizing: border-box;
 }
 .match-detail-header {
     display: flex;
@@ -59,6 +66,12 @@
     align-items: center;
 }
 
+.team-info img {
+    max-width: 100px; /* Domyślny rozmiar obrazków */
+    height: auto;
+    object-fit: contain;
+}
+
 .team-name {
     font-size: 24px;
     font-weight: bold;
@@ -96,7 +109,7 @@
 .match-detail-body .bi {
     font-size: 24px; /* Zwiększa rozmiar gwiazdek */
     cursor: pointer;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .match-events {
@@ -177,3 +190,43 @@ hr {
     background-color: #007bff; /* Kolor aktywnego przycisku */
     color: #fff; /* Kolor tekstu aktywnego przycisku */
 }
+
+@media (max-width: 768px) {
+    .team-info img {
+        max-width: 70px; /* Zmniejszenie obrazków na wąskich ekranach */
+    }
+
+    .team-name {
+        font-size: 18px; /* Zmniejszenie czcionki */
+    }
+
+    .match-score {
+        font-size: 28px; /* Zmniejszenie wyniku meczu */
+    }
+
+    .match-detail-body .bi {
+        font-size: 18px; /* Zmniejszony rozmiar gwiazdek na małych ekranach */
+    }
+
+    .custom-modal .modal-dialog {
+        padding: 5px; /* Zmniejszenie paddingu */
+    }
+
+    .match-date{
+        font-size: 14px;
+    }
+
+    .tab-buttons button{
+        font-size: 12px;
+    }
+
+    .tab-content{
+        font-size: 13px;
+    }
+
+    .match-detail-body{
+        gap:5px;
+    }
+}
+
+

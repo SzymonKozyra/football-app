@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, Row, Col, ListGroup, Modal, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, ListGroup, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -159,26 +159,6 @@ const AddMatchForm = () => {
     };
 
     const resetForm = () => {
-        if(matchStatus !== 'UPCOMING') {
-            setHomeGoals(0);
-            setAwayGoals(0);
-            setHomePossession(0);
-            setAwayPossession(0);
-            setHomePasses(0);
-            setAwayPasses(0);
-            setHomeAccuratePasses(0);
-            setAwayAccuratePasses(0);
-            setHomeShots(0);
-            setAwayShots(0);
-            setHomeShotsOnGoal(0);
-            setAwayShotsOnGoal(0);
-            setHomeCorners(0);
-            setAwayCorners(0);
-            setHomeOffside(0);
-            setAwayOffside(0);
-            setHomeFouls(0);
-            setAwayFouls(0);
-        }
         setMatchStatus('UPCOMING');
         setDateTime('');
         setRound('');
@@ -187,6 +167,25 @@ const AddMatchForm = () => {
         setRefereeSearchQuery('');
         setStadiumSearchQuery('');
         setLeagueSearchQuery('');
+
+        setHomeGoals(0);
+        setAwayGoals(0);
+        setHomePossession(0);
+        setAwayPossession(0);
+        setHomePasses(0);
+        setAwayPasses(0);
+        setHomeAccuratePasses(0);
+        setAwayAccuratePasses(0);
+        setHomeShots(0);
+        setAwayShots(0);
+        setHomeShotsOnGoal(0);
+        setAwayShotsOnGoal(0);
+        setHomeCorners(0);
+        setAwayCorners(0);
+        setHomeOffside(0);
+        setAwayOffside(0);
+        setHomeFouls(0);
+        setAwayFouls(0);
     };
 
     useEffect(() => {

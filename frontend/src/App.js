@@ -64,8 +64,6 @@ function App() {
         isLoginOpen: false,
         isPasswordResetOpen: false,
         isNewPasswordOpen: false,
-        isAddModeratorOpen: false,
-        isAddAdminOpen: false,
     });
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -207,6 +205,11 @@ function App() {
 
             {message && (<Alert variant={messageType} className="mb-3">{message}</Alert>)}
 
+            <div className="main-content">
+                {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
+                {currentMode === 'moderator' && <ModeratorView />}
+                {currentMode === 'user' && <MainView />}
+            </div>
 
             {/* Modale */}
             <RegistrationModal
@@ -235,12 +238,10 @@ function App() {
 
 
 
-
             <Routes>
                 <Route path="/add-match" element={<AddMatchForm />} />
                 <Route path="/add-match-squad/:matchId" element={<AddMatchSquadForm />} />
                 <Route path="/add-players-match-squad/:matchSquadId" element={<AddPlayersMatchSquadForm />} />
-
                 <Route
                     path="/admin-panel"
                     element={
@@ -251,7 +252,6 @@ function App() {
                         )
                     }
                 />
-
                 <Route path="/manage-events/:matchId" element={<EventManagement />} />
                 <Route path="/" element={<MainView />} />
                 <Route path="/league/:id" element={<LeaguePage />} />
@@ -262,4 +262,3 @@ function App() {
 }
 
 export default App;
-
