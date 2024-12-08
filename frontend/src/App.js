@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Alert } from 'react-bootstrap';
+import {Alert} from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
@@ -36,6 +36,8 @@ function App() {
     const [currentMode, setCurrentMode] = useState('user'); // Track user mode
 
     const navigate = useNavigate();
+    const [token, setToken] = useState('');
+
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -56,6 +58,24 @@ function App() {
             setLoginData({ email: '', role: '' });
         }
     }, []);
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const resetToken = searchParams.get('token');
+        if (resetToken) {
+            setToken(resetToken);
+            setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
+        }
+    }, [location.search]);
+
+    useEffect(() => {
+        // Initialize mode based on role
+        if (loginData.role === 'ROLE_ADMIN') {
+            setCurrentMode('admin');
+        } else if (loginData.role === 'ROLE_MODERATOR') {
+            setCurrentMode('moderator');
+        }
+    }, [loginData]);
 
     useEffect(() => {
         const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
@@ -80,9 +100,15 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-        setCurrentMode('user'); // Zresetuj widok na użytkownika
+
         localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out');
-        navigate('/'); // Przejdź na stronę główną
+        setTimeout(() => {
+            setMessage('');
+        }, 2000);
+        setCurrentMode('user'); // Zresetuj widok na użytkownika
+        navigate('/');
+        window.scrollTo(0, 0);
+        window.location.reload();
     };
 
     const handleModeSwitch = () => {
@@ -101,10 +127,11 @@ function App() {
 
     const handleNewPasswordSubmit = async (newPassword) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
-                token: new URLSearchParams(window.location.search).get('token'),
-                password: newPassword,
-            });
+            const response = await
+                axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
+                    token,
+                    password: newPassword,
+                });
             if (response.status === 200) {
                 console.log("Password reset successfully!");
             }
@@ -134,18 +161,21 @@ function App() {
 
     return (
         <div className="App">
-            <Navbar
-                isLoggedIn={isLoggedIn}
-                loginData={loginData}
-                onLogout={handleLogout}
-                onModeSwitch={handleModeSwitch}
-                currentMode={currentMode}
-                onOpenLogin={() => toggleModal('isLoginOpen')}
-                onOpenRegistration={() => toggleModal('isRegistrationOpen')}
-                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-            />
+            <div className="navbar">
+                <Navbar
+                    isLoggedIn={isLoggedIn}
+                    loginData={loginData}
+                    onLogout={handleLogout}
+                    setIsLoggedIn={setIsLoggedIn}
+                    onOpenLogin={() => toggleModal('isLoginOpen')}
+                    onOpenRegistration={() => toggleModal('isRegistrationOpen')}
+                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
+                    onModeSwitch={handleModeSwitch}
+                    currentMode={currentMode}
+                />
+            </div>
 
-            {message && <Alert variant={messageType} className="mb-3">{message}</Alert>}
+            {message && (<Alert variant={messageType} className="logoutOrDeleteAccMessage mb-3">{message}</Alert>)}
 
             <Routes>
                 <Route
@@ -179,16 +209,40 @@ function App() {
                 onClose={() => toggleModal('isLoginOpen')}
                 setIsLoggedIn={setIsLoggedIn}
                 setLoginData={setLoginData}
+                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
             />
             <PasswordResetModal
                 isOpen={modals.isPasswordResetOpen}
                 onClose={() => toggleModal('isPasswordResetOpen')}
             />
+
             <NewPasswordModal
                 isOpen={modals.isNewPasswordOpen}
                 onClose={() => toggleModal('isNewPasswordOpen')}
                 onSubmit={handleNewPasswordSubmit}
+                token={token}
             />
+
+
+
+            <Routes>
+                <Route path="/add-match" element={<AddMatchForm />} />
+                <Route path="/add-match-squad/:matchId" element={<AddMatchSquadForm />} />
+                <Route path="/add-players-match-squad/:matchSquadId" element={<AddPlayersMatchSquadForm />} />
+                <Route
+                    path="/admin-panel"
+                    element={
+                        isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
+                            <AdminPanel/>
+                        ) : (
+                            <Navigate to="/" replace />
+                        )
+                    }
+                />
+                <Route path="/manage-events/:matchId" element={<EventManagement />} />
+                <Route path="/league/:id" element={<LeaguePage />} />
+                {/*<Route path="/" element={<MainView />} />*/}
+            </Routes>
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, ListGroup, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Card, Button, Accordion } from 'react-bootstrap';
 import { BiLeftArrow, BiRightArrow } from 'react-icons/bi';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -379,7 +379,7 @@ const MainView = () => {
         const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
 
         return sortedLeagues.map((leagueName) => (
-            <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
+            <Card className="mb-4" key={leagueName} style={{ width: '100%', margin: '0 auto' }}>
                 <Card.Header className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
                         <i
@@ -430,12 +430,12 @@ const MainView = () => {
                                     padding: '5px',
                                 }}
                             >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
+                                {match.status === 'IN_PLAY'
+                                    ? calculateMatchMinute(match)
+                                    : match.status === 'FINISHED'
+                                        ? 'Finished'
+                                        : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -448,11 +448,11 @@ const MainView = () => {
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
                                 <span style={{ marginRight: '40px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div>{match.homeGoals}</div>
-                <div>{match.awayGoals}</div>
-            </div>
-        </span>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div>{match.homeGoals}</div>
+                                        <div>{match.awayGoals}</div>
+                                    </div>
+                                </span>
                             ) : null}
                         </ListGroup.Item>
                     ))}
@@ -504,12 +504,12 @@ const MainView = () => {
                                     padding: '5px',
                                 }}
                             >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
+                                {match.status === 'IN_PLAY'
+                                    ? calculateMatchMinute(match)
+                                    : match.status === 'FINISHED'
+                                        ? 'Finished'
+                                        : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -551,9 +551,19 @@ const MainView = () => {
 
     return (
         <Container fluid>
-            <Row>
-                <Col xs={3} className="bg-light border-right">
-                    <Sidebar />
+            {/* Menu rozwijane na małych ekranach */}
+            <Accordion className="d-md-none mb-3">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>Menu</Accordion.Header>
+                    <Accordion.Body><Sidebar /></Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+
+
+            <Row className="flex-column flex-md-row">
+                <Col md={3} className="bg-light border-right order-2 order-md-1">
+                    {/* Menu boczne na dużych ekranach */}
+                    <div className="d-none d-md-block"><Sidebar /></div>
                 </Col>
 
                 <Col xs={9}>
@@ -582,7 +592,6 @@ const MainView = () => {
                     </>
 
                 </Col>
-
             </Row>
 
             {/* Modal Section */}

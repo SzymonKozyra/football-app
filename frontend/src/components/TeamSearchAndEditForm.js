@@ -24,7 +24,7 @@ const TeamSearchAndEditForm = () => {
     const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
     const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(teams, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(teams, 10);
 
 
     useEffect(() => {
