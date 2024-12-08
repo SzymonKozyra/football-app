@@ -298,7 +298,7 @@ public class EventService {
 
 
     // Metoda obliczająca całkowity czas meczu
-    private int calculateMatchDurationFromEvents(List<Event> events) {
+    public int calculateMatchDurationFromEvents(List<Event> events) {
         int firstHalfEnd = events.stream()
                 .filter(event -> event.getType() == EventType.FIRST_HALF_END)
                 .map(Event::getMinute)

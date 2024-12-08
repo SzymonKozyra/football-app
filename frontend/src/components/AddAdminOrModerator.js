@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Form, Container, Row, Col, ToggleButtonGroup, ToggleButton, Alert } from 'react-bootstrap';
 
+
 const AddAdminOrModerator = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -115,7 +116,7 @@ const AddAdminOrModerator = () => {
                             />
                         </Form.Group>
 
-                        <Button variant="primary" type="submit" className="w-50 mt-3">
+                        <Button variant="primary" type="submit" className="w-60 mt-3">
                             Add {role === 'ADMIN' ? 'Admin' : 'Moderator'}
                         </Button>
                     </Col>

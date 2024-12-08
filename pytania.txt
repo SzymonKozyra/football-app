@@ -1,19 +1,12 @@
-czy podrozdzial 3.1.1 zostawic
-jako 3.2
+czy dzial 4 widoki musi byc podzielony na podrozdzialy
 
-czy wylogowanie zrobic jako oddzielny podrozdzial 3.3.3
-nie
+czy opisywac responsywnosc
 
+
+//
 czy robic rozdzial kontrola poprawności danych i czy wrzucic to w podrozdzial bezpieczenstwo
-tak
+- tak
 
 Czy opisywac wyszukiwanie trenera i pokazanie jego kontraktow
 (relacja jeden do wielu, team moze miec wiele kontraktow a trener jeden)
-nie ewentualnie w tekscie wspomniec nie jako rozdzial
-
-czy rysunki, listingi, i podpisy maja byc wysrodkowane
-tak
-
-czy ma znaczenie czy podpisujemy listingi jako funkcja czy metoda
-i czy podpisy pogrubione i z kropką na końcu
-nie pogrubione, bez kropki, jako metody
+- nie ewentualnie w tekscie wspomniec nie jako rozdzial

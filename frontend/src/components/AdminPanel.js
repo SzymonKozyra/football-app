@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NewPasswordModal from './NewPasswordModal';
-import { Table, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Table, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './AdminPanel.css';
 
 const AdminPanel = ({ handleLogout }) => {
     const [users, setUsers] = useState([]);
@@ -77,46 +78,51 @@ const AdminPanel = ({ handleLogout }) => {
     };
 
     return (
-        <div className="container my-2">
-            <h2 className="text-center mb-4">Admin Panel - User Management</h2>
-
-            <Table striped bordered hover responsive className="text-center mb-2">
-                <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {users.map((user) => (
-                    <tr key={user.email}>
-                        <td className="align-middle">{user.email}</td>
-                        <td className="align-middle">
-                            <Button
-                                variant="outline-primary"
-                                className="me-2"
-                                onClick={() => openPasswordModal(user)}
-                            >
-                                Change Password
-                            </Button>
-                            <Button
-                                variant="outline-danger"
-                                onClick={() => handleDelete(user.email)}
-                            >
-                                Delete User
-                            </Button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </Table>
-
-            <NewPasswordModal
-                isOpen={isPasswordModalOpen}
-                onClose={() => setIsPasswordModalOpen(false)}
-                onSubmit={(newPassword) => handlePasswordChange(newPassword)}
-            />
-        </div>
+        <Container fluid className="my-4">
+            <Row className="justify-content-center">
+                <Col lg={10}>
+                    <h2 className="text-center mb-4">Admin Panel - User Management</h2>
+                    <div className="p-4 border rounded shadow-sm bg-light">
+                        <Table striped bordered hover responsive className="text-center mb-3">
+                            <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {users.map((user) => (
+                                <tr key={user.email}>
+                                    <td className="align-middle">{user.email}</td>
+                                    <td className="align-middle">
+                                        <Button
+                                            variant="outline-primary"
+                                            className="me-2 mt-1 mb-1"
+                                            onClick={() => openPasswordModal(user)}
+                                        >
+                                            Change Password
+                                        </Button>
+                                        <Button
+                                            variant="outline-danger"
+                                            className="mt-1 mb-1"
+                                            onClick={() => handleDelete(user.email)}
+                                        >
+                                            Delete User
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                        <NewPasswordModal
+                            isOpen={isPasswordModalOpen}
+                            onClose={() => setIsPasswordModalOpen(false)}
+                            onSubmit={(newPassword) => handlePasswordChange(newPassword)}
+                        />
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 

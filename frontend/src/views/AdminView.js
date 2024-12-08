@@ -17,7 +17,7 @@ const AdminView = ({ setIsLoggedIn, handleLogout }) => {
     return (
         <Container fluid className="my-5">
             <Row>
-                <Col md={3}>
+                <Col md={4} className="mb-4">
                     <Accordion>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Admin Functions</Accordion.Header>
@@ -34,7 +34,7 @@ const AdminView = ({ setIsLoggedIn, handleLogout }) => {
                         </Accordion.Item>
                     </Accordion>
                 </Col>
-                <Col md={9}>
+                <Col md={8}>
                     <div className="p-4 border rounded shadow-sm bg-light">
                         {renderSelectedComponent()}
                     </div>

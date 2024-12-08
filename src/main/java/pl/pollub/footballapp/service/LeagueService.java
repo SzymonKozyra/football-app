@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.service;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -153,4 +154,7 @@ public class LeagueService {
                 .orElseThrow(() -> new RuntimeException("League with ID " + leagueId + " not found"));
     }
 
+    public Optional<League> findById(Long id) {
+        return leagueRepository.findById(id);
+    }
 }

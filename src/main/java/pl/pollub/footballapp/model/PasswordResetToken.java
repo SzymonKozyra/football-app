@@ -13,7 +13,7 @@ public class PasswordResetToken {
 
     private String token;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

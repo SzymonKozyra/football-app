@@ -24,6 +24,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public User() {
+
+    }
+
     public enum Role {
         ROLE_USER, ROLE_MODERATOR, ROLE_ADMIN
     }
