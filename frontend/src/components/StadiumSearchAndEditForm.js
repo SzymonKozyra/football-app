@@ -18,7 +18,7 @@ const StadiumSearchAndEditForm = () => {
         cityName: '',
         countryName: ''
     });
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(stadiums, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(stadiums, 10);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');

@@ -18,7 +18,7 @@ const RefereeSearchAndEditForm = () => {
         dateOfBirth: '',
         countryName: ''
     });
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(referees, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(referees, 10);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');

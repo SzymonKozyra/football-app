@@ -24,7 +24,7 @@ const PlayerSearchAndEditForm = () => {
         value: ''
     });
     const [pictureFile, setPictureFile] = useState(null);
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(players, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(players, 10);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');

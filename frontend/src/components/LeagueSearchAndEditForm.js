@@ -19,7 +19,7 @@ const LeagueSearchAndEditForm = () => {
         edition: ''
     });
     const [isEditionValid, setIsEditionValid] = useState(true);
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(leagues, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(leagues, 10);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');

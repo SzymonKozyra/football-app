@@ -20,7 +20,7 @@ const CoachSearchAndEditForm = () => {
         nickname: '',
         countryName: ''
     });
-    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(coaches, 20);
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(coaches, 10);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');

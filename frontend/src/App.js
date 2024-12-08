@@ -203,7 +203,7 @@ function App() {
                 />
             </div>
 
-            {message && (<Alert variant={messageType} className="mb-3">{message}</Alert>)}
+            {message && (<Alert variant={messageType} className="logoutOrDeleteAccMessage mb-3">{message}</Alert>)}
 
             <div className="main-content">
                 {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
@@ -253,9 +253,8 @@ function App() {
                     }
                 />
                 <Route path="/manage-events/:matchId" element={<EventManagement />} />
-                <Route path="/" element={<MainView />} />
                 <Route path="/league/:id" element={<LeaguePage />} />
-                {/* Inne trasy */}
+                {/*<Route path="/" element={<MainView />} />*/}
             </Routes>
         </div>
     );

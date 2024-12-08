@@ -97,6 +97,7 @@ const AddGroupForm = () => {
 
             alert('Group and teams added successfully');
             setGroupName('');
+            setLeagueSearchQuery('');
             setSelectedLeague(null);
             setSelectedTeams([]);
         } catch (error) {

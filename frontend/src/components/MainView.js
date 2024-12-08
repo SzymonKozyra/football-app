@@ -434,12 +434,12 @@ const MainView = () => {
                                     padding: '5px',
                                 }}
                             >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
+                                {match.status === 'IN_PLAY'
+                                    ? calculateMatchMinute(match)
+                                    : match.status === 'FINISHED'
+                                        ? 'Finished'
+                                        : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -452,11 +452,11 @@ const MainView = () => {
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
                                 <span style={{ marginRight: '40px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div>{match.homeGoals}</div>
-                <div>{match.awayGoals}</div>
-            </div>
-        </span>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div>{match.homeGoals}</div>
+                                        <div>{match.awayGoals}</div>
+                                    </div>
+                                </span>
                             ) : null}
                         </ListGroup.Item>
                     ))}
@@ -508,12 +508,12 @@ const MainView = () => {
                                     padding: '5px',
                                 }}
                             >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
+                                {match.status === 'IN_PLAY'
+                                    ? calculateMatchMinute(match)
+                                    : match.status === 'FINISHED'
+                                        ? 'Finished'
+                                        : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -620,18 +620,18 @@ const MainView = () => {
 
     return (
         <Container fluid>
-            {/* Menu jako Accordion na małych ekranach */}
+            {/* Menu rozwijane na małych ekranach */}
             <Accordion className="d-md-none mb-3">
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Menu</Accordion.Header>
-                    <Accordion.Body>{renderSidebarContent()}</Accordion.Body>
+                    <Accordion.Body><Sidebar /></Accordion.Body>
                 </Accordion.Item>
             </Accordion>
 
             <Row className="flex-column flex-md-row">
                 <Col md={3} className="bg-light border-right order-2 order-md-1">
-                    {/* Menu statyczne na dużych ekranach */}
-                    <div className="d-none d-md-block">{renderSidebarContent()}</div>
+                    {/* Menu boczne na dużych ekranach */}
+                    <div className="d-none d-md-block"><Sidebar /></div>
                 </Col>
 
                 {/* Główna zawartość */}

@@ -1,13 +1,9 @@
 Najważniejsze
-- responsywność
 - upload zdjec gdzies indziej niz w pliakch projektowych, czyli gdzies na dysku, bo jak ktos bedzie testowal strone to zobaczy ze nie dziala i lipa
-- ikonki dla UK wszystkie kraje, i dla kontynentów
 
 
 Ważne
-- playercontract: salary powinno byc optional
 - importy do wszystkiego
-- zeby sie registerAdmin nie pokazywalo
 - zrobienie przechodzenia miedzy stronami w sposob asynchroniczny na akzdej stronie rpzynajmnije u moderatora, bo kwasy wychodza
 - zmienic ograniczenie zeby zawodnik co zaczyna mecz na lawce mogl zejsc z boiska
 
