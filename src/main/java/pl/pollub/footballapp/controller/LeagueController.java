@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,6 @@ public class LeagueController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<League>> searchLeagues(@RequestParam("query") String query) {
         return leagueService.searchLeagues(query);
     }
@@ -80,13 +80,14 @@ public class LeagueController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
+    @PermitAll
     public ResponseEntity<List<League>> getAllLeagues() {
         return ResponseEntity.ok(leagueService.getAllLeagues());
     }
 
 
     @GetMapping("/countries")
+    @PermitAll
     public ResponseEntity<List<String>> getDistinctCountries() {
         logger.info("Received request to get distinct countries");
         List<Country> distinctCountries = leagueRepository.findDistinctCountries();
@@ -99,6 +100,7 @@ public class LeagueController {
     }
 
     @GetMapping("/byCountry")
+    @PermitAll
     public ResponseEntity<List<League>> getLeaguesByCountry(@RequestParam String country) {
         logger.info("Received request to get leagues for country: {}", country);
         List<League> leagues = leagueRepository.findByCountryName(country);
@@ -107,6 +109,7 @@ public class LeagueController {
     }
 
     @GetMapping("/editions")
+    @PermitAll
     public ResponseEntity<List<String>> getEditions(
             @RequestParam String leagueName,
             @RequestParam String country) {
@@ -118,6 +121,7 @@ public class LeagueController {
 
 
     @GetMapping("/getByDetails")
+    @PermitAll
     public ResponseEntity<League> getLeagueByDetails(
             @RequestParam String country,
             @RequestParam String name,
@@ -128,7 +132,7 @@ public class LeagueController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PermitAll
     public ResponseEntity<League> getLeagueById(@PathVariable Long id) {
         return leagueService.findById(id)
                 .map(ResponseEntity::ok)

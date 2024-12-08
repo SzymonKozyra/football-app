@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -94,12 +95,13 @@ public class MatchController {
 
 
     @GetMapping
-            @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public ResponseEntity<List<Match>> getAllMatches() {
         return ResponseEntity.ok(matchService.getAllMatches());
     }
 
     @GetMapping("/{id}")
+    @PermitAll
     public ResponseEntity<Match> getMatchById(@PathVariable Long id) {
         return matchService.getMatchById(id)
                 .map(ResponseEntity::ok)
@@ -146,6 +148,7 @@ public class MatchController {
 //    }
 
     @GetMapping("/search")
+    @PermitAll
     public ResponseEntity<List<Match>> searchMatches(@RequestParam String query) {
         List<Match> matches = matchService.searchMatchesByTeamName(query);
         return ResponseEntity.ok(matches);
@@ -158,6 +161,7 @@ public class MatchController {
 //    }
 
     @GetMapping("/date/{date}")
+    @PermitAll
     public ResponseEntity<List<Match>> getMatchesByDate(
             @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<Match> matches = matchService.getMatchesByDate(date);
@@ -165,7 +169,7 @@ public class MatchController {
     }
 
     @GetMapping("/league/{leagueId}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PermitAll
     public ResponseEntity<List<Match>> getMatchesByLeague(@PathVariable Long leagueId) {
         List<Match> matches = matchService.getMatchesByLeague(leagueId);
         return ResponseEntity.ok(matches);

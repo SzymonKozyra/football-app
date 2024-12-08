@@ -17,19 +17,13 @@ import {useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";
 const BASE_URL = 'http://localhost:8080';
 
-const MainView = () => {
+const MainViewGuest = () => {
     const navigate = useNavigate(); // Call useNavigate at the top level
 
-    const [favorites, setFavorites] = useState({
-        matches: [],
-        leagues: [],
-        teams: [],
-    });
+
     const [matches, setMatches] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [userId, setUserId] = useState(null);
-    const [isFavoritesReady, setIsFavoritesReady] = useState(false); // Flaga określająca gotowość
-
     const [allLeagues, setAllLeagues] = useState([]);
     const [allTeams, setAllTeams] = useState([]);
 
@@ -47,18 +41,13 @@ const MainView = () => {
 
         return () => clearInterval(interval); // Wyczyść interwał po unmount
     }, []);
-    useEffect(() => {
-        console.log("Favorites state updated:", favorites);
-    }, [favorites]);
 
     useEffect(() => {
         if (selectedLeagueId === null) {
             const fetchMatches = async () => {
                 try {
                     const formattedDate = selectedDate.toISOString().split('T')[0];
-                    const matchesResponse = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
+                    const matchesResponse = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`);
                     setMatches(matchesResponse.data);
                 } catch (error) {
                     console.error("Error fetching matches:", error);
@@ -73,9 +62,7 @@ const MainView = () => {
         return Promise.all(
             matches.map(async (match) => {
                 try {
-                    const response = await axios.get(`${BASE_URL}/api/events/match/${match.id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
+                    const response = await axios.get(`${BASE_URL}/api/events/match/${match.id}`);
                     return { ...match, events: response.data }; // Add events to match
                 } catch (error) {
                     console.error(`Error fetching events for match ${match.id}:`, error);
@@ -142,61 +129,23 @@ const MainView = () => {
         return null; // For non-IN_PLAY and non-FINISHED statuses
     };
 
-
-    // Pobranie ID użytkownika
-    useEffect(() => {
-        if (token) {
-            axios.get(`${BASE_URL}/api/auth/get-email`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-                .then(response => {
-                    const userEmail = response.data;
-                    return axios.get(`${BASE_URL}/api/auth/users/email/${userEmail}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                })
-                .then(response => setUserId(response.data.id))
-                .catch(error => console.error('Error fetching user ID:', error));
-        }
-    }, [token]);
-
     // Pobranie wszystkich lig i drużyn
     useEffect(() => {
-        axios.get(`${BASE_URL}/api/leagues`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${BASE_URL}/api/leagues`)
             .then(response => setAllLeagues(response.data))
             .catch(error => console.error('Error fetching leagues:', error));
 
-        axios.get(`${BASE_URL}/api/teams`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${BASE_URL}/api/teams`)
             .then(response => setAllTeams(response.data))
             .catch(error => console.error('Error fetching teams:', error));
     }, [token]);
 
 
-    // Pobranie ulubionych lig i drużyn
-    useEffect(() => {
-        if (userId) {
-            axios.get(`${BASE_URL}/api/favorites/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-                .then(response => {
-                    console.log(`Favorites fetched for ${userId}:`, response.data);
-                    setFavorites(response.data); // Ustawienie favorites
-                    setIsFavoritesReady(true); // Oznaczenie, że dane są gotowe
-                })
-                .catch(error => {
-                    console.error('Error fetching favorites:', error);
-                    setIsFavoritesReady(true); // Nawet w przypadku błędu ustaw flagę
-                });
-        }
-    }, [userId, token]);
-
     // Pobranie meczów dla wybranej daty
     const fetchMatchesAndEvents = async () => {
         try {
             const formattedDate = selectedDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
-            const response = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await axios.get(`${BASE_URL}/api/matches/date/${formattedDate}`);
 
             const fetchedMatches = response.data;
 
@@ -206,17 +155,6 @@ const MainView = () => {
             // Update matches
             setMatches(updatedMatches);
 
-            // Sync events with favorites
-            setFavorites((prevFavorites) => ({
-                ...prevFavorites,
-                matches: prevFavorites.matches.map((fav) => {
-                    const updatedMatch = updatedMatches.find((match) => match.id === fav.match.id);
-                    return {
-                        ...fav,
-                        match: updatedMatch ? { ...fav.match, events: updatedMatch.events } : fav.match,
-                    };
-                }),
-            }));
 
             console.log("Updated Matches with Events:", updatedMatches);
         } catch (error) {
@@ -227,7 +165,7 @@ const MainView = () => {
 
 
     useEffect(() => {
-        // Fetch matches and their events whenever selectedDate changes
+        // Fetch matches and their events wahenever selectedDate changes
         fetchMatchesAndEvents();
     }, [selectedDate, token]);
 
@@ -248,10 +186,6 @@ const MainView = () => {
     const handleDateChange = (newDate) => {
         setSelectedDate(newDate);
     };
-    const updateFavorites = (newFavorites) => {
-        setFavorites(newFavorites);
-        console.log("Nowe wartości favorites:", newFavorites);
-    };
     const goToPreviousDay = () => {
         const previousDay = new Date(selectedDate);
         previousDay.setDate(previousDay.getDate() - 1);
@@ -263,111 +197,6 @@ const MainView = () => {
         nextDay.setDate(nextDay.getDate() + 1);
         setSelectedDate(nextDay);
     };
-
-    const toggleFavorite = async (type, item) => {
-        console.log("Toggling favorite:", type, item);
-
-        if (!userId || !item || !item.id) {
-            console.error("Invalid userId or item.");
-            return;
-        }
-
-        // Mapa typów dla liczby pojedynczej
-        const typeMap = {
-            teams: 'team',
-            leagues: 'league',
-            matches: 'match'
-        };
-
-        const singularType = typeMap[type]; // Pobranie liczby pojedynczej z mapy
-
-        if (!singularType) {
-            console.error("Invalid type provided:", type);
-            return;
-        }
-
-        // Sprawdzenie, czy element jest ulubiony, za pomocą uniwersalnego isFavorite
-        const isFavoriteItem = isFavorite(type, item.id);
-
-        const endpointMap = {
-            team: isFavoriteItem ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
-            league: isFavoriteItem ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
-            match: isFavoriteItem ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
-        };
-
-        const dataMap = {
-            team: { teamId: item.id, userId },
-            league: { leagueId: item.id, userId },
-            match: { matchId: item.id, userId }
-        };
-
-        const endpoint = endpointMap[singularType];
-        const data = dataMap[singularType];
-
-        if (!endpoint || !data) {
-            console.error("Invalid endpoint or data for type:", singularType);
-            return;
-        }
-
-        console.log("Endpoint:", endpoint);
-        console.log("Data:", data);
-
-        try {
-            if (isFavoriteItem) {
-                // Usunięcie z ulubionych
-                await axios({
-                    method: 'delete',
-                    url: endpoint,
-                    headers: { Authorization: `Bearer ${token}` },
-                    data: data // Przekazanie danych dla DELETE
-                });
-            } else {
-                // Dodanie do ulubionych
-                await axios.post(endpoint, data, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            }
-
-            // Odświeżanie ulubionych po każdej operacji
-            await refetchFavorites();
-        } catch (error) {
-            console.error(`Error toggling favorite ${type}:`, error);
-        }
-    };
-
-
-    const refetchFavorites = async () => {
-        try {
-            const response = await axios.get(`${BASE_URL}/api/favorites/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setFavorites(response.data); // Zaktualizowanie ulubionych
-            console.log("Favorites refreshed:", response.data);
-        } catch (error) {
-            console.error("Error fetching updated favorites:", error);
-        }
-    };
-    const isFavorite = (type, id) => {
-        const typeMap = {
-            matches: (fav) => fav.match.id === id,
-            leagues: (fav) => fav.league.id === id,
-            teams: (fav) => fav.team.id === id,
-        };
-
-        if (!typeMap[type]) {
-            console.error(`Invalid type provided: ${type}`);
-            return false;
-        }
-
-        return favorites[type]?.some(typeMap[type]) || false;
-    };
-
-
-
-    const handleBackToMainView = () => {
-        setSelectedLeagueId(null); // Resetuje id ligi i wraca do głównego widoku
-    };
-
     const renderMatchesByLeague = () => {
         const groupedMatches = matches.reduce((acc, match) => {
             const leagueName = match.league.name;
@@ -383,13 +212,9 @@ const MainView = () => {
                 <Card.Header className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
                         <i
-                            className={`bi ${
-                                isFavorite('leagues', groupedMatches[leagueName][0].league.id)
-                                    ? 'bi-star-fill text-warning'
-                                    : 'bi-star'
-                            }`}
+                            className="bi bi-star" // Zawsze niewypełniona gwiazdka
                             style={{ cursor: 'pointer' }}
-                            onClick={() => toggleFavorite('leagues', groupedMatches[leagueName][0].league)}
+                            onClick={() => console.log(`League ${groupedMatches[leagueName][0].league.name} clicked`)}
                         ></i>
                         <span style={{ marginRight: '15px' }}></span>
                         <img
@@ -409,13 +234,11 @@ const MainView = () => {
                             className="d-flex align-items-center justify-content-between"
                         >
                             <i
-                                className={`bi ${
-                                    isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'
-                                }`}
+                                className="bi bi-star" // Zawsze niewypełniona gwiazdka
                                 style={{ cursor: 'pointer' }}
                                 onClick={(e) => {
                                     e.stopPropagation(); // Zapobiegaj zamykaniu modala przy kliknięciu w gwiazdkę
-                                    toggleFavorite('matches', match);
+                                    console.log(`Match ${match.id} favorite clicked`);
                                 }}
                             ></i>
                             <span
@@ -430,12 +253,15 @@ const MainView = () => {
                                     padding: '5px',
                                 }}
                             >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
+                            {match.status === 'IN_PLAY'
+                                ? calculateMatchMinute(match)
+                                : match.status === 'FINISHED'
+                                    ? 'Finished'
+                                    : new Date(match.dateTime).toLocaleTimeString('en-GB', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                        </span>
                             <div style={{ flex: 1 }}>
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
@@ -448,11 +274,11 @@ const MainView = () => {
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
                                 <span style={{ marginRight: '40px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div>{match.homeGoals}</div>
-                <div>{match.awayGoals}</div>
-            </div>
-        </span>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div>{match.homeGoals}</div>
+                                    <div>{match.awayGoals}</div>
+                                </div>
+                            </span>
                             ) : null}
                         </ListGroup.Item>
                     ))}
@@ -461,93 +287,8 @@ const MainView = () => {
         ));
     };
 
-    const renderFavorites = () => {
-        const favoriteMatchIds = favorites.matches.map((fav) => fav.match.id);
-        const favoriteMatches = matches.filter((match) => favoriteMatchIds.includes(match.id));
 
-        if (favoriteMatches.length === 0) {
-            return null;
-        }
 
-        return (
-            <Card className="mb-4 mt-4" style={{ width: '700px', margin: '0 auto' }}>
-                <Card.Header className="d-flex align-items-center justify-content-between">
-                    <h5 className="mb-0">Ulubione mecze</h5>
-                </Card.Header>
-                <ListGroup variant="flush">
-                    {favoriteMatches.map((match) => (
-                        <ListGroup.Item
-                            key={match.id}
-                            onClick={() => handleMatchClick(match)}
-                            style={{ cursor: 'pointer' }}
-                            className="d-flex align-items-center justify-content-between"
-                        >
-                            <i
-                                className={`bi ${
-                                    isFavorite('matches', match.id) ? 'bi-star-fill text-warning' : 'bi-star'
-                                }`}
-                                style={{ cursor: 'pointer' }}
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Zapobiegaj zamykaniu modala przy kliknięciu w gwiazdkę
-                                    toggleFavorite('matches', match);
-                                }}
-                            ></i>
-                            <span
-                                style={{
-                                    marginRight: '15px',
-                                    marginLeft: '15px',
-                                    width: '70px',
-                                    textAlign: 'center',
-                                    display: 'inline-block',
-                                    backgroundColor: match.status === 'IN_PLAY' ? 'rgba(255, 0, 0, 0.6)' : 'transparent',
-                                    borderRadius: '5px',
-                                    padding: '5px',
-                                }}
-                            >
-        {match.status === 'IN_PLAY'
-            ? calculateMatchMinute(match)
-            : match.status === 'FINISHED'
-                ? 'Finished'
-                : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-    </span>
-                            <div style={{ flex: 1 }}>
-                                <div className="d-flex align-items-center">
-                                    <TeamImageVerySmall team={match.homeTeam} />
-                                    <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
-                                </div>
-                                <div className="d-flex align-items-center">
-                                    <TeamImageVerySmall team={match.awayTeam} />
-                                    <span style={{ marginLeft: '10px' }}>{match.awayTeam.name}</span>
-                                </div>
-                            </div>
-                            {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
-                                <span style={{ marginRight: '40px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div>{match.homeGoals}</div>
-                <div>{match.awayGoals}</div>
-            </div>
-        </span>
-                            ) : null}
-                        </ListGroup.Item>
-
-                    ))}
-                </ListGroup>
-            </Card>
-        );
-    };
-
-    // Wstrzymaj renderowanie, jeśli ulubione dane nie są gotowe
-    if (!isFavoritesReady) {
-        return (
-            <Container fluid>
-                <Row>
-                    <Col className="text-center mt-5">
-                        <p>Ładowanie danych...</p>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
 
     return (
         <Container fluid>
@@ -574,9 +315,6 @@ const MainView = () => {
                             </Button>
                         </div>
 
-                        {/* Favorites Section */}
-                        {renderFavorites()}
-
                         {/* All Matches by League */}
                         {renderMatchesByLeague()}
                     </>
@@ -591,8 +329,6 @@ const MainView = () => {
                     show={showModal}
                     onHide={handleCloseModal}
                     match={selectedMatch}
-                    toggleFavorite={toggleFavorite} // Przekazanie toggleFavorite
-                    isFavorite={isFavorite} // Przekazanie isFavorite
                 />
             )}
         </Container>
@@ -601,4 +337,4 @@ const MainView = () => {
 
 };
 
-export default MainView;
+export default MainViewGuest;

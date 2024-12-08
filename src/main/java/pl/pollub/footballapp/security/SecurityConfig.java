@@ -33,6 +33,10 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
+
+                        .requestMatchers("/api/**").permitAll() // Pozwól na dostęp bez autoryzacji
+
+
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/countries").permitAll()
@@ -59,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/leagues/countries").permitAll() // Pozwól na dostęp bez autoryzacji
                         .requestMatchers("/api/leagues/**").permitAll() // Pozwól na dostęp bez autoryzacji
                         .requestMatchers("/api/leagues/byCountry").permitAll() // Pozwól na dostęp bez autoryzacji
+//                        .requestMatchers("/api/**").permitAll() // Pozwól na dostęp bez autoryzacji
 
 
                         .anyRequest().authenticated()

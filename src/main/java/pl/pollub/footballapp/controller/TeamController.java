@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,6 @@ public class TeamController {
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
     }
-
-
-
-
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addTeam(
@@ -81,7 +78,7 @@ public class TeamController {
 
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public ResponseEntity<List<Team>> searchTeams(@RequestParam("query") String query) {
         List<Team> teams = teamService.searchTeams(query);
         return ResponseEntity.ok(teams);
@@ -99,7 +96,7 @@ public class TeamController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MODERATOR','ADMIN')")
+    @PermitAll
     public ResponseEntity<List<Team>> getAllTeams() {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
@@ -113,7 +110,7 @@ public class TeamController {
     }
 
     @GetMapping("/group/{groupId}/points")
-    @PreAuthorize("hasRole('USER')")
+    @PermitAll
     public ResponseEntity<Map<String, Integer>> getGroupPoints(@PathVariable Long groupId) {
         Map<Team, Integer> points = teamService.calculateGroupPoints(groupId);
         Map<String, Integer> response = points.entrySet().stream()

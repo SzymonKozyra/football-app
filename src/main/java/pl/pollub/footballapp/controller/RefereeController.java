@@ -41,7 +41,6 @@ public class RefereeController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Referee>> searchReferees(@RequestParam("query") String query) {
         return refereeService.searchReferees(query);
     }

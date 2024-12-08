@@ -38,7 +38,6 @@ public class CoachController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Coach>> searchCoaches(@RequestParam("query") String query) {
         return coachService.searchCoaches(query);
     }

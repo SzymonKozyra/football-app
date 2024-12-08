@@ -2,6 +2,7 @@ package pl.pollub.footballapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.LeagueGroup;
 import pl.pollub.footballapp.service.LeagueGroupService;
@@ -18,6 +19,7 @@ public class LeagueGroupController {
     private LeagueGroupService leagueGroupService;
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<LeagueGroup> addLeagueGroup(@RequestBody Map<String, Object> payload) {
         String name = (String) payload.get("name");
         Long leagueId = ((Number) payload.get("leagueId")).longValue();
@@ -43,6 +45,7 @@ public class LeagueGroupController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
         leagueGroupService.deleteGroup(id);
         return ResponseEntity.ok().build();

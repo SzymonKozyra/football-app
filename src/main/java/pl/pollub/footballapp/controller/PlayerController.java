@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -146,6 +147,7 @@ public class PlayerController {
     }
 
     @GetMapping("/search")
+    @PermitAll
     public ResponseEntity<List<Player>> searchPlayers(@RequestParam("query") String query) {
         List<Player> players = playerService.searchPlayers(query);
         return ResponseEntity.ok(players);
@@ -212,7 +214,7 @@ public class PlayerController {
 //        }
 //    }
     @GetMapping("/by-team/{teamId}")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public ResponseEntity<List<Player>> getPlayersByTeam(@PathVariable Long teamId) {
         return ResponseEntity.ok(playerService.getPlayersByTeam(teamId));
     }

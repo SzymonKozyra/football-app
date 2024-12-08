@@ -42,7 +42,6 @@ public class StadiumController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<Stadium>> searchStadiums(@RequestParam("query") String query) {
         return stadiumService.searchStadiums(query);
     }

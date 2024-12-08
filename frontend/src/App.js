@@ -1,62 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Alert} from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
-import {Navigate, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddLeagueForm from './components/AddLeagueForm';
-
-//import AddCoachesTransferForm from './components/AddCoachesTransferForm';
 import AddCoachForm from './components/AddCoachForm';
 import RegisterAdminForm from './components/RegisterAdminForm';
 import './App.css';
-import CountryList from './components/CountryList';
-import CoachSearchAndEditForm from "./components/CoachSearchAndEditForm";
-import LeagueSearchAndEditForm from "./components/LeagueSearchAndEditForm";
-import StadiumSearchAndEditForm from "./components/StadiumSearchAndEditForm";
-import AddCityForm from "./components/AddCityForm";
-import AddTeamForm from "./components/AddTeamForm";
-import TeamSearchAndEditForm from "./components/TeamSearchAndEditForm";
-import AddStadiumForm from "./components/AddStadiumForm";
-import AddRefereeForm from "./components/AddRefereeForm";
-import RefereeSearchAndEditForm from "./components/RefereeSearchAndEditForm";
-import AddPlayerForm from "./components/AddPlayerForm";
-import PlayerSearchAndEditForm from "./components/PlayerSearchAndEditForm";
-import PlayerImportForm from "./components/PlayerImportForm";
-import AddCoachContractForm from "./components/AddCoachContractForm";
-import EditCoachContractForm from "./components/EditCoachContractForm";
-import AddPlayerContractForm from "./components/AddPlayerContractForm";
-import EditPlayerContractForm from "./components/EditPlayerContractForm";
-import AddInjuryForm from "./components/AddInjuryForm";
-import EditInjuryForm from "./components/EditInjuryForm";
-import AddBetForm from "./components/AddBetForm";
-import EditBetForm from "./components/EditBetForm";
-import RankingView from "./components/RankingView";
-import NotificationsView from "./components/NotificationsView";
-import EditRankingForm from "./components/EditRankingForm";
-
-//import AddTournamentForm from "./components/AddTournamentForm";
-//import TournamentSearchAndEditForm from "./components/TournamentSearchAndEditForm";
-import AddMatchForm from "./components/AddMatchForm";
-import EditMatchForm from "./components/EditMatchForm";
+import MainView from "./components/MainView";
+import LeaguePage from "./components/LeaguePage";
 import AdminView from './views/AdminView';
 import ModeratorView from './views/ModeratorView';
-import UserView from './views/UserView';
-
-
-//import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AddMatchSquadForm from './components/AddMatchSquadForm';
-import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
-import AddRankingForm from './components/AddRankingForm';
-import EventManagement from "./components/EventManagement";
-import MainView from "./components/MainView";
-import LeagueView from "./components/LeagueView";
-import LeaguePage from "./components/LeaguePage";
+import MainViewGuest from "./components/MainViewGuest";
 
 function App() {
     const [modals, setModals] = useState({
@@ -72,11 +33,9 @@ function App() {
     const [messageType, setMessageType] = useState('');
     const [adminExists, setAdminExists] = useState(false);
     const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [token, setToken] = useState('');
+    const [currentMode, setCurrentMode] = useState('user'); // Track user mode
 
-    const [currentMode, setCurrentMode] = useState('user'); // New state for tracking mode
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/auth/check-admin')
@@ -99,24 +58,6 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const resetToken = searchParams.get('token');
-        if (resetToken) {
-            setToken(resetToken);
-            setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
-        }
-    }, [location.search]);
-
-    useEffect(() => {
-        // Initialize mode based on role
-        if (loginData.role === 'ROLE_ADMIN') {
-            setCurrentMode('admin');
-        } else if (loginData.role === 'ROLE_MODERATOR') {
-            setCurrentMode('moderator');
-        }
-    }, [loginData]);
-
-    useEffect(() => {
         const logoutOrDeleteAccMessage = localStorage.getItem('logoutOrDeleteAccMessage');
         if (logoutOrDeleteAccMessage) {
             setMessage(logoutOrDeleteAccMessage);
@@ -129,7 +70,7 @@ function App() {
     }, []);
 
     const toggleModal = (modalName) => {
-        setModals((prevModals) => ({
+        setModals(prevModals => ({
             ...prevModals,
             [modalName]: !prevModals[modalName],
         }));
@@ -139,22 +80,31 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
+        setCurrentMode('user'); // Zresetuj widok na użytkownika
         localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out');
-        setTimeout(() => {
-            setMessage('');
-        }, 2000);
-        navigate('/');
-        window.scrollTo(0, 0);
-        window.location.reload();
+        navigate('/'); // Przejdź na stronę główną
     };
+
+    const handleModeSwitch = () => {
+        let newMode = currentMode;
+
+        if (loginData.role === 'ROLE_ADMIN') {
+            newMode = currentMode === 'admin' ? 'user' : 'admin';
+        } else if (loginData.role === 'ROLE_MODERATOR') {
+            newMode = currentMode === 'moderator' ? 'user' : 'moderator';
+        }
+
+        setCurrentMode(newMode); // Ustawienie nowego widoku
+        navigate('/'); // Przejście na stronę główną
+    };
+
 
     const handleNewPasswordSubmit = async (newPassword) => {
         try {
-            const response = await
-                axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
-                    token,
-                    password: newPassword,
-                });
+            const response = await axios.post('http://localhost:8080/api/auth/reset-password-confirm', {
+                token: new URLSearchParams(window.location.search).get('token'),
+                password: newPassword,
+            });
             if (response.status === 200) {
                 console.log("Password reset successfully!");
             }
@@ -163,17 +113,12 @@ function App() {
         }
     };
 
-    const handleModeSwitch = () => {
-        setCurrentMode((prevMode) => {
-            if (loginData.role === 'ROLE_ADMIN') {
-                return prevMode === 'admin' ? 'user' : 'admin';
-            } else if (loginData.role === 'ROLE_MODERATOR') {
-                return prevMode === 'moderator' ? 'user' : 'moderator';
-            }
-            return 'user';
-        });
+    const handleOpenRegistrationModal = () => {
+        setModals(prevModals => ({
+            ...prevModals,
+            isRegistrationOpen: true, // Otwiera modal rejestracji
+        }));
     };
-
 
     if (isCheckingAdmin) {
         return null;
@@ -189,27 +134,39 @@ function App() {
 
     return (
         <div className="App">
-            <div className="navbar">
-                <Navbar
-                    isLoggedIn={isLoggedIn}
-                    loginData={loginData}
-                    onLogout={handleLogout}
-                    setIsLoggedIn={setIsLoggedIn}
-                    onOpenLogin={() => toggleModal('isLoginOpen')}
-                    onOpenRegistration={() => toggleModal('isRegistrationOpen')}
-                    onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
-                    onModeSwitch={handleModeSwitch}
-                    currentMode={currentMode}
+            <Navbar
+                isLoggedIn={isLoggedIn}
+                loginData={loginData}
+                onLogout={handleLogout}
+                onModeSwitch={handleModeSwitch}
+                currentMode={currentMode}
+                onOpenLogin={() => toggleModal('isLoginOpen')}
+                onOpenRegistration={() => toggleModal('isRegistrationOpen')}
+                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
+            />
+
+            {message && <Alert variant={messageType} className="mb-3">{message}</Alert>}
+
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        isLoggedIn ? (
+                            currentMode === 'admin' ? (
+                                <AdminView />
+                            ) : currentMode === 'moderator' ? (
+                                <ModeratorView />
+                            ) : (
+                                <MainView />
+                            )
+                        ) : (
+                            <MainViewGuest />
+                        )
+                    }
                 />
-            </div>
-
-            {message && (<Alert variant={messageType} className="mb-3">{message}</Alert>)}
-
-            <div className="main-content">
-                {currentMode === 'admin' && <AdminView handleLogout={handleLogout}/>}
-                {currentMode === 'moderator' && <ModeratorView />}
-                {currentMode === 'user' && <MainView />}
-            </div>
+                <Route path="/league/:id" element={<LeaguePage />} />
+                <Route path="/add-league" element={<AddLeagueForm />} />
+            </Routes>
 
             {/* Modale */}
             <RegistrationModal
@@ -222,41 +179,16 @@ function App() {
                 onClose={() => toggleModal('isLoginOpen')}
                 setIsLoggedIn={setIsLoggedIn}
                 setLoginData={setLoginData}
-                onOpenPasswordReset={() => toggleModal('isPasswordResetOpen')}
             />
             <PasswordResetModal
                 isOpen={modals.isPasswordResetOpen}
                 onClose={() => toggleModal('isPasswordResetOpen')}
             />
-
             <NewPasswordModal
                 isOpen={modals.isNewPasswordOpen}
                 onClose={() => toggleModal('isNewPasswordOpen')}
                 onSubmit={handleNewPasswordSubmit}
-                token={token}
             />
-
-
-
-            <Routes>
-                <Route path="/add-match" element={<AddMatchForm />} />
-                <Route path="/add-match-squad/:matchId" element={<AddMatchSquadForm />} />
-                <Route path="/add-players-match-squad/:matchSquadId" element={<AddPlayersMatchSquadForm />} />
-                <Route
-                    path="/admin-panel"
-                    element={
-                        isLoggedIn && loginData.role === 'ROLE_ADMIN' ? (
-                            <AdminPanel/>
-                        ) : (
-                            <Navigate to="/" replace />
-                        )
-                    }
-                />
-                <Route path="/manage-events/:matchId" element={<EventManagement />} />
-                <Route path="/" element={<MainView />} />
-                <Route path="/league/:id" element={<LeaguePage />} />
-                {/* Inne trasy */}
-            </Routes>
         </div>
     );
 }

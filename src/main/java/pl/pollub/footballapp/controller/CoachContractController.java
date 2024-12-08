@@ -26,19 +26,16 @@ public class CoachContractController {
     }
 
     @GetMapping("/coach/{coachId}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public List<CoachContract> getContractsByCoach(@PathVariable Long coachId) {
         return coachContractService.getContractsByCoach(coachId);
     }
 
     @GetMapping("/team/{teamId}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public List<CoachContract> getContractsByTeam(@PathVariable Long teamId) {
         return coachContractService.getContractsByTeam(teamId);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<CoachContract> getCoachContractById(@PathVariable Long id) {
         return coachContractService.getCoachContractById(id);
     }

@@ -1,10 +1,11 @@
 package pl.pollub.footballapp.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import pl.pollub.footballapp.service.MatchSquadService;
 import pl.pollub.footballapp.util.JwtUtil;
 
@@ -30,19 +34,53 @@ import java.util.stream.Collectors;
 public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
     private UserDetailsService userDetailsService;
+    private final ApplicationContext applicationContext; // Dodaj pole ApplicationContext
+
     @Autowired
-    public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService, ApplicationContext applicationContext) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.applicationContext = applicationContext;
     }
 
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
+
+    // Pomocnicza metoda do pobrania metody kontrolera
+    private HandlerMethod getHandlerMethod(HttpServletRequest request) {
+        try {
+            RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
+            HandlerExecutionChain handler = mapping.getHandler(request);
+            if (handler != null && handler.getHandler() instanceof HandlerMethod) {
+                return (HandlerMethod) handler.getHandler();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
+
+        String requestPath = request.getRequestURI();
+        System.out.println("Request URI: " + requestPath);
+
+//        if (requestPath.endsWith("/api/leagues") || requestPath.endsWith("/api/matches") || requestPath.endsWith("/api/teams") ) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+
+        HandlerMethod handlerMethod = getHandlerMethod(request);
+
+
+        // Jeśli metoda ma adnotację @PermitAll, przepuść żądanie bez weryfikacji JWT
+        if (handlerMethod != null && handlerMethod.getMethodAnnotation(PermitAll.class) != null) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         String username = null;
         String jwt = null;

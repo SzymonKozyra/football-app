@@ -28,7 +28,6 @@ public class CityController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<City>> searchCities(@RequestParam("query") String query) {
         return cityService.searchCities(query);
     }

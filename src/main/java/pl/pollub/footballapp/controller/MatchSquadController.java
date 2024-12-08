@@ -41,24 +41,6 @@ public class MatchSquadController {
 
     private static final Logger log = LoggerFactory.getLogger(MatchSquadService.class);
 
-//    @PostMapping("/add")
-//    @PreAuthorize("hasRole('MODERATOR')")
-//    public ResponseEntity<MatchSquad> addMatchSquad(@RequestBody MatchSquadRequest request) {
-//        Match match = matchRepository.findById(request.getMatchId())
-//                .orElseThrow(() -> new IllegalArgumentException("Match not found for ID: " + request.getMatchId()));
-//
-//        Player player = playerRepository.findById(request.getPlayerId())
-//                .orElseThrow(() -> new IllegalArgumentException("Player not found for ID: " + request.getPlayerId()));
-//
-//        MatchSquad matchSquad = new MatchSquad();
-//        matchSquad.setMatch(match); // Ustawienie pełnego obiektu meczu
-//        matchSquad.setPlayer(player); // Ustawienie pełnego obiektu zawodnika
-//        matchSquad.setHomeTeam(request.getHomeTeam());
-//        matchSquad.setFirstSquad(request.getFirstSquad());
-//
-//        MatchSquad savedMatchSquad = matchSquadService.addMatchSquad(matchSquad);
-//        return ResponseEntity.ok(savedMatchSquad);
-//    }
     @PostMapping("/add")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<MatchSquad> addMatchSquad(@RequestBody MatchSquadRequest request) {
@@ -77,7 +59,6 @@ public class MatchSquadController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<MatchSquad> getMatchSquadById(@PathVariable Long id) {
         Optional<MatchSquad> matchSquad = matchSquadService.getMatchSquadById(id);
         return matchSquad.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
