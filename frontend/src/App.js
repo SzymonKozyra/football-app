@@ -18,6 +18,10 @@ import LeaguePage from "./components/LeaguePage";
 import AdminView from './views/AdminView';
 import ModeratorView from './views/ModeratorView';
 import MainViewGuest from "./components/MainViewGuest";
+import AddMatchForm from "./components/AddMatchForm";
+import AddMatchSquadForm from "./components/AddMatchSquadForm";
+import AddPlayersMatchSquadForm from "./components/AddPlayersMatchSquadForm";
+import EventManagement from "./components/EventManagement";
 
 function App() {
     const [modals, setModals] = useState({
@@ -58,15 +62,15 @@ function App() {
             setLoginData({ email: '', role: '' });
         }
     }, []);
-
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const resetToken = searchParams.get('token');
-        if (resetToken) {
-            setToken(resetToken);
-            setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
-        }
-    }, [location.search]);
+    //
+    // useEffect(() => {
+    //     const searchParams = new URLSearchParams(location.search);
+    //     const resetToken = searchParams.get('token');
+    //     if (resetToken) {
+    //         setToken(resetToken);
+    //         setModals((prevModals) => ({ ...prevModals, isNewPasswordOpen: true }));
+    //     }
+    // }, [location.search]);
 
     useEffect(() => {
         // Initialize mode based on role
@@ -240,7 +244,6 @@ function App() {
                     }
                 />
                 <Route path="/manage-events/:matchId" element={<EventManagement />} />
-                <Route path="/league/:id" element={<LeaguePage />} />
                 {/*<Route path="/" element={<MainView />} />*/}
             </Routes>
         </div>

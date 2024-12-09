@@ -288,7 +288,9 @@ const MainViewGuest = () => {
     };
 
 
-
+    const isFavorite = (type, id) => {
+        return false;
+    };
 
     return (
         <Container fluid>

@@ -561,7 +561,7 @@ const MainView = () => {
 
 
             <Row className="flex-column flex-md-row">
-                <Col md={3} className="bg-light border-right order-2 order-md-1">
+                <Col md={3} className="bg-light border-right">
                     {/* Menu boczne na dużych ekranach */}
                     <div className="d-none d-md-block"><Sidebar /></div>
                 </Col>
@@ -606,6 +606,7 @@ const MainView = () => {
             )}
         </Container>
     );
+
 
 
 };
