@@ -29,9 +29,10 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite }) => {
         <Modal
             show={show}
             onHide={onHide}
-            centered
+
             dialogClassName="custom-modal"
             contentClassName="custom-modal-content"
+            backdrop="static"
         >
             <Modal.Header closeButton>
                 <Modal.Title>

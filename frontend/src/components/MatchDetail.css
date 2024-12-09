@@ -6,12 +6,26 @@
     max-width: 80%; /* Maksymalna szerokość dopasowana do ekranu */
     margin: 0 auto; /* Wycentrowanie modalu */
     padding: 10px;
+
+}
+.custom-modal{
+    position: fixed;
+    display: flex; /* Flexbox dla poprawnego wyrównania */
+    justify-content: center; /* Wycentrowanie poziome */
+    align-items: center; /* Wycentrowanie pionowe */
+    top: 0; /* Start na samej górze */
+    left: 0; /* Start na lewej krawędzi */
+    right: 0; /* Zakończenie na prawej krawędzi */
+    bottom: 0; /* Zakończenie na dolnej krawędzi */
+    margin: auto; /* Automatyczne marginesy */
+    max-width: 100%; /* Maksymalna szerokość */
+    height: auto;
 }
 
 .modal-content{
     position: relative;
     flex-direction: column;
-    width: 150% !important;
+    width: fit-content !important;
     color: var(--bs-modal-color);
     pointer-events: auto;
     background-color: var(--bs-modal-bg);
@@ -28,11 +42,24 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.custom-modal .modal-dialog {
+    top: 50%; /* Wycentrowanie w pionie */
+    left: 50%; /* Wycentrowanie w poziomie */
+    transform: translate(-50%, -50%); /* Wyrównanie do środka */
+}
+
+.custom-modal .modal-content {
+    max-height: 90vh; /* Maksymalna wysokość zawartości */
+    overflow-y: auto; /* Przewijanie w pionie */
+    overflow-x: hidden; /* Wyłączenie przewijania w poziomie */
+}
+
 .match-detail-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 18px; /* Powiększamy tekst w nagłówku */
+    font-size: 22px; /* Powiększamy tekst w nagłówku */
 }
 
 .match-detail-flag {
@@ -191,6 +218,8 @@ hr {
     color: #fff; /* Kolor tekstu aktywnego przycisku */
 }
 
+
+
 @media (max-width: 768px) {
     .team-info img {
         max-width: 70px; /* Zmniejszenie obrazków na wąskich ekranach */
@@ -227,6 +256,68 @@ hr {
     .match-detail-body{
         gap:5px;
     }
+
+    .match-detail-header{
+        font-size: 18px;
+    }
+
+    .custom-modal .modal-content {
+        padding: 10px !important;
+    }
+
+    .custom-modal .btn-close {
+        font-size: 14px;
+    }
 }
 
 
+
+@media (max-width: 500px) {
+    .team-info img {
+        max-width: 50px; /* Zmniejszenie obrazków na wąskich ekranach */
+    }
+
+    .team-name {
+        font-size: 14px; /* Zmniejszenie czcionki */
+    }
+
+    .match-score {
+        font-size: 24px; /* Zmniejszenie wyniku meczu */
+    }
+
+    .match-detail-body .bi {
+        font-size: 14px; /* Zmniejszony rozmiar gwiazdek na małych ekranach */
+    }
+
+    .custom-modal .modal-dialog {
+        padding: 0px; /* Zmniejszenie paddingu */
+    }
+
+    .match-date{
+        font-size: 10px;
+    }
+
+    .tab-buttons button{
+        font-size: 10px;
+    }
+
+    .tab-content{
+        font-size: 10px;
+    }
+
+    .match-detail-body{
+        gap:0px;
+    }
+
+    .match-detail-header{
+        font-size: 14px;
+    }
+
+    .custom-modal .modal-content {
+        padding: 0 !important;
+    }
+
+    .custom-modal .btn-close {
+        font-size: 10px;
+    }
+}

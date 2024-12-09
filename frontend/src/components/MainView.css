@@ -1,3 +1,10 @@
+
+.matches-display{
+    width: 70%;
+    margin: 0 auto;
+}
+
+
 @media (max-width: 768px) {
     .mainview-sidebar {
         width: 100%;
@@ -22,5 +29,9 @@
 
     .accordion .list-group-item:hover {
         background-color: #f8f9fa;
+    }
+
+    .matches-display{
+        width: 100%;
     }
 }

@@ -15,6 +15,8 @@ import "./MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 import LeagueView from "./LeagueView"; // Import LeagueView component
 import {useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";
+import './MainView.css';
+
 const BASE_URL = 'http://localhost:8080';
 
 const MainView = () => {
@@ -379,7 +381,7 @@ const MainView = () => {
         const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
 
         return sortedLeagues.map((leagueName) => (
-            <Card className="mb-4" key={leagueName} style={{ width: '100%', margin: '0 auto' }}>
+            <Card className="matches-display mb-4" key={leagueName}>
                 <Card.Header className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
                         <i
@@ -470,7 +472,7 @@ const MainView = () => {
         }
 
         return (
-            <Card className="mb-4 mt-4" style={{ width: '700px', margin: '0 auto' }}>
+            <Card className="matches-display mb-4 mt-4">
                 <Card.Header className="d-flex align-items-center justify-content-between">
                     <h5 className="mb-0">Ulubione mecze</h5>
                 </Card.Header>
