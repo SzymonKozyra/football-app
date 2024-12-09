@@ -58,7 +58,10 @@ const MatchStatistics = ({ match }) => {
                             {isPercentage ? "%" : ""}
                             {homeAccurate ? ` (${homeAccurate})` : ""}
                         </span>
-                        <TeamImageVerySmall team={match.homeTeam} />
+                        <TeamImageVerySmall
+                            team={match.homeTeam}
+                            customStyle={{ marginLeft: '10px' }}
+                        />
                     </div>
                     <div className="bar away" style={{ width: `${awayWidth}%` }}>
                         <div
@@ -70,7 +73,10 @@ const MatchStatistics = ({ match }) => {
                             {isPercentage ? "%" : ""}
                             {awayAccurate ? ` (${awayAccurate})` : ""}
                         </span>
-                        <TeamImageVerySmall team={match.awayTeam} />
+                        <TeamImageVerySmall
+                            team={match.awayTeam}
+                            customStyle={{ marginLeft: '10px' }}
+                        />
                     </div>
                 </div>
             </div>

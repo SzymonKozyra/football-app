@@ -1,7 +1,7 @@
 // TeamImage.js
 import React, { useState, useEffect } from 'react';
 
-const TeamImageVerySmall = ({ team }) => {
+const TeamImageVerySmall = ({ team, style = {} }) => {
     const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/team/team_${team.id}.jpg`);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ const TeamImageVerySmall = ({ team }) => {
             src={imageUrl}
             alt={team.name}
             className="team-picture"
-            style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px' }}
+            style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px', ...style }}
         />
     );
 };

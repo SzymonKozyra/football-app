@@ -30,8 +30,8 @@ const LeaguePage = () => {
         .filter((match) => match.status === "FINISHED")
         .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
 
-    const matchesPagination = UsePagination(filteredMatches, 5);
-    const resultsPagination = UsePagination(filteredResults, 3);
+    const matchesPagination = UsePagination(filteredMatches, 10);
+    const resultsPagination = UsePagination(filteredResults, 10);
 
     useEffect(() => {
         // Pobierz dane ligi
@@ -154,7 +154,7 @@ const LeaguePage = () => {
     return (
         <Container fluid>
             {/* Menu rozwijane na małych ekranach */}
-            <Accordion className="d-md-none mb-3">
+            <Accordion className="d-md-none mb-4 mt-4">
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Menu</Accordion.Header>
                     <Accordion.Body>
@@ -164,8 +164,8 @@ const LeaguePage = () => {
             </Accordion>
 
             <Row className="flex-column flex-md-row">
+                {/* Menu boczne na dużych ekranach */}
                 <Col md={3} className="bg-light border-right order-2 order-md-1">
-                    {/* Menu boczne na dużych ekranach */}
                     <div className="d-none d-md-block">
                         <Sidebar />
                     </div>

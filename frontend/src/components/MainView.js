@@ -522,11 +522,11 @@ const MainView = () => {
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
                                 <span style={{ marginRight: '40px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div>{match.homeGoals}</div>
-                <div>{match.awayGoals}</div>
-            </div>
-        </span>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div>{match.homeGoals}</div>
+                                        <div>{match.awayGoals}</div>
+                                    </div>
+                                </span>
                             ) : null}
                         </ListGroup.Item>
 
@@ -549,27 +549,31 @@ const MainView = () => {
         );
     }
 
+
+
     return (
         <Container fluid>
             {/* Menu rozwijane na małych ekranach */}
-            <Accordion className="d-md-none mb-3">
+            <Accordion className="d-md-none mb-4 mt-4">
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Menu</Accordion.Header>
-                    <Accordion.Body><Sidebar /></Accordion.Body>
+                    <Accordion.Body>
+                        <Sidebar />
+                    </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
 
-
             <Row className="flex-column flex-md-row">
+                {/* Menu boczne na dużych ekranach */}
                 <Col md={3} className="bg-light border-right">
-                    {/* Menu boczne na dużych ekranach */}
-                    <div className="d-none d-md-block"><Sidebar /></div>
+                    <div className="d-none d-md-block">
+                        <Sidebar />
+                    </div>
                 </Col>
 
-                <Col xs={9}>
-
+                <Col md={9}>
                     <>
-                        <div className="d-flex align-items-center justify-content-center mt-4">
+                        <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
                             <Button variant="light" onClick={goToPreviousDay} style={{ marginRight: '5px' }}>
                                 <BiLeftArrow />
                             </Button>

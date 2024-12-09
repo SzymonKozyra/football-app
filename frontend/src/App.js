@@ -7,7 +7,7 @@ import RegistrationModal from './components/RegistrationModal';
 import LoginModal from './components/LoginModal';
 import PasswordResetModal from './components/PasswordResetModal';
 import NewPasswordModal from './components/NewPasswordModal';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import {Navigate, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import AdminPanel from './components/AdminPanel';
 import AddLeagueForm from './components/AddLeagueForm';
 import AddCoachForm from './components/AddCoachForm';
@@ -18,10 +18,11 @@ import LeaguePage from "./components/LeaguePage";
 import AdminView from './views/AdminView';
 import ModeratorView from './views/ModeratorView';
 import MainViewGuest from "./components/MainViewGuest";
-import AddMatchForm from "./components/AddMatchForm";
+import AddMatchForm from './components/AddMatchForm';
+import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
+import EventManagement from './components/EventManagement';
 import AddMatchSquadForm from "./components/AddMatchSquadForm";
-import AddPlayersMatchSquadForm from "./components/AddPlayersMatchSquadForm";
-import EventManagement from "./components/EventManagement";
+
 
 function App() {
     const [modals, setModals] = useState({
@@ -41,6 +42,7 @@ function App() {
 
     const navigate = useNavigate();
     const [token, setToken] = useState('');
+    const location = useLocation();
 
 
     useEffect(() => {

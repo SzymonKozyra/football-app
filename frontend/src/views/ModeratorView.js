@@ -78,7 +78,7 @@ const ModeratorView = () => {
         <Container fluid className="my-5">
             <Row>
                 {/* Sidebar */}
-                <Col md={3}>
+                <Col md={3} className="mb-4">
                     <h4 className="mb-4">Moderator Functions</h4>
                     <Accordion>
                         <Accordion.Item eventKey="0">
