@@ -1,6 +1,3 @@
-import React from "react";
-import "./MatchDetail.css";
-
 const MatchEvents = ({ match }) => {
     const getEventIcon = (type) => {
         switch (type) {
@@ -46,6 +43,7 @@ const MatchEvents = ({ match }) => {
 
     // Find assist for a given goal event
     const findAssist = (goalEvent) => {
+        if (!match.events) return null;
         const assistEvent = match.events.find(
             (event) =>
                 event.type === "ASSIST" &&
@@ -55,9 +53,9 @@ const MatchEvents = ({ match }) => {
         return assistEvent ? formatPlayerName(assistEvent.player) : null;
     };
 
-
     // Find the player being subbed off for a sub_in event
     const findSubOff = (subInEvent) => {
+        if (!match.events) return null;
         const subOffEvent = match.events.find(
             (event) =>
                 event.type === "SUB_OFF" &&
@@ -70,6 +68,8 @@ const MatchEvents = ({ match }) => {
 
     // Filter events to combine yellow and red cards into a yellow-red card if applicable
     const combineYellowRedCards = () => {
+        if (!match.events || !Array.isArray(match.events)) return []; // Zabezpieczenie
+
         const eventsToShow = [];
         const seenPlayers = new Set();
 
@@ -115,6 +115,7 @@ const MatchEvents = ({ match }) => {
 
         return eventsToShow;
     };
+
     const partOfGameLabels = {
         FIRST_HALF: "1ST HALF",
         SECOND_HALF: "2ND HALF",
@@ -123,9 +124,12 @@ const MatchEvents = ({ match }) => {
         PENALTIES: "PENALTIES",
     };
 
-
     // Render events grouped by partOfGame and sorted by minute
     const renderEvents = () => {
+        if (!match.events || !Array.isArray(match.events)) {
+            return <p>No events available for this match.</p>; // Zabezpieczenie
+        }
+
         const filteredEvents = combineYellowRedCards().filter((event) => getEventIcon(event.type));
 
         if (!filteredEvents.length) {

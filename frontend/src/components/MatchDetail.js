@@ -6,12 +6,21 @@ import "./MatchDetail.css";
 import MatchStatistics from "./MatchStatistics";
 import MatchLineups from "./MatchLineups";
 
-const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite }) => {
+const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRegistration }) => {
     const [activeTab, setActiveTab] = useState("EVENTS"); // Default to "EVENTS"
 
     if (!match) return null;
 
     const isUpcoming = match.status === "UPCOMING";
+
+    const handleFavoriteClick = (type, item) => {
+        if (toggleFavorite) {
+            toggleFavorite(type, item); // Jeśli użytkownik jest zalogowany, wykonaj standardową akcję
+        } else if (onOpenRegistration) {
+            onHide(); // Zamknij obecny modal
+            onOpenRegistration(); // Otwórz modal rejestracji
+        }
+    };
 
     const renderTabContent = () => {
         if (activeTab === "EVENTS") {
@@ -19,7 +28,7 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite }) => {
         } else if (activeTab === "STATISTICS") {
             return <MatchStatistics match={match} />;
         } else if (activeTab === "LINEUPS") {
-            console.log("LINEUPS MATCH ID: " + match.id)
+            console.log("LINEUPS MATCH ID: " + match.id);
             return <MatchLineups matchId={match.id} />;
         }
         return <div>Coming soon...</div>;
@@ -53,9 +62,11 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite }) => {
                     <div className="team-section">
                         <i
                             className={`bi ${
-                                isFavorite("teams", match.homeTeam.id) ? "bi-star-fill text-warning" : "bi-star"
+                                isFavorite && isFavorite("teams", match.homeTeam.id)
+                                    ? "bi-star-fill text-warning"
+                                    : "bi-star"
                             }`}
-                            onClick={() => toggleFavorite("teams", match.homeTeam)}
+                            onClick={() => handleFavoriteClick("teams", match.homeTeam)}
                             style={{ cursor: "pointer", marginRight: "10px" }}
                         ></i>
                         <div className="team-info">
@@ -90,9 +101,11 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite }) => {
                         </div>
                         <i
                             className={`bi ${
-                                isFavorite("teams", match.awayTeam.id) ? "bi-star-fill text-warning" : "bi-star"
+                                isFavorite && isFavorite("teams", match.awayTeam.id)
+                                    ? "bi-star-fill text-warning"
+                                    : "bi-star"
                             }`}
-                            onClick={() => toggleFavorite("teams", match.awayTeam)}
+                            onClick={() => handleFavoriteClick("teams", match.awayTeam)}
                             style={{ cursor: "pointer", marginLeft: "10px" }}
                         ></i>
                     </div>

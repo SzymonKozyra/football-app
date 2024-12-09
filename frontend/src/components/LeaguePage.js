@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Card, Nav, Accordion } from "react-bootstrap";
+import { Container, Row, Col, Card, Nav, ListGroup, Accordion, Modal } from "react-bootstrap";
 import Sidebar from "./Sidebar";
 import TeamImageVerySmall from "./TeamImageVerySmall";
 import UsePagination from "./UsePagination";
 import PaginationComponent from "./PaginationComponent";
 
+import MatchDetail from "./MatchDetail";
+import RegistrationModal from "./RegistrationModal"; // Import RegistrationModal
 const BASE_URL = "http://localhost:8080";
 
 const LeaguePage = () => {
     const { id } = useParams();
     const [matches, setMatches] = useState([]);
     const [league, setLeague] = useState(null);
+    const [activeTab, setActiveTab] = useState("matches");
+
+    const [showMatchDetail, setShowMatchDetail] = useState(false); // Stan modala
+    const [selectedMatch, setSelectedMatch] = useState(null); // Wybrany mecz
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false); // Stan dla modala rejestracji
+
     const [favorites, setFavorites] = useState({
         matches: [],
         leagues: [],
         teams: [],
     });
-    const [activeTab, setActiveTab] = useState("matches");
+    const [isFavoritesReady, setIsFavoritesReady] = useState(false); // Flaga określająca gotowość
+
+    const [userId, setUserId] = useState(null);
 
     const token = localStorage.getItem("jwtToken");
 
@@ -46,54 +56,350 @@ const LeaguePage = () => {
             .then((response) => setMatches(response.data))
             .catch((error) => console.error("Error fetching matches for league:", error));
     }, [id, token]);
+// Pobranie ID użytkownika
+    useEffect(() => {
+        if (token) {
+            axios.get(`${BASE_URL}/api/auth/get-email`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => {
+                    const userEmail = response.data;
+                    return axios.get(`${BASE_URL}/api/auth/users/email/${userEmail}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                })
+                .then(response => setUserId(response.data.id))
+                .catch(error => console.error('Error fetching user ID:', error));
+        }
+    }, [token]);
 
-    const toggleFavorite = async (type, match) => {
-        // Logika dodawania/usuwania z ulubionych (jeśli potrzeba, zaimplementuj tutaj)
+    // Pobranie ulubionych lig i drużyn
+    useEffect(() => {
+        if (userId) {
+            axios.get(`${BASE_URL}/api/favorites/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+                .then(response => {
+                    console.log(`Favorites fetched for ${userId}:`, response.data);
+                    setFavorites(response.data); // Ustawienie favorites
+                    setIsFavoritesReady(true); // Oznaczenie, że dane są gotowe
+                })
+                .catch(error => {
+                    console.error('Error fetching favorites:', error);
+                    setIsFavoritesReady(true); // Nawet w przypadku błędu ustaw flagę
+                });
+        }
+    }, [userId, token]);
+
+    useEffect(() => {
+        const fetchMatches = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/api/matches/league/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const fetchedMatches = response.data;
+
+                // Dodaj pole isFavorite do każdego meczu
+                setMatches(
+                    fetchedMatches.map((match) => ({
+                        ...match,
+                        isFavorite: favorites.matches.some((fav) => fav.match.id === match.id),
+                    }))
+                );
+            } catch (error) {
+                console.error("Error fetching matches for league:", error);
+            }
+        };
+
+        fetchMatchesAndEvents();
+
+    }, [id, token, favorites.matches]); // Zależność od favorites.matches
+
+    const fetchEventsForMatches = async (matches) => {
+        return Promise.all(
+            matches.map(async (match) => {
+                try {
+                    const response = await axios.get(`${BASE_URL}/api/events/match/${match.id}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    return { ...match, events: response.data }; // Dodaj zdarzenia do meczu
+                } catch (error) {
+                    console.error(`Error fetching events for match ${match.id}:`, error);
+                    return match; // Jeśli wystąpi błąd, zwróć mecz bez zdarzeń
+                }
+            })
+        );
     };
 
+    const fetchMatchesAndEvents = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/matches/league/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const fetchedMatches = response.data;
+
+            // Pobierz zdarzenia dla wszystkich meczów
+            const updatedMatches = await fetchEventsForMatches(fetchedMatches);
+
+            // Zaktualizuj mecze w stanie
+            setMatches(
+                updatedMatches.map((match) => ({
+                    ...match,
+                    isFavorite: favorites.matches.some((fav) => fav.match.id === match.id),
+                }))
+            );
+
+            console.log("Updated Matches with Events:", updatedMatches);
+        } catch (error) {
+            console.error("Error fetching matches and events:", error);
+        }
+    };
+
+    const handleMatchClick = (match) => {
+        setSelectedMatch(match);
+        setShowMatchDetail(true);
+    };
+
+    const calculateMatchMinute = (match) => {
+        if (match.status === 'FINISHED') {
+            // Zwróć datę i godzinę meczu w formacie "DD.MM HH:mm"
+            return new Date(match.dateTime).toLocaleString('pl-PL', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            }).replace(',', ''); // Usuwa przecinek między datą a godziną
+        }
+
+
+        if (match.status === 'IN_PLAY') {
+            const startEventTypes = [
+                'MATCH_START',
+                'SECOND_HALF_START',
+                'OT_FIRST_HALF_START',
+                'OT_SECOND_HALF_START',
+                'PENALTIES_START',
+            ];
+
+            if (!match.events || !Array.isArray(match.events)) {
+                console.warn(`No events available for match ${match.id}`);
+                return "Live"; // Default fallback for matches without events
+            }
+
+            // Sort events by date in descending order
+            const sortedEvents = [...match.events].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+            const startEvent = sortedEvents.find((event) => startEventTypes.includes(event.type));
+
+            if (startEvent) {
+                const startTime = new Date(startEvent.dateTime);
+                const now = new Date();
+                const diffInMinutes = Math.floor((now - startTime) / 60000) + 1;
+
+                switch (startEvent.type) {
+                    case 'MATCH_START':
+                        return diffInMinutes <= 45 ? `${diffInMinutes}'` : `45+${diffInMinutes - 45}'`;
+
+                    case 'SECOND_HALF_START':
+                        return diffInMinutes <= 45 ? `45+${diffInMinutes}'` : `90+${diffInMinutes - 45}'`;
+
+                    case 'OT_FIRST_HALF_START':
+                        return diffInMinutes <= 15 ? `90+${diffInMinutes}'` : `105+${diffInMinutes - 15}'`;
+
+                    case 'OT_SECOND_HALF_START':
+                        return diffInMinutes <= 15 ? `105+${diffInMinutes}'` : `120+${diffInMinutes - 15}'`;
+
+                    case 'PENALTIES_START':
+                        return 'Penalties';
+
+                    default:
+                        return `${diffInMinutes}'`;
+                }
+            }
+
+            console.warn(`No start event found for match ${match.id}`);
+            return "Live"; // Fallback if no start event is found
+        }
+
+        return null; // For non-IN_PLAY and non-FINISHED statuses
+    };
+
+    const refetchFavorites = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/favorites/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const favoritesData = response.data;
+
+            // Aktualizacja ulubionych w stanie
+            setFavorites(favoritesData);
+
+            // Oznaczenie ulubionych meczów w stanie matches
+            setMatches((prevMatches) =>
+                prevMatches.map((match) => ({
+                    ...match,
+                    isFavorite: favoritesData.matches.some((fav) => fav.match.id === match.id),
+                }))
+            );
+
+            console.log("Favorites refreshed:", favoritesData);
+        } catch (error) {
+            console.error("Error fetching updated favorites:", error);
+        }
+    };
+
+    const toggleFavorite = async (type, item) => {
+        if (!token) {
+            // Otwórz modal rejestracji, jeśli użytkownik nie jest zalogowany
+            setShowRegistrationModal(true);
+            return;
+        }
+
+        // Mapa typów dla liczby pojedynczej
+        const typeMap = {
+            teams: 'team',
+            leagues: 'league',
+            matches: 'match'
+        };
+
+        const singularType = typeMap[type]; // Pobranie liczby pojedynczej z mapy
+
+        if (!singularType) {
+            console.error("Invalid type provided:", type);
+            return;
+        }
+
+        // Sprawdzenie, czy element jest ulubiony, za pomocą uniwersalnego isFavorite
+        const isFavoriteItem = isFavorite(type, item.id);
+
+        const endpointMap = {
+            team: isFavoriteItem ? `${BASE_URL}/api/favorite-teams/remove` : `${BASE_URL}/api/favorite-teams/add`,
+            league: isFavoriteItem ? `${BASE_URL}/api/favorite-leagues/remove` : `${BASE_URL}/api/favorite-leagues/add`,
+            match: isFavoriteItem ? `${BASE_URL}/api/favorite-matches/remove` : `${BASE_URL}/api/favorite-matches/add`
+        };
+
+        const dataMap = {
+            team: { teamId: item.id, userId },
+            league: { leagueId: item.id, userId },
+            match: { matchId: item.id, userId }
+        };
+
+        const endpoint = endpointMap[singularType];
+        const data = dataMap[singularType];
+
+        if (!endpoint || !data) {
+            console.error("Invalid endpoint or data for type:", singularType);
+            return;
+        }
+
+        console.log("Endpoint:", endpoint);
+        console.log("Data:", data);
+
+        try {
+            if (isFavoriteItem) {
+                // Usunięcie z ulubionych
+                await axios({
+                    method: 'delete',
+                    url: endpoint,
+                    headers: { Authorization: `Bearer ${token}` },
+                    data: data // Przekazanie danych dla DELETE
+                });
+            } else {
+                // Dodanie do ulubionych
+                await axios.post(endpoint, data, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+
+            // Aktualizuj tylko ten jeden mecz
+            setMatches((prevMatches) =>
+                prevMatches.map((match) =>
+                    match.id === item.id ? { ...match, isFavorite: !isFavoriteItem } : match
+                )
+            );
+
+            // Odświeżanie ulubionych po każdej operacji
+            await refetchFavorites();
+        } catch (error) {
+            console.error(`Error toggling favorite ${type}:`, error);
+        }
+    };
     const isFavorite = (type, id) => {
         const typeMap = {
             matches: (fav) => fav.match.id === id,
+            leagues: (fav) => fav.league.id === id,
+            teams: (fav) => fav.team.id === id,
         };
+
+        if (!typeMap[type]) {
+            console.error(`Invalid type provided: ${type}`);
+            return false;
+        }
+
         return favorites[type]?.some(typeMap[type]) || false;
     };
 
-    const renderMatches = () => {
+    const renderMatches = (matchesToRender) => {
         const { currentResults, totalPages, currentPage, handlePageChange } = matchesPagination;
-
         return (
             <>
-                <Card className="mt-4">
+                <Card className="mb-4" style={{ width: "100%", margin: "0 auto" }}>
                     <Card.Body>
-                        {currentResults.map((match) => (
-                            <Card className="mb-3" key={match.id}>
-                                <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div className="d-flex align-items-center">
-                                        <i
-                                            className={`bi ${
-                                                isFavorite("matches", match.id)
-                                                    ? "bi-star-fill text-warning"
-                                                    : "bi-star"
-                                            }`}
-                                            style={{ cursor: "pointer", marginRight: "10px" }}
-                                            onClick={() => toggleFavorite("matches", match)}
-                                        ></i>
-                                        <TeamImageVerySmall team={match.homeTeam} />
-                                        <span style={{ marginLeft: "10px" }}>{match.homeTeam.name}</span>
-                                        <span style={{ margin: "0 10px" }}>vs</span>
-                                        <TeamImageVerySmall team={match.awayTeam} />
-                                        <span style={{ marginLeft: "10px" }}>{match.awayTeam.name}</span>
+                        <ListGroup variant="flush">
+                            {currentResults.map((match) => (
+                                <ListGroup.Item
+                                    key={match.id}
+                                    className="d-flex align-items-center justify-content-between"
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    <i
+                                        className={`bi ${
+                                            match.isFavorite ? "bi-star-fill text-warning" : "bi-star"
+                                        }`}
+                                        style={{ cursor: "pointer" }}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Zapobiegaj otwieraniu modala przy kliknięciu w gwiazdkę
+                                            toggleFavorite('matches', match);
+                                        }}
+                                    ></i>
+                                    <span
+                                        style={{
+                                            marginRight: "15px",
+                                            marginLeft: "15px",
+                                            width: "90px",
+                                            textAlign: "center",
+                                            display: "inline-block",
+                                            backgroundColor:
+                                                match.status === "IN_PLAY" ? "rgba(255, 0, 0, 0.6)" : "transparent",
+                                            borderRadius: "5px",
+                                            padding: "5px",
+                                        }}
+                                        onClick={() => handleMatchClick(match)}
+                                    >
+                                    {calculateMatchMinute(match)}
+                                </span>
+                                    <div style={{ flex: 1 }} onClick={() => handleMatchClick(match)}>
+                                        <div className="d-flex align-items-center">
+                                            <TeamImageVerySmall team={match.homeTeam} />
+                                            <span style={{ marginLeft: "10px" }}>{match.homeTeam.name}</span>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                            <TeamImageVerySmall team={match.awayTeam} />
+                                            <span style={{ marginLeft: "10px" }}>{match.awayTeam.name}</span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        {match.status === "IN_PLAY" ? (
-                                            <span style={{ color: "red" }}>Live</span>
-                                        ) : (
-                                            new Date(match.dateTime).toLocaleString()
-                                        )}
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        ))}
+                                    {match.status === "IN_PLAY" || match.status === "FINISHED" ? (
+                                        <span style={{ marginRight: "40px" }}>
+                                        <div style={{ textAlign: "right" }}>
+                                            <div>{match.homeGoals}</div>
+                                            <div>{match.awayGoals}</div>
+                                        </div>
+                                    </span>
+                                    ) : null}
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
                     </Card.Body>
                 </Card>
                 <PaginationComponent
@@ -189,6 +495,21 @@ const LeaguePage = () => {
                     {activeTab === "standings" && renderStandings()}
                 </Col>
             </Row>
+
+            {/* Modal MatchDetail */}
+            {showMatchDetail && selectedMatch && (
+                <MatchDetail
+                    show={showMatchDetail}
+                    onHide={() => setShowMatchDetail(false)} // Obsługa zamknięcia modala
+                    match={selectedMatch}
+                />
+            )}
+
+            {/* Modal Registration */}
+            <RegistrationModal
+                show={showRegistrationModal}
+                onHide={() => setShowRegistrationModal(false)}
+            />
         </Container>
     );
 };

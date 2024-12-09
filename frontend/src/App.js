@@ -153,6 +153,13 @@ function App() {
         }));
     };
 
+    const toggleRegistrationModal = () => {
+        setModals(prevModals => ({
+            ...prevModals,
+            isRegistrationOpen: true, // Otwiera modal rejestracji
+        }));
+    };
+
     if (isCheckingAdmin) {
         return null;
     }
@@ -196,7 +203,7 @@ function App() {
                                 <MainView />
                             )
                         ) : (
-                            <MainViewGuest />
+                            <MainViewGuest onOpenRegistration={toggleRegistrationModal} />
                         )
                     }
                 />

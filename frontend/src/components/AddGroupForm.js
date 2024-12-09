@@ -1,36 +1,99 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Container, ListGroup } from 'react-bootstrap';
+import { Form, Button, Container, ListGroup, Modal } from 'react-bootstrap';
 
 const AddGroupForm = () => {
     const [groupName, setGroupName] = useState('');
-    const [leagueSearchQuery, setLeagueSearchQuery] = useState('');
-    const [filteredLeagues, setFilteredLeagues] = useState([]);
     const [selectedLeague, setSelectedLeague] = useState(null);
+
+    const [showLeagueModal, setShowLeagueModal] = useState(false);
+    const [countries, setCountries] = useState([]);
+    const [leagues, setLeagues] = useState([]);
+    const [editions, setEditions] = useState([]);
+
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedLeagueName, setSelectedLeagueName] = useState(null);
+    const [selectedEdition, setSelectedEdition] = useState(null);
 
     const [teamSearchQuery, setTeamSearchQuery] = useState('');
     const [filteredTeams, setFilteredTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
 
-    // Wyszukiwanie lig
-    useEffect(() => {
-        if (leagueSearchQuery) {
-            if (selectedLeague && leagueSearchQuery !== selectedLeague.name) {
-                setSelectedLeague(null);
-            }
+    // Pobranie krajów i inicjalizacja modal
+    const handleOpenLeagueModal = () => {
+        setSelectedCountry(null);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+        setCountries([]);
+        setLeagues([]);
+        setEditions([]);
 
-            const token = localStorage.getItem('jwtToken');
-            axios
-                .get(`http://localhost:8080/api/leagues/search?query=${leagueSearchQuery}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                .then((response) => setFilteredLeagues(response.data))
-                .catch((error) => console.error('Error fetching leagues:', error));
-        } else {
-            setFilteredLeagues([]);
-            setSelectedLeague(null);
-        }
-    }, [leagueSearchQuery, selectedLeague]);
+        const token = localStorage.getItem('jwtToken');
+        axios
+            .get('http://localhost:8080/api/leagues/countries', {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => setCountries(response.data))
+            .catch((error) => console.error('Error fetching countries:', error));
+
+        setShowLeagueModal(true);
+    };
+
+    // Pobierz ligi dla wybranego kraju
+    const handleSelectCountry = (country) => {
+        setSelectedCountry(country);
+        setSelectedLeagueName(null);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken');
+        axios
+            .get(`http://localhost:8080/api/leagues/byCountry?country=${country}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                const uniqueLeagues = response.data.filter(
+                    (league, index, self) =>
+                        index === self.findIndex((l) => l.name === league.name)
+                );
+                setLeagues(uniqueLeagues);
+            })
+            .catch((error) => console.error('Error fetching leagues:', error));
+    };
+
+    // Pobierz edycje ligi
+    const handleSelectLeagueName = (leagueName) => {
+        setSelectedLeagueName(leagueName);
+        setSelectedEdition(null);
+
+        const token = localStorage.getItem('jwtToken');
+        axios
+            .get(
+                `http://localhost:8080/api/leagues/editions?leagueName=${leagueName}&country=${selectedCountry}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .then((response) => setEditions(response.data))
+            .catch((error) => console.error('Error fetching editions:', error));
+    };
+
+    // Wybierz edycję i ustaw pełny obiekt ligi
+    const handleSelectEdition = (edition) => {
+        setSelectedEdition(edition);
+
+        const token = localStorage.getItem('jwtToken');
+        axios
+            .get(
+                `http://localhost:8080/api/leagues/getByDetails?country=${selectedCountry}&name=${selectedLeagueName}&edition=${edition}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .then((response) => {
+                setSelectedLeague(response.data);
+                setShowLeagueModal(false);
+            })
+            .catch((error) => {
+                console.error('Error fetching league by details:', error);
+                alert('Failed to fetch league details');
+            });
+    };
 
     // Wyszukiwanie drużyn
     useEffect(() => {
@@ -42,7 +105,7 @@ const AddGroupForm = () => {
                 })
                 .then((response) => {
                     if (Array.isArray(response.data)) {
-                        setFilteredTeams(response.data); // Poprawnie przypisz wyniki
+                        setFilteredTeams(response.data);
                     } else {
                         setFilteredTeams([]);
                     }
@@ -56,12 +119,6 @@ const AddGroupForm = () => {
         }
     }, [teamSearchQuery]);
 
-    const handleLeagueSelect = (league) => {
-        setSelectedLeague(league);
-        setLeagueSearchQuery(league.name); // Ustaw nazwę ligi w polu wyszukiwania
-        setFilteredLeagues([]); // Wyczyść listę wyników
-    };
-
     const handleTeamSelect = (team) => {
         if (!selectedTeams.some((t) => t.id === team.id)) {
             setSelectedTeams([...selectedTeams, team]);
@@ -73,22 +130,19 @@ const AddGroupForm = () => {
     const handleTeamRemove = (teamId) => {
         setSelectedTeams(selectedTeams.filter((team) => team.id !== teamId));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('jwtToken');
         try {
-            // Dodanie grupy
             const groupResponse = await axios.post(
                 'http://localhost:8080/api/leagueGroups/add',
                 { name: groupName, leagueId: selectedLeague.id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            const groupId = groupResponse.data.id; // Pobieramy ID grupy z odpowiedzi
+            const groupId = groupResponse.data.id;
 
-            // Przygotowanie ID drużyn
             const teamIds = selectedTeams.map((team) => team.id);
-
-            // Przypisanie drużyn do grupy za pomocą poprawnego URL
             await axios.post(
                 `http://localhost:8080/api/teamGroupMembership/group/${groupId}/assign`,
                 teamIds,
@@ -97,7 +151,6 @@ const AddGroupForm = () => {
 
             alert('Group and teams added successfully');
             setGroupName('');
-            setLeagueSearchQuery('');
             setSelectedLeague(null);
             setSelectedTeams([]);
         } catch (error) {
@@ -105,7 +158,6 @@ const AddGroupForm = () => {
             alert('Failed to add group or assign teams');
         }
     };
-
 
     return (
         <Container className="mt-5">
@@ -121,28 +173,13 @@ const AddGroupForm = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formLeagueSearch" className="mb-3">
+                <Form.Group controlId="formLeague" className="mb-3">
                     <Form.Label>League</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Search for a league"
-                        value={leagueSearchQuery}
-                        onChange={(e) => setLeagueSearchQuery(e.target.value)}
-                        required
-                    />
-                    {filteredLeagues.length > 0 && !selectedLeague && (
-                        <ListGroup>
-                            {filteredLeagues.map((league) => (
-                                <ListGroup.Item
-                                    key={league.id}
-                                    action
-                                    onClick={() => handleLeagueSelect(league)}
-                                >
-                                    {league.name}
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup>
-                    )}
+                    <Button variant="outline-primary" onClick={handleOpenLeagueModal} className="w-100">
+                        {selectedLeague
+                            ? `${selectedLeague.name} (${selectedLeague.country?.name || 'Unknown Country'}, Edition: ${selectedLeague.edition})`
+                            : 'Select League'}
+                    </Button>
                 </Form.Group>
 
                 <Form.Group controlId="formTeamSearch" className="mb-3">
@@ -187,6 +224,59 @@ const AddGroupForm = () => {
                     Add Group
                 </Button>
             </Form>
+
+            {/* League Selection Modal */}
+            <Modal show={showLeagueModal} onHide={() => setShowLeagueModal(false)} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select League</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {!selectedCountry && (
+                        <>
+                            <h5>Select Country</h5>
+                            <ListGroup>
+                                {countries.map((country) => (
+                                    <ListGroup.Item key={country} action onClick={() => handleSelectCountry(country)}>
+                                        {country}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+                    {selectedCountry && !selectedLeagueName && (
+                        <>
+                            <h5>Select League in {selectedCountry}</h5>
+                            <ListGroup>
+                                {leagues.map((league) => (
+                                    <ListGroup.Item
+                                        key={league.name}
+                                        action
+                                        onClick={() => handleSelectLeagueName(league.name)}
+                                    >
+                                        {league.name}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+                    {selectedLeagueName && !selectedEdition && (
+                        <>
+                            <h5>Select Edition for {selectedLeagueName}</h5>
+                            <ListGroup>
+                                {editions.map((edition) => (
+                                    <ListGroup.Item
+                                        key={edition}
+                                        action
+                                        onClick={() => handleSelectEdition(edition)}
+                                    >
+                                        Edition: {edition}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        </>
+                    )}
+                </Modal.Body>
+            </Modal>
         </Container>
     );
 };

@@ -406,7 +406,7 @@ const AddMatchForm = () => {
 
             console.log("Odpowiedź backendu:", response.data);
 
-            setNewMatchId(response.data?.id); // Zapisz ID nowego meczu
+            setNewMatchId(response.data); // Zapisz ID nowego meczu
             handleModalShow(); // Otwórz modal po dodaniu meczu
             resetForm(); // Zresetuj formularz
         } catch (error) {

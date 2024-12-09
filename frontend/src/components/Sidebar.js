@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://localhost:8080";
 
-const Sidebar = () => {
+const Sidebar = ({ onOpenRegistration }) => {
     const token = localStorage.getItem('jwtToken');
     const [userId, setUserId] = useState(null);
 
@@ -61,6 +61,13 @@ const Sidebar = () => {
     };
 
     const toggleFavorite = async (type, item) => {
+
+        if (!userId) {
+            if (onOpenRegistration) {
+                onOpenRegistration(); // Otwórz modal rejestracji, jeśli użytkownik nie jest zalogowany
+            }
+            return;
+        }
         console.log("Toggling favorite:", type, item);
 
         if (!userId || !item || !item.id) {

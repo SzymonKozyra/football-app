@@ -206,6 +206,22 @@ const MatchSearchAndEditForm = () => {
         }
     }, [leagueSearchQuery, selectedLeague]);
 
+    useEffect(() => {
+        const fetchStages = async () => {
+            const token = localStorage.getItem('jwtToken');
+            try {
+                const response = await axios.get('http://localhost:8080/api/leagueStages', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setStageOptions(response.data); // Ustawienie opcji faz
+            } catch (error) {
+                console.error('Error fetching stages:', error);
+            }
+        };
+
+        fetchStages();
+    }, []);
+
     const handleEditClick = (match) => {
         setSelectedMatch(match.id);
         setEditData({
@@ -268,7 +284,7 @@ const MatchSearchAndEditForm = () => {
             league: { id: editData.league },
             homeTeam: { id: editData.homeTeam },
             awayTeam: { id: editData.awayTeam },
-            isBetable: { id: editData.isBetable},
+            isBetable: editData.isBetable,
 
         };
 

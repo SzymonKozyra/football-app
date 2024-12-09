@@ -17,7 +17,7 @@ import {useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";
 const BASE_URL = 'http://localhost:8080';
 
-const MainViewGuest = () => {
+const MainViewGuest = ({ onOpenRegistration }) => {
     const navigate = useNavigate(); // Call useNavigate at the top level
 
 
@@ -56,6 +56,14 @@ const MainViewGuest = () => {
             fetchMatches();
         }
     }, [selectedDate, token, selectedLeagueId]);
+
+    const handleFavoriteClick = () => {
+        if (onOpenRegistration) {
+            onOpenRegistration(); // Wywołanie funkcji otwierającej modal rejestracji
+        } else {
+            console.warn("onOpenRegistration is not provided");
+        }
+    };
 
     const fetchEventsForMatches = async (matches) => {
         // Fetch events for a list of matches and return updated matches
@@ -183,6 +191,12 @@ const MainViewGuest = () => {
         setSelectedMatch(null);
     };
 
+
+    const isFavorite = (type, id) => {
+        return false;
+    };
+
+
     const handleDateChange = (newDate) => {
         setSelectedDate(newDate);
     };
@@ -214,7 +228,7 @@ const MainViewGuest = () => {
                         <i
                             className="bi bi-star" // Zawsze niewypełniona gwiazdka
                             style={{ cursor: 'pointer' }}
-                            onClick={() => console.log(`League ${groupedMatches[leagueName][0].league.name} clicked`)}
+                            onClick={handleFavoriteClick} // Dodajemy obsługę kliknięcia
                         ></i>
                         <span style={{ marginRight: '15px' }}></span>
                         <img
@@ -229,17 +243,14 @@ const MainViewGuest = () => {
                     {groupedMatches[leagueName].map((match) => (
                         <ListGroup.Item
                             key={match.id}
-                            onClick={() => handleMatchClick(match)}
                             style={{ cursor: 'pointer' }}
                             className="d-flex align-items-center justify-content-between"
                         >
                             <i
                                 className="bi bi-star" // Zawsze niewypełniona gwiazdka
                                 style={{ cursor: 'pointer' }}
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Zapobiegaj zamykaniu modala przy kliknięciu w gwiazdkę
-                                    console.log(`Match ${match.id} favorite clicked`);
-                                }}
+                                onClick={handleFavoriteClick} // Dodajemy obsługę kliknięcia
+
                             ></i>
                             <span
                                 style={{
@@ -252,6 +263,8 @@ const MainViewGuest = () => {
                                     borderRadius: '5px',
                                     padding: '5px',
                                 }}
+                                onClick={() => handleMatchClick(match)}
+
                             >
                             {match.status === 'IN_PLAY'
                                 ? calculateMatchMinute(match)
@@ -262,7 +275,12 @@ const MainViewGuest = () => {
                                         minute: '2-digit',
                                     })}
                         </span>
-                            <div style={{ flex: 1 }}>
+                            <div
+                                style={{ flex: 1 }}
+                                onClick={() => handleMatchClick(match)}
+
+                            >
+
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
                                     <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
@@ -273,12 +291,14 @@ const MainViewGuest = () => {
                                 </div>
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
-                                <span style={{ marginRight: '40px' }}>
+                                <span style={{ marginRight: '40px' }}
+                                      onClick={() => handleMatchClick(match)}
+                                >
                                 <div style={{ textAlign: 'right' }}>
                                     <div>{match.homeGoals}</div>
                                     <div>{match.awayGoals}</div>
                                 </div>
-                            </span>
+                                </span>
                             ) : null}
                         </ListGroup.Item>
                     ))}
@@ -288,15 +308,12 @@ const MainViewGuest = () => {
     };
 
 
-    const isFavorite = (type, id) => {
-        return false;
-    };
 
     return (
         <Container fluid>
             <Row>
                 <Col xs={3} className="bg-light border-right">
-                    <Sidebar />
+                    <Sidebar onOpenRegistration={onOpenRegistration} />
                 </Col>
 
                 <Col xs={9}>
@@ -331,6 +348,9 @@ const MainViewGuest = () => {
                     show={showModal}
                     onHide={handleCloseModal}
                     match={selectedMatch}
+                    isFavorite={isFavorite}
+                    onOpenRegistration={onOpenRegistration} // Przekazanie funkcji otwierającej modal rejestracji
+
                 />
             )}
         </Container>

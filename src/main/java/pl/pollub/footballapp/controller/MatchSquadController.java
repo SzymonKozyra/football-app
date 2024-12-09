@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +54,12 @@ public class MatchSquadController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<List<MatchSquad>> getAllMatchSquads() {
         return ResponseEntity.ok(matchSquadService.getAllMatchSquads());
     }
 
     @GetMapping("/{id}")
+    @PermitAll
     public ResponseEntity<MatchSquad> getMatchSquadById(@PathVariable Long id) {
         Optional<MatchSquad> matchSquad = matchSquadService.getMatchSquadById(id);
         return matchSquad.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -72,6 +73,7 @@ public class MatchSquadController {
     }
 
     @GetMapping("/players/{matchId}")
+    @PermitAll
     public ResponseEntity<List<Player>> getPlayersByMatchId(@PathVariable Long matchId) {
         log.debug("Received request for players in matchId: {}", matchId);
         List<Player> players = matchSquadService.getPlayersByMatchId(matchId);
@@ -80,17 +82,20 @@ public class MatchSquadController {
     }
 
     @GetMapping("/first-squad/{matchId}")
+    @PermitAll
     public ResponseEntity<List<Player>> getFirstSquadPlayers(@PathVariable Long matchId) {
         return ResponseEntity.ok(matchSquadService.getFirstSquadPlayers(matchId));
     }
 
     @GetMapping("/substitutes/{matchId}")
+    @PermitAll
     public ResponseEntity<List<Player>> getSubstitutePlayers(@PathVariable Long matchId) {
         return ResponseEntity.ok(matchSquadService.getSubstitutePlayers(matchId));
     }
 
     // Nowy endpoint do pobierania pierwszej jedenastki z uwzględnieniem homeTeam
     @GetMapping("/first-squad-home/{matchId}")
+    @PermitAll
     public ResponseEntity<List<Player>> getFirstSquadPlayersByHomeTeam(
             @PathVariable Long matchId,
             @RequestParam boolean homeTeam) {
@@ -100,6 +105,7 @@ public class MatchSquadController {
 
     // Nowy endpoint do pobierania rezerwowych z uwzględnieniem homeTeam
     @GetMapping("/substitutes-home/{matchId}")
+    @PermitAll
     public ResponseEntity<List<Player>> getSubstitutePlayersByHomeTeam(
             @PathVariable Long matchId,
             @RequestParam boolean homeTeam) {

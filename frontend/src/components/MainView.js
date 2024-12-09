@@ -406,9 +406,9 @@ const MainView = () => {
                     {groupedMatches[leagueName].map((match) => (
                         <ListGroup.Item
                             key={match.id}
-                            onClick={() => handleMatchClick(match)}
                             style={{ cursor: 'pointer' }}
                             className="d-flex align-items-center justify-content-between"
+                            onClick={() => handleMatchClick(match)}
                         >
                             <i
                                 className={`bi ${
@@ -480,7 +480,6 @@ const MainView = () => {
                     {favoriteMatches.map((match) => (
                         <ListGroup.Item
                             key={match.id}
-                            onClick={() => handleMatchClick(match)}
                             style={{ cursor: 'pointer' }}
                             className="d-flex align-items-center justify-content-between"
                         >
@@ -505,6 +504,8 @@ const MainView = () => {
                                     borderRadius: '5px',
                                     padding: '5px',
                                 }}
+                                onClick={() => handleMatchClick(match)}
+
                             >
                                 {match.status === 'IN_PLAY'
                                     ? calculateMatchMinute(match)
@@ -512,7 +513,10 @@ const MainView = () => {
                                         ? 'Finished'
                                         : new Date(match.dateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <div style={{ flex: 1 }}>
+                            <div
+                                style={{ flex: 1 }}
+                                onClick={() => handleMatchClick(match)}
+                            >
                                 <div className="d-flex align-items-center">
                                     <TeamImageVerySmall team={match.homeTeam} />
                                     <span style={{ marginLeft: '10px' }}>{match.homeTeam.name}</span>
@@ -523,7 +527,11 @@ const MainView = () => {
                                 </div>
                             </div>
                             {match.status === 'IN_PLAY' || match.status === 'FINISHED' ? (
-                                <span style={{ marginRight: '40px' }}>
+                                <span
+                                    style={{ marginRight: '40px' }}
+                                    onClick={() => handleMatchClick(match)}
+
+                                >
                                     <div style={{ textAlign: 'right' }}>
                                         <div>{match.homeGoals}</div>
                                         <div>{match.awayGoals}</div>
@@ -550,8 +558,6 @@ const MainView = () => {
             </Container>
         );
     }
-
-
 
     return (
         <Container fluid>

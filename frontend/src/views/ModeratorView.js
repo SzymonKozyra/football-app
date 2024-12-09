@@ -32,6 +32,7 @@ import EditRankingForm from '../components/EditRankingForm';
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 import MatchSearchAndEditForm from "../components/MatchSearchAndEditForm";
 import AddGroupForm from "../components/AddGroupForm";
+import EditGroupForm from "../components/EditGroupForm";
 
 const ModeratorView = () => {
     const [selectedComponent, setSelectedComponent] = useState(null);
@@ -65,6 +66,8 @@ const ModeratorView = () => {
             case 'EditBets': return <EditBetForm/>;
             case 'AddRanking': return <AddRankingForm/>;
             case 'AddGroup': return <AddGroupForm/>;
+            case 'EditGroup': return <EditGroupForm/>;
+
             case 'EditRankings': return <EditRankingForm/>;
 
             case 'RankingView': return <RankingView/>;
@@ -107,6 +110,7 @@ const ModeratorView = () => {
                             <Accordion.Body>
                                 <ListGroup>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditLeagues')}>Edit Leagues</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditGroup')}>Edit Groups</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditCoaches')}>Edit Coaches</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditTeams')}>Edit Teams</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditStadiums')}>Edit Stadiums</ListGroup.Item>
