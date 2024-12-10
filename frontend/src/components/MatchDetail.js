@@ -38,10 +38,8 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
         <Modal
             show={show}
             onHide={onHide}
-
-            dialogClassName="custom-modal"
-            contentClassName="custom-modal-content"
-            backdrop="static"
+            dialogClassName="match-detail-modal custom-modal"
+            contentClassName="match-detail-content"
         >
             <Modal.Header closeButton>
                 <Modal.Title>

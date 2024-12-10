@@ -11,7 +11,6 @@ import TeamImageVerySmall from "./TeamImageVerySmall";
 import { Link } from 'react-router-dom'; // Import React Router Link
 import { Modal } from 'react-bootstrap';
 import MatchDetail from "./MatchDetail";
-import "./MatchDetail.css"; // Dodajemy plik CSS dla stylizacji
 import LeagueView from "./LeagueView"; // Import LeagueView component
 import {useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";

@@ -1,6 +1,10 @@
-czy dzial 4 widoki musi byc podzielony na podrozdzialy
+czy wklejać screenshoty kodu testów
 
-czy opisywac responsywnosc
+czy opisywac testy niepowodzenia operacji i testy wykonywania operacji bez uprawnien, czy tylko wspomnieć o nich w tekście dotyczącym testu o sukcesie
+
+czy dzial 4 "Widoki" i dzial 5 "Testy" muszą byc podzielone na podrozdzialy
+
+czy opisywac gdzies responsywnosc
 
 
 //

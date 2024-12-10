@@ -1,14 +1,5 @@
-/* Stylizacja modala */
-.custom-modal .modal-dialog .custom-modal-content {
-    /*max-width: 900px !important;*/
-    /*width: 100% !important;*/
-
-    max-width: 80%; /* Maksymalna szerokość dopasowana do ekranu */
-    margin: 0 auto; /* Wycentrowanie modalu */
-    padding: 10px;
-
-}
-.custom-modal{
+/* Stylizacja modala dla MatchDetail */
+.match-detail-modal {
     position: fixed;
     display: flex; /* Flexbox dla poprawnego wyrównania */
     justify-content: center; /* Wycentrowanie poziome */
@@ -22,7 +13,7 @@
     height: auto;
 }
 
-.modal-content{
+.match-detail-content {
     position: relative;
     flex-direction: column;
     width: fit-content !important;
@@ -33,26 +24,17 @@
     border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
     border-radius: var(--bs-modal-border-radius);
     outline: 0;
-}
-
-.custom-modal .modal-content {
     padding: 20px !important;
-    /*max-width: 900px !important;*/
-
     width: 100%;
     box-sizing: border-box;
+    overflow-y: auto; /* Przewijanie w pionie */
+    overflow-x: hidden; /* Wyłączenie przewijania w poziomie */
 }
 
-.custom-modal .modal-dialog {
+.match-detail-modal .modal-dialog {
     top: 50%; /* Wycentrowanie w pionie */
     left: 50%; /* Wycentrowanie w poziomie */
     transform: translate(-50%, -50%); /* Wyrównanie do środka */
-}
-
-.custom-modal .modal-content {
-    max-height: 90vh; /* Maksymalna wysokość zawartości */
-    overflow-y: auto; /* Przewijanie w pionie */
-    overflow-x: hidden; /* Wyłączenie przewijania w poziomie */
 }
 
 .match-detail-header {
@@ -68,6 +50,7 @@
     border-radius: 2px;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
+
 .match-detail-body {
     display: flex;
     justify-content: space-between;
@@ -76,7 +59,6 @@
     padding: 20px 0;
     gap: 30px; /* Większa przestrzeń między sekcjami */
 }
-
 
 .team-section {
     display: flex;
@@ -126,6 +108,7 @@
     font-weight: bold;
     color: gray;
 }
+
 .match-date {
     font-size: 16px;
     color: gray;
@@ -184,7 +167,8 @@
 hr {
     margin-top: 0;
 }
-.minute{
+
+.minute {
     min-width: 20px;
 }
 
@@ -218,8 +202,7 @@ hr {
     color: #fff; /* Kolor tekstu aktywnego przycisku */
 }
 
-
-
+/* Stylizacja dla małych ekranów */
 @media (max-width: 768px) {
     .team-info img {
         max-width: 70px; /* Zmniejszenie obrazków na wąskich ekranach */
@@ -237,41 +220,32 @@ hr {
         font-size: 18px; /* Zmniejszony rozmiar gwiazdek na małych ekranach */
     }
 
-    .custom-modal .modal-dialog {
+    .match-detail-modal .modal-dialog {
         padding: 5px; /* Zmniejszenie paddingu */
     }
 
-    .match-date{
+    .match-date {
         font-size: 14px;
     }
 
-    .tab-buttons button{
+    .tab-buttons button {
         font-size: 12px;
     }
 
-    .tab-content{
+    .tab-content {
         font-size: 13px;
     }
 
-    .match-detail-body{
-        gap:5px;
+    .match-detail-body {
+        gap: 5px;
     }
 
-    .match-detail-header{
+    .match-detail-header {
         font-size: 18px;
-    }
-
-    .custom-modal .modal-content {
-        padding: 10px !important;
-    }
-
-    .custom-modal .btn-close {
-        font-size: 14px;
     }
 }
 
-
-
+/* Stylizacja dla bardzo małych ekranów */
 @media (max-width: 500px) {
     .team-info img {
         max-width: 50px; /* Zmniejszenie obrazków na wąskich ekranach */
@@ -289,35 +263,27 @@ hr {
         font-size: 14px; /* Zmniejszony rozmiar gwiazdek na małych ekranach */
     }
 
-    .custom-modal .modal-dialog {
+    .match-detail-modal .modal-dialog {
         padding: 0px; /* Zmniejszenie paddingu */
     }
 
-    .match-date{
+    .match-date {
         font-size: 10px;
     }
 
-    .tab-buttons button{
+    .tab-buttons button {
         font-size: 10px;
     }
 
-    .tab-content{
+    .tab-content {
         font-size: 10px;
     }
 
-    .match-detail-body{
-        gap:0px;
+    .match-detail-body {
+        gap: 0px;
     }
 
-    .match-detail-header{
+    .match-detail-header {
         font-size: 14px;
-    }
-
-    .custom-modal .modal-content {
-        padding: 0 !important;
-    }
-
-    .custom-modal .btn-close {
-        font-size: 10px;
     }
 }
