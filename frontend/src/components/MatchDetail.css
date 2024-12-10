@@ -27,6 +27,7 @@
     padding: 20px !important;
     width: 100%;
     box-sizing: border-box;
+    max-height: 90vh; /* Maksymalna wysokość zawartości */
     overflow-y: auto; /* Przewijanie w pionie */
     overflow-x: hidden; /* Wyłączenie przewijania w poziomie */
 }
@@ -243,6 +244,10 @@ hr {
     .match-detail-header {
         font-size: 18px;
     }
+
+    .match-detail-content{
+        padding: 10px !important;
+    }
 }
 
 /* Stylizacja dla bardzo małych ekranów */
@@ -285,5 +290,9 @@ hr {
 
     .match-detail-header {
         font-size: 14px;
+    }
+
+    .match-detail-content{
+        padding: 5px !important;
     }
 }
