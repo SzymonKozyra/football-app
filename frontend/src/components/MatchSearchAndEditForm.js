@@ -721,6 +721,21 @@ const MatchSearchAndEditForm = () => {
                                                 <>
                                                     <Row>
                                                         <Col>
+                                                            <Form.Group controlId="formHomeGoals" className="mb-3">
+                                                                <Form.Label>Home Goals</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.homeGoals}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev
+                                                                        ) => ({
+                                                                            ...prev,
+                                                                            homeGoals: parseInt(e.target.value) || 0 }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
                                                             <Form.Group controlId="formHomePossession" className="mb-3">
                                                                 <Form.Label>Home Possession (%)</Form.Label>
                                                                 <Form.Control
@@ -745,7 +760,10 @@ const MatchSearchAndEditForm = () => {
                                                                     type="number"
                                                                     value={editData.homePasses}
                                                                     onChange={(e) =>
-                                                                        setEditData((prev) => ({ ...prev, homePasses: parseInt(e.target.value) || 0 }))
+                                                                        setEditData((prev
+                                                                        ) => ({
+                                                                            ...prev,
+                                                                            homePasses: parseInt(e.target.value) || 0 }))
                                                                     }
                                                                     min="0"
                                                                     required
@@ -843,6 +861,23 @@ const MatchSearchAndEditForm = () => {
                                                         </Col>
                                                         <Col>
                                                             {/* Away Team Statistics */}
+
+                                                            <Form.Group controlId="formAwayGoals" className="mb-3">
+                                                                <Form.Label>Away Goals</Form.Label>
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    value={editData.awayGoals}
+                                                                    onChange={(e) =>
+                                                                        setEditData((prev
+                                                                        ) => ({
+                                                                            ...prev,
+                                                                            awayGoals: parseInt(e.target.value) || 0 }))
+                                                                    }
+                                                                    min="0"
+                                                                    required
+                                                                />
+                                                            </Form.Group>
+
                                                             <Form.Group controlId="formAwayPossession" className="mb-3">
                                                                 <Form.Label>Away Possession (%)</Form.Label>
                                                                 <Form.Control
