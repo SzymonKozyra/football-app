@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class TeamGroupMembershipController {
     }
 
     @GetMapping("/group/{groupId}/points") // Poprawiono mapowanie
+    @PermitAll
     public ResponseEntity<Map<String, Integer>> getGroupPoints(@PathVariable Long groupId) {
         Map<Team, Integer> points = membershipService.calculateGroupPoints(groupId);
         Map<String, Integer> response = points.entrySet().stream()
@@ -34,4 +36,12 @@ public class TeamGroupMembershipController {
                 ));
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/group/{groupId}/teams")
+    @PermitAll
+    public ResponseEntity<List<Team>> getTeamsByGroup(@PathVariable Long groupId) {
+        List<Team> teams = membershipService.getTeamsByGroup(groupId);
+        return ResponseEntity.ok(teams);
+    }
+
 }

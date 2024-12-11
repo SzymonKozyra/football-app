@@ -98,7 +98,7 @@ const AddGroupForm = () => {
     // Wyszukiwanie drużyn
     useEffect(() => {
         if (teamSearchQuery) {
-            const token = localStorage.getItem('jwtToken');
+            const token = localStorage.getItem("jwtToken");
             axios
                 .get(`http://localhost:8080/api/teams/search?query=${teamSearchQuery}`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -111,13 +111,14 @@ const AddGroupForm = () => {
                     }
                 })
                 .catch((error) => {
-                    console.error('Error fetching teams:', error);
+                    console.error("Error fetching teams:", error);
                     setFilteredTeams([]);
                 });
         } else {
             setFilteredTeams([]);
         }
     }, [teamSearchQuery]);
+
 
     const handleTeamSelect = (team) => {
         if (!selectedTeams.some((t) => t.id === team.id)) {

@@ -92,8 +92,14 @@ const EditGroupForm = () => {
                     .get(`http://localhost:8080/api/leagueGroups/league/${response.data.id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     })
-                    .then((groupResponse) => setGroups(groupResponse.data))
-                    .catch((error) => console.error("Error fetching groups:", error));
+                    .then((groupResponse) => {
+                        console.log("Fetched groups:", groupResponse.data); // Log danych
+                        setGroups(groupResponse.data);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching groups:", error.response || error.message);
+                        alert("Failed to fetch groups for the selected league.");
+                    });
 
                 setShowLeagueModal(false);
             })
@@ -103,10 +109,22 @@ const EditGroupForm = () => {
             });
     };
 
-    const handleGroupSelect = (group) => {
+    const handleGroupSelect = (group, e) => {
+        console.log("Group selected:", group); // Debug log
+
         setSelectedGroup(group);
         setGroupName(group.name);
-        setSelectedTeams(group.teams || []);
+
+        const token = localStorage.getItem("jwtToken");
+        axios
+            .get(`http://localhost:8080/api/teamGroupMembership/group/${group.id}/teams`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                console.log("Fetched Teams for group:", response.data); // Loguj dane z backendu
+                setSelectedTeams(response.data);
+            })
+            .catch((error) => console.error("Error fetching teams for group:", error));
     };
 
     const handleTeamSelect = (team) => {
@@ -123,6 +141,13 @@ const EditGroupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("handleSubmit called");
+
+        if (!selectedGroup) {
+            alert("Please select a group before saving changes.");
+            return;
+        }
+
         const token = localStorage.getItem("jwtToken");
         try {
             // Edycja grupy
@@ -134,32 +159,65 @@ const EditGroupForm = () => {
 
             // Aktualizacja drużyn w grupie
             const teamIds = selectedTeams.map((team) => team.id);
-            await axios.post(
+            console.log("Updated Team IDs to send:", teamIds); // Dodaj log, aby sprawdzić dane
+
+            const response = await axios.post(
                 `http://localhost:8080/api/teamGroupMembership/group/${selectedGroup.id}/assign`,
                 teamIds,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
+            console.log("API response:", response.data);
             alert("Group updated successfully");
-            setSelectedGroup(null);
-            setGroupName("");
-            setSelectedTeams([]);
         } catch (error) {
             console.error("Error updating group or assigning teams:", error);
             alert("Failed to update group or assign teams");
         }
     };
 
+
+    useEffect(() => {
+        if (teamSearchQuery) {
+            const token = localStorage.getItem("jwtToken");
+            axios
+                .get(`http://localhost:8080/api/teams/search?query=${teamSearchQuery}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => {
+                    if (Array.isArray(response.data)) {
+                        setFilteredTeams(response.data);
+                    } else {
+                        setFilteredTeams([]);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching teams:", error);
+                    setFilteredTeams([]);
+                });
+        } else {
+            setFilteredTeams([]);
+        }
+    }, [teamSearchQuery]);
+
+
     return (
         <Container className="mt-5">
             <h1 className="text-center mb-4">Edit Group</h1>
-            <Form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-light">
+            <Form
+                onSubmit={(e) => {
+                    e.preventDefault(); // Zatrzymuje domyślne wysyłanie formularza
+                    console.log("Form submitted, selectedGroup:", selectedGroup);
+                    if (selectedGroup) handleSubmit(e); // Zapobiega wywołaniu, gdy grupa nie jest wybrana
+                }}
+
+                className="p-4 border rounded shadow-sm bg-light"
+            >
                 <Form.Group controlId="formLeague" className="mb-3">
                     <Form.Label>League</Form.Label>
                     <Button
                         variant="outline-primary"
                         onClick={handleOpenLeagueModal}
                         className="w-100"
+                        type="button" // Dodano type="button"
                     >
                         {selectedLeague
                             ? `${selectedLeague.name} (${selectedLeague.country?.name || "Unknown Country"}, Edition: ${selectedLeague.edition})`
@@ -175,7 +233,11 @@ const EditGroupForm = () => {
                                 <ListGroup.Item
                                     key={group.id}
                                     action
-                                    onClick={() => handleGroupSelect(group)}
+                                    onClick={(e) => {
+                                        e.preventDefault(); // Prevent default browser action
+                                        e.stopPropagation(); // Stop the event from bubbling up
+                                        handleGroupSelect(group);
+                                    }}
                                 >
                                     {group.name}
                                 </ListGroup.Item>
@@ -192,6 +254,9 @@ const EditGroupForm = () => {
                                 type="text"
                                 value={groupName}
                                 onChange={(e) => setGroupName(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") e.preventDefault(); // Blokuj domyślne działanie Enter
+                                }}
                                 required
                             />
                         </Form.Group>
@@ -203,6 +268,9 @@ const EditGroupForm = () => {
                                 placeholder="Search for a team"
                                 value={teamSearchQuery}
                                 onChange={(e) => setTeamSearchQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") e.preventDefault();
+                                }}
                             />
                             {filteredTeams.length > 0 && (
                                 <ListGroup>

@@ -31,4 +31,13 @@ public class TeamGroupMembership {
     public void setTeam(Team team) { this.team = team; }
     public LeagueGroup getGroup() { return group; }
     public void setGroup(LeagueGroup group) { this.group = group; }
+
+    public void setGroupId(Long groupId) {
+    }
+
+    public void setTeamId(Long teamId) {
+    }
+    public Long getTeamId() {
+        return team != null ? team.getId() : null;
+    }
 }

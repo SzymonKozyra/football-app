@@ -42,6 +42,18 @@ public class LeagueGroupService {
     }
 
     public List<LeagueGroup> getGroupsByLeague(Long leagueId) {
-        return leagueGroupRepository.findByLeagueId(leagueId);
+        List<LeagueGroup> groups = leagueGroupRepository.findByLeagueId(leagueId);
+        System.out.println("Groups found for leagueId " + leagueId + ": " + groups);
+        return groups;
     }
+
+    public LeagueGroup editLeagueGroup(Long groupId, String name, Long leagueId) {
+        LeagueGroup group = leagueGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        group.setName(name);
+        group.setLeague(leagueRepository.findById(leagueId)
+                .orElseThrow(() -> new RuntimeException("League not found")));
+        return leagueGroupRepository.save(group);
+    }
+
 }

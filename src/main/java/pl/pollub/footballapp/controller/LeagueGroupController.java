@@ -29,8 +29,10 @@ public class LeagueGroupController {
     @GetMapping("/league/{leagueId}")
     public ResponseEntity<List<LeagueGroup>> getGroupsByLeague(@PathVariable Long leagueId) {
         List<LeagueGroup> groups = leagueGroupService.getGroupsByLeague(leagueId);
+        System.out.println("Fetched groups for leagueId " + leagueId + ": " + groups);
         return ResponseEntity.ok(groups);
     }
+
 
     @GetMapping
     public ResponseEntity<List<LeagueGroup>> getAllGroups() {
@@ -50,4 +52,17 @@ public class LeagueGroupController {
         leagueGroupService.deleteGroup(id);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/edit")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<LeagueGroup> editGroup(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload
+    ) {
+        String name = (String) payload.get("name");
+        Long leagueId = ((Number) payload.get("leagueId")).longValue();
+        LeagueGroup updatedGroup = leagueGroupService.editLeagueGroup(id, name, leagueId);
+        return ResponseEntity.ok(updatedGroup);
+    }
+
 }
