@@ -55,6 +55,23 @@ const Sidebar = ({ onOpenRegistration }) => {
         }
     }, [userId, token]);
 
+    const getDistinctLeagues = (leagues) => {
+        const leagueMap = new Map();
+
+        leagues.forEach((league) => {
+            const editionYears = league.edition.split("/").map(Number); // Rozdziela edycję na lata
+            const editionYear = Math.max(...editionYears); // Pobiera większy rok, np. z "2023/2024" -> 2024
+
+            if (!leagueMap.has(league.name) || editionYear > leagueMap.get(league.name).year) {
+                leagueMap.set(league.name, { ...league, year: editionYear });
+            }
+        });
+
+        return Array.from(leagueMap.values());
+    };
+
+
+
     const updateFavorites = (newFavorites) => {
         setFavorites(newFavorites);
         console.log("Nowe wartości favorites:", newFavorites);
@@ -169,7 +186,10 @@ const Sidebar = ({ onOpenRegistration }) => {
         // Pobierz wszystkie ligi i drużyny
         axios
             .get(`${BASE_URL}/api/leagues`, { headers: { Authorization: `Bearer ${token}` } })
-            .then((response) => setAllLeagues(response.data))
+            .then((response) => {
+                const distinctLeagues = getDistinctLeagues(response.data);
+                setAllLeagues(distinctLeagues);
+            })
             .catch((error) => console.error("Error fetching leagues:", error));
 
         axios
@@ -261,7 +281,7 @@ const Sidebar = ({ onOpenRegistration }) => {
                                 }}
                             />
                             <span onClick={() => handleLeagueClick(league.id)} style={{cursor: "pointer"}}>
-                                {league.name || "Brak nazwy"}
+                                {league.name || "Unknown name"}
                             </span>
                         </div>
                         <i

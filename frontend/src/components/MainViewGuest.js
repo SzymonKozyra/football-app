@@ -136,6 +136,12 @@ const MainViewGuest = ({ onOpenRegistration }) => {
         return null; // For non-IN_PLAY and non-FINISHED statuses
     };
 
+    // Helper function to parse editions
+    const parseEdition = (edition) => {
+        const parts = edition.split('/');
+        return parseInt(parts[0], 10); // Extract the starting year as an integer
+    };
+
     // Pobranie wszystkich lig i drużyn
     useEffect(() => {
         axios.get(`${BASE_URL}/api/leagues`)

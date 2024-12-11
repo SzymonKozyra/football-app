@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Card, Nav, ListGroup, Accordion, Modal } from "react-bootstrap";
+import { Container, Row, Col, Card, Nav, ListGroup, Accordion, Modal, Form } from "react-bootstrap";
 import Sidebar from "./Sidebar";
 import TeamImageVerySmall from "./TeamImageVerySmall";
 import UsePagination from "./UsePagination";
@@ -9,9 +9,14 @@ import PaginationComponent from "./PaginationComponent";
 
 import MatchDetail from "./MatchDetail";
 import RegistrationModal from "./RegistrationModal"; // Import RegistrationModal
+import { useNavigate } from "react-router-dom";
+
 const BASE_URL = "http://localhost:8080";
 
 const LeaguePage = () => {
+    const navigate = useNavigate();
+
+
     const { id } = useParams();
     const [matches, setMatches] = useState([]);
     const [league, setLeague] = useState(null);
@@ -43,12 +48,31 @@ const LeaguePage = () => {
     const matchesPagination = UsePagination(filteredMatches, 10);
     const resultsPagination = UsePagination(filteredResults, 10);
 
+    const [editions, setEditions] = useState([]);
+    const [selectedEdition, setSelectedEdition] = useState(null);
+
+
     useEffect(() => {
-        // Pobierz dane ligi
+        // Pobierz dane ligi i edycje
+        // Pobierz dane ligi i edycje
         axios
             .get(`${BASE_URL}/api/leagues/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-            .then((response) => setLeague(response.data))
-            .catch((error) => console.error("Error fetching league:", error));
+            .then((response) => {
+                setLeague(response.data);
+
+                // Po wczytaniu ligi pobierz edycje
+                return axios.get(`${BASE_URL}/api/leagues/${id}/editions`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+            })
+            .then((response) => {
+                setEditions(response.data);
+
+                // Ustaw obecnie wczytaną ligę jako domyślną edycję w selektorze
+                const currentEdition = response.data.find((edition) => edition.id === parseInt(id));
+                setSelectedEdition(currentEdition || response.data[0]); // Jeśli nie znajdzie, ustaw pierwszą edycję
+            })
+            .catch((error) => console.error("Error fetching league or editions:", error));
 
         // Pobierz mecze ligi
         axios
@@ -115,6 +139,8 @@ const LeaguePage = () => {
         fetchMatchesAndEvents();
 
     }, [id, token, favorites.matches]); // Zależność od favorites.matches
+
+
 
     const fetchEventsForMatches = async (matches) => {
         return Promise.all(
@@ -340,65 +366,165 @@ const LeaguePage = () => {
         return favorites[type]?.some(typeMap[type]) || false;
     };
 
-    const renderMatches = (matchesToRender) => {
+    const handleEditionChange = (newEditionId) => {
+        const selected = editions.find((edition) => edition.id === parseInt(newEditionId));
+        setSelectedEdition(selected);
+        if (selected) {
+            navigate(`/league/${selected.id}`); // Przejdź na stronę ligi z wybraną edycją
+        }
+    };
+
+    const renderMatches = () => {
         const { currentResults, totalPages, currentPage, handlePageChange } = matchesPagination;
+
+        let lastRound = null;
+        let lastRoundStage = null; // Inicjalizacja zmiennych
+
         return (
             <>
                 <Card className="mb-4" style={{ width: "100%", margin: "0 auto" }}>
                     <Card.Body>
                         <ListGroup variant="flush">
-                            {currentResults.map((match) => (
-                                <ListGroup.Item
-                                    key={match.id}
-                                    className="d-flex align-items-center justify-content-between"
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    <i
-                                        className={`bi ${
-                                            match.isFavorite ? "bi-star-fill text-warning" : "bi-star"
-                                        }`}
-                                        style={{ cursor: "pointer" }}
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // Zapobiegaj otwieraniu modala przy kliknięciu w gwiazdkę
-                                            toggleFavorite('matches', match);
-                                        }}
-                                    ></i>
-                                    <span
-                                        style={{
-                                            marginRight: "15px",
-                                            marginLeft: "15px",
-                                            width: "90px",
-                                            textAlign: "center",
-                                            display: "inline-block",
-                                            backgroundColor:
-                                                match.status === "IN_PLAY" ? "rgba(255, 0, 0, 0.6)" : "transparent",
-                                            borderRadius: "5px",
-                                            padding: "5px",
-                                        }}
-                                        onClick={() => handleMatchClick(match)}
-                                    >
-                                    {calculateMatchMinute(match)}
-                                </span>
-                                    <div style={{ flex: 1 }} onClick={() => handleMatchClick(match)}>
-                                        <div className="d-flex align-items-center">
-                                            <TeamImageVerySmall team={match.homeTeam} />
-                                            <span style={{ marginLeft: "10px" }}>{match.homeTeam.name}</span>
-                                        </div>
-                                        <div className="d-flex align-items-center">
-                                            <TeamImageVerySmall team={match.awayTeam} />
-                                            <span style={{ marginLeft: "10px" }}>{match.awayTeam.name}</span>
-                                        </div>
-                                    </div>
-                                    {match.status === "IN_PLAY" || match.status === "FINISHED" ? (
-                                        <span style={{ marginRight: "40px" }}>
-                                        <div style={{ textAlign: "right" }}>
-                                            <div>{match.homeGoals}</div>
-                                            <div>{match.awayGoals}</div>
-                                        </div>
-                                    </span>
-                                    ) : null}
-                                </ListGroup.Item>
-                            ))}
+                            {currentResults.map((match) => {
+                                const isNewRound =
+                                    match.round !== lastRound || match.stage.name !== lastRoundStage;
+
+                                // Aktualizacja zmiennych lastRound i lastRoundStage
+                                lastRound = match.round;
+                                lastRoundStage = match.stage.name;
+
+                                // Ustal etykietę dla rundy
+                                let roundLabel = `Round ${match.round}`;
+                                if (match.stage.name !== "GROUP") {
+                                    switch (match.stage.name) {
+                                        case "1/2":
+                                            roundLabel = "SEMI-FINALS";
+                                            break;
+                                        case "FINAL":
+                                            roundLabel = "FINAL";
+                                            break;
+                                        case "1/4":
+                                            roundLabel = "QUARTER-FINALS";
+                                            break;
+                                        case "1/8":
+                                            roundLabel = "ROUND OF 16";
+                                            break;
+                                        default:
+                                            roundLabel = `${match.stage.name}-FINALS`;
+                                    }
+                                }
+
+                                return (
+                                    <React.Fragment key={match.id}>
+                                        {/* Dodaj linię z nazwą rundy, jeśli jest nowa */}
+                                        {isNewRound && (
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    margin: "20px 0",
+                                                    position: "relative",
+                                                }}
+                                            >
+                                                <hr
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderTop: "1px solid #ccc",
+                                                    }}
+                                                />
+                                                <span
+                                                    style={{
+                                                        padding: "0 10px",
+                                                        backgroundColor: "#fff",
+                                                        fontWeight: "bold",
+                                                        color: "#555",
+                                                    }}
+                                                >
+                                                {roundLabel}
+                                            </span>
+                                                <hr
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderTop: "1px solid #ccc",
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Wyświetlenie meczu */}
+                                        <ListGroup.Item
+                                            key={match.id}
+                                            className="d-flex align-items-center justify-content-between"
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <i
+                                                className={`bi ${
+                                                    match.isFavorite
+                                                        ? "bi-star-fill text-warning"
+                                                        : "bi-star"
+                                                }`}
+                                                style={{ cursor: "pointer" }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Zapobiegaj otwieraniu modala przy kliknięciu w gwiazdkę
+                                                    toggleFavorite("matches", match);
+                                                }}
+                                            ></i>
+                                            <span
+                                                style={{
+                                                    marginRight: "15px",
+                                                    marginLeft: "15px",
+                                                    width: "90px",
+                                                    textAlign: "center",
+                                                    display: "inline-block",
+                                                    backgroundColor:
+                                                        match.status === "IN_PLAY"
+                                                            ? "rgba(255, 0, 0, 0.6)"
+                                                            : "transparent",
+                                                    borderRadius: "5px",
+                                                    padding: "5px",
+                                                }}
+                                                onClick={() => handleMatchClick(match)}
+                                            >
+                                            {match.status === "IN_PLAY"
+                                                ? calculateMatchMinute(match)
+                                                : new Date(match.dateTime).toLocaleString("pl-PL", {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                }).replace(",", "")}
+                                        </span>
+                                            <div
+                                                style={{ flex: 1 }}
+                                                onClick={() => handleMatchClick(match)}
+                                            >
+                                                <div className="d-flex align-items-center">
+                                                    <TeamImageVerySmall team={match.homeTeam} />
+                                                    <span style={{ marginLeft: "10px" }}>
+                                                    {match.homeTeam.name}
+                                                </span>
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <TeamImageVerySmall team={match.awayTeam} />
+                                                    <span style={{ marginLeft: "10px" }}>
+                                                    {match.awayTeam.name}
+                                                </span>
+                                                </div>
+                                            </div>
+                                            {match.status === "IN_PLAY" ||
+                                            match.status === "FINISHED" ? (
+                                                <span style={{ marginRight: "40px" }}>
+                                                <div style={{ textAlign: "right" }}>
+                                                    <div>{match.homeGoals}</div>
+                                                    <div>{match.awayGoals}</div>
+                                                </div>
+                                            </span>
+                                            ) : null}
+                                        </ListGroup.Item>
+                                    </React.Fragment>
+                                );
+                            })}
                         </ListGroup>
                     </Card.Body>
                 </Card>
@@ -411,31 +537,153 @@ const LeaguePage = () => {
         );
     };
 
+
+
     const renderResults = () => {
         const { currentResults, totalPages, currentPage, handlePageChange } = resultsPagination;
 
+        let lastRound = null;
+        let lastRoundStage = null; // Inicjalizacja zmiennej przed użyciem
+
         return (
             <>
-                <Card className="mt-4">
+                <Card className="mb-4" style={{ width: "100%", margin: "0 auto" }}>
                     <Card.Body>
-                        {currentResults.map((match) => (
-                            <Card className="mb-3" key={match.id}>
-                                <Card.Body className="d-flex justify-content-between align-items-center">
-                                    <div className="d-flex align-items-center">
-                                        <TeamImageVerySmall team={match.homeTeam} />
-                                        <span style={{ marginLeft: "10px" }}>{match.homeTeam.name}</span>
-                                        <span style={{ margin: "0 10px" }}>vs</span>
-                                        <TeamImageVerySmall team={match.awayTeam} />
-                                        <span style={{ marginLeft: "10px" }}>{match.awayTeam.name}</span>
-                                    </div>
-                                    <div>
-                                        <strong>
-                                            {match.homeGoals} - {match.awayGoals}
-                                        </strong>
-                                    </div>
-                                </Card.Body>
-                            </Card>
-                        ))}
+                        <ListGroup variant="flush">
+                            {currentResults.map((match) => {
+                                const isNewRound =
+                                    match.round !== lastRound || match.stage.name !== lastRoundStage;
+
+                                // Aktualizacja zmiennych lastRound i lastRoundStage
+                                lastRound = match.round;
+                                lastRoundStage = match.stage.name;
+
+                                // Ustal etykietę dla rundy
+                                let roundLabel = `Round ${match.round}`;
+                                if (match.stage.name !== "GROUP") {
+                                    switch (match.stage.name) {
+                                        case "1/2":
+                                            roundLabel = "SEMI-FINALS";
+                                            break;
+                                        case "FINAL":
+                                            roundLabel = "FINAL";
+                                            break;
+                                        case "1/4":
+                                            roundLabel = "QUARTER-FINALS";
+                                            break;
+                                        case "1/8":
+                                            roundLabel = "ROUND OF 16";
+                                            break;
+                                        default:
+                                            roundLabel = `${match.stage.name}-FINALS`;
+                                    }
+                                }
+
+                                return (
+                                    <React.Fragment key={match.id}>
+                                        {/* Dodaj linię z nazwą rundy, jeśli jest nowa */}
+                                        {isNewRound && (
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    margin: "20px 0",
+                                                    position: "relative",
+                                                }}
+                                            >
+                                                <hr
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderTop: "1px solid #ccc",
+                                                    }}
+                                                />
+                                                <span
+                                                    style={{
+                                                        padding: "0 10px",
+                                                        backgroundColor: "#fff",
+                                                        fontWeight: "bold",
+                                                        color: "#555",
+                                                    }}
+                                                >
+                                                {roundLabel}
+                                            </span>
+                                                <hr
+                                                    style={{
+                                                        flexGrow: 1,
+                                                        borderTop: "1px solid #ccc",
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Wyświetlenie meczu */}
+                                        <ListGroup.Item
+                                            key={match.id}
+                                            className="d-flex align-items-center justify-content-between"
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <i
+                                                className={`bi ${
+                                                    match.isFavorite
+                                                        ? "bi-star-fill text-warning"
+                                                        : "bi-star"
+                                                }`}
+                                                style={{ cursor: "pointer" }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Zapobiegaj otwieraniu modala przy kliknięciu w gwiazdkę
+                                                    toggleFavorite("matches", match);
+                                                }}
+                                            ></i>
+                                            <span
+                                                style={{
+                                                    marginRight: "15px",
+                                                    marginLeft: "15px",
+                                                    width: "90px",
+                                                    textAlign: "center",
+                                                    display: "inline-block",
+                                                    backgroundColor:
+                                                        match.status === "IN_PLAY"
+                                                            ? "rgba(255, 0, 0, 0.6)"
+                                                            : "transparent",
+                                                    borderRadius: "5px",
+                                                    padding: "5px",
+                                                }}
+                                                onClick={() => handleMatchClick(match)}
+                                            >
+                                            {calculateMatchMinute(match)}
+                                        </span>
+                                            <div
+                                                style={{ flex: 1 }}
+                                                onClick={() => handleMatchClick(match)}
+                                            >
+                                                <div className="d-flex align-items-center">
+                                                    <TeamImageVerySmall team={match.homeTeam} />
+                                                    <span style={{ marginLeft: "10px" }}>
+                                                    {match.homeTeam.name}
+                                                </span>
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <TeamImageVerySmall team={match.awayTeam} />
+                                                    <span style={{ marginLeft: "10px" }}>
+                                                    {match.awayTeam.name}
+                                                </span>
+                                                </div>
+                                            </div>
+                                            {match.status === "IN_PLAY" ||
+                                            match.status === "FINISHED" ? (
+                                                <span style={{ marginRight: "40px" }}>
+                                                <div style={{ textAlign: "right" }}>
+                                                    <div>{match.homeGoals}</div>
+                                                    <div>{match.awayGoals}</div>
+                                                </div>
+                                            </span>
+                                            ) : null}
+                                        </ListGroup.Item>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </ListGroup>
                     </Card.Body>
                 </Card>
                 <PaginationComponent
@@ -446,6 +694,10 @@ const LeaguePage = () => {
             </>
         );
     };
+
+
+
+
 
     const renderStandings = () => {
         return (
@@ -479,6 +731,20 @@ const LeaguePage = () => {
 
                 <Col md={9} className="mb-2 order-1 order-md-2">
                     <h3 className="mt-4">{league.name}</h3>
+
+                    <Form.Group controlId="formEditionSelect" className="mt-3 mb-3">
+                        <Form.Select
+                            value={selectedEdition?.id || ""}
+                            onChange={(e) => handleEditionChange(e.target.value)}
+                        >
+                            {editions.map((edition) => (
+                                <option key={edition.id} value={edition.id}>
+                                    {edition.edition}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+
                     <Nav variant="tabs" activeKey={activeTab} onSelect={(selectedKey) => setActiveTab(selectedKey)}>
                         <Nav.Item>
                             <Nav.Link eventKey="matches">Matches</Nav.Link>

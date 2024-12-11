@@ -17,7 +17,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     @Query("SELECT l FROM League l WHERE LOWER(l.name) LIKE %:query%")
     List<League> findByNameContaining(@Param("query") String query, Sort sort);
 
-    Optional<Object> findByName(String leagueName);
+    List<League> findByName(String leagueName);
 
     boolean existsByNameAndCountryAndEdition(String name, Country country, String edition);
 

@@ -139,5 +139,10 @@ public class LeagueController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
+    @GetMapping("/{id}/editions")
+    @PermitAll
+    public ResponseEntity<List<League>> getLeaguesWithSameName(@PathVariable Long id) {
+        List<League> leagues = leagueService.getLeaguesBySameName(id);
+        return ResponseEntity.ok(leagues);
+    }
 }

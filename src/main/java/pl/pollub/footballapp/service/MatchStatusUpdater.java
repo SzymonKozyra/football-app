@@ -31,15 +31,15 @@ public class MatchStatusUpdater {
         // UPCOMING & IN_PLAY matches
         List<Match> matches = matchRepository.findByStatusIn(List.of(MatchStatus.UPCOMING, MatchStatus.IN_PLAY));
 
-        for (Match match : matches) {
-            if (now.isBefore(match.getDateTime())) {
-                match.setStatus(MatchStatus.UPCOMING);
-            } else if (now.isBefore(match.getDateTime().plus(match.getDuration(), ChronoUnit.MINUTES))) {
-                match.setStatus(MatchStatus.IN_PLAY);
-            } else {
-                match.setStatus(MatchStatus.FINISHED);
-            }
-        }
-        matchRepository.saveAll(matches);
+//        for (Match match : matches) {
+//            if (now.isBefore(match.getDateTime())) {
+//                match.setStatus(MatchStatus.UPCOMING);
+//            } else if (now.isBefore(match.getDateTime().plus(match.getDuration(), ChronoUnit.MINUTES))) {
+//                match.setStatus(MatchStatus.IN_PLAY);
+//            } else {
+//                match.setStatus(MatchStatus.FINISHED);
+//            }
+//        }
+//        matchRepository.saveAll(matches);
     }
 }

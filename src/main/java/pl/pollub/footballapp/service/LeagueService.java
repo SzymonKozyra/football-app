@@ -157,4 +157,18 @@ public class LeagueService {
     public Optional<League> findById(Long id) {
         return leagueRepository.findById(id);
     }
+
+
+    public List<League> getLeaguesBySameName(Long leagueId) {
+        // Pobierz ligę na podstawie ID
+        League league = leagueRepository.findById(leagueId)
+                .orElseThrow(() -> new IllegalArgumentException("League not found with ID: " + leagueId));
+
+        String leagueName = league.getName(); // Pobierz nazwę ligi
+
+        // Wyszukaj wszystkie ligi o tej samej nazwie
+        List<League> leaguesWithSameName = leagueRepository.findByName(leagueName);
+
+        return leaguesWithSameName;
+    }
 }
