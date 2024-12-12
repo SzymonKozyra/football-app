@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, ListGroup, Card, Button } from 'react-bootstrap';
+import {Container, Row, Col, ListGroup, Card, Button, Accordion} from 'react-bootstrap';
 import { BiLeftArrow, BiRightArrow } from 'react-icons/bi';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -14,6 +14,8 @@ import MatchDetail from "./MatchDetail";
 import LeagueView from "./LeagueView"; // Import LeagueView component
 import {useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";
+import './MainView.css';
+
 const BASE_URL = 'http://localhost:8080';
 
 const MainViewGuest = ({ onOpenRegistration }) => {
@@ -227,7 +229,7 @@ const MainViewGuest = ({ onOpenRegistration }) => {
         const sortedLeagues = Object.keys(groupedMatches).sort((a, b) => a.localeCompare(b));
 
         return sortedLeagues.map((leagueName) => (
-            <Card className="mb-4" key={leagueName} style={{ width: '700px', margin: '0 auto' }}>
+            <Card className="matches-display mb-4" key={leagueName}>
                 <Card.Header className="d-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center">
                         <i
@@ -316,15 +318,27 @@ const MainViewGuest = ({ onOpenRegistration }) => {
 
     return (
         <Container fluid>
+            {/* Menu rozwijane na małych ekranach */}
+            <Accordion className="d-md-none mb-4 mt-4">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>Menu</Accordion.Header>
+                    <Accordion.Body>
+                        <Sidebar onOpenRegistration={onOpenRegistration} />
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+
             <Row>
-                <Col xs={3} className="bg-light border-right">
-                    <Sidebar onOpenRegistration={onOpenRegistration} />
+                {/* Menu boczne na dużych ekranach */}
+                <Col md={3} className="bg-light border-right">
+                    <div className="d-none d-md-block">
+                        <Sidebar onOpenRegistration={onOpenRegistration} />
+                    </div>
                 </Col>
 
-                <Col xs={9}>
-
+                <Col md={9}>
                     <>
-                        <div className="d-flex align-items-center justify-content-center mt-4">
+                        <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
                             <Button variant="light" onClick={goToPreviousDay} style={{ marginRight: '5px' }}>
                                 <BiLeftArrow />
                             </Button>

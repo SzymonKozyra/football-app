@@ -91,7 +91,7 @@ function App() {
             localStorage.removeItem('logoutOrDeleteAccMessage');
             setTimeout(() => {
                 setMessage('');
-            }, 2000);
+            }, 3000);
         }
     }, []);
 
@@ -106,12 +106,8 @@ function App() {
         localStorage.removeItem('jwtToken');
         setIsLoggedIn(false);
         setLoginData({ email: '', role: '' });
-
-        localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out');
-        setTimeout(() => {
-            setMessage('');
-        }, 2000);
-        setCurrentMode('user'); // Zresetuj widok na użytkownika
+        localStorage.setItem('logoutOrDeleteAccMessage', 'You have been logged out.');
+        setCurrentMode('user');
         navigate('/');
         window.scrollTo(0, 0);
         window.location.reload();

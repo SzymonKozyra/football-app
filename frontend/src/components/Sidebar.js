@@ -204,8 +204,14 @@ const Sidebar = ({ onOpenRegistration }) => {
 
     return (
         <>
-            <h5 className="mt-4">Ulubione rozgrywki</h5>
+            <h5 className="mt-4">Favorite leagues</h5>
             <ListGroup>
+                {!token && (
+                    <p>You must be logged in to use this feature.</p>
+                )}
+                {token && isFavoritesReady && favorites.leagues.length === 0 && (
+                    <ListGroup.Item>You do not have any favorite leagues.</ListGroup.Item>
+                )}
                 {favorites.leagues.map((league) => (
                     <ListGroup.Item key={league.league.id} className="d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center">
@@ -240,8 +246,14 @@ const Sidebar = ({ onOpenRegistration }) => {
                 ))}
             </ListGroup>
 
-            <h5 className="mt-4">Ulubione drużyny</h5>
+            <h5 className="mt-4">Favorite Teams</h5>
             <ListGroup>
+                {!token && (
+                    <p>You must be logged in to use this feature.</p>
+                )}
+                {token && isFavoritesReady && favorites.teams.length === 0 && (
+                    <ListGroup.Item>You do not have any favorite teams.</ListGroup.Item>
+                )}
                 {favorites.teams.map((team) => (
                     <ListGroup.Item key={team.team.id} className="d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center">
@@ -264,7 +276,7 @@ const Sidebar = ({ onOpenRegistration }) => {
                 ))}
             </ListGroup>
 
-            <h5 className="mt-4">Wszystkie ligi</h5>
+            <h5 className="mt-4">All Leagues</h5>
             <ListGroup>
                 {allLeagues.map((league) => (
                     <ListGroup.Item key={league.id} className="d-flex justify-content-between align-items-center">
@@ -297,7 +309,7 @@ const Sidebar = ({ onOpenRegistration }) => {
                 ))}
             </ListGroup>
 
-            <h5 className="mt-4">Wszystkie drużyny</h5>
+            <h5 className="mt-4">All Teams</h5>
             <ListGroup>
                 {allTeams.map((team) => (
                     <ListGroup.Item key={team.id} className="d-flex justify-content-between align-items-center">

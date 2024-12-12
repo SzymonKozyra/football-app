@@ -65,43 +65,49 @@ const RegistrationModal = ({ isOpen, onClose, onOpenLogin }) => {
             <Modal.Body>
                 <Form onSubmit={handleRegister}>
                     <Form.Group controlId="formUsername">
-                        <Form.Label>Username</Form.Label>
+                        <Form.Label>Username:</Form.Label>
                         <Form.Control
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Enter your username"
                             required
                         />
                     </Form.Group>
                     <Form.Group controlId="formEmail" className="mt-3">
-                        <Form.Label>Email</Form.Label>
+                        <Form.Label>E-mail:</Form.Label>
                         <Form.Control
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your e-mail address"
                             required
                         />
                     </Form.Group>
                     <Form.Group controlId="formPassword" className="mt-3">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>Password:</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
                             required
                         />
                     </Form.Group>
-                    <Form.Group controlId="formConfirmPassword" className="mt-3">
-                        <Form.Label>Confirm Password</Form.Label>
+                    <Form.Group controlId="formConfirmPassword" className="mt-3 mb-3">
+                        <Form.Label>Confirm Password:</Form.Label>
                         <Form.Control
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm your password"
                             required
                         />
                     </Form.Group>
-                    {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
-                    <Button variant="primary" type="submit" className="mt-3 w-100">
+
+                    {message && <p className={`text-${messageType} text-center`}>{message}</p>}
+
+                    <Button variant="primary" type="submit" className="w-100">
                         Register
                     </Button>
                 </Form>

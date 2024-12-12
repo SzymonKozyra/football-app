@@ -26,7 +26,7 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData, onOpenPasswo
             setLoginData({ email: responseEmail, role });
             onClose();
         } catch (error) {
-            setMessage('Error while logging in');
+            setMessage('Error while logging in. Check if the login details are correct.');
             setMessageType('danger');
         }
     };
@@ -51,20 +51,24 @@ const LoginModal = ({ isOpen, onClose, setIsLoggedIn, setLoginData, onOpenPasswo
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your e-mail address"
                             required
                         />
                     </Form.Group>
-                    <Form.Group controlId="formPassword" className="mt-3">
+                    <Form.Group controlId="formPassword" className="mt-3 mb-3">
                         <Form.Label>Password:</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
                             required
                         />
                     </Form.Group>
-                    {message && <p className={`text-${messageType} mt-2`}>{message}</p>}
-                    <Button variant="primary" type="submit" className="mt-3 w-100">
+
+                    {message && <p className={`text-${messageType} text-center`}>{message}</p>}
+
+                    <Button variant="primary" type="submit" className="w-100">
                         Login
                     </Button>
                 </Form>

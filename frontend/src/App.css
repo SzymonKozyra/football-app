@@ -159,3 +159,32 @@ img {
 
 
 
+/*.modal-header{*/
+/*    justify-content: center;*/
+/*    align-items: center; !* Wyśrodkowanie w poziomie *!*/
+/*    text-align: center;*/
+/*}*/
+
+/*.modal-body {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    justify-content: center; !* Wyśrodkowanie w pionie *!*/
+/*    align-items: center; !* Wyśrodkowanie w poziomie *!*/
+/*    text-align: center; !* Wyśrodkowanie tekstu *!*/
+
+/*}*/
+
+/*.modal-header {*/
+/*    position: relative; !* Ustawienie pozycji względem rodzica *!*/
+/*    display: flex;*/
+/*    justify-content: center; !* Wyśrodkowanie tytułu w poziomie *!*/
+/*    align-items: center; !* Wyśrodkowanie tytułu w pionie *!*/
+/*}*/
+
+/*.modal-header .btn-close {*/
+/*    position: absolute; !* Ustawienie absolutne dla niezależnego położenia *!*/
+/*    top: 50%; !* Wyśrodkowanie w pionie *!*/
+/*    right: 15px; !* Odstęp od prawej krawędzi *!*/
+/*    transform: translateY(-50%); !* Wycentrowanie względem osi Y *!*/
+/*}*/
+

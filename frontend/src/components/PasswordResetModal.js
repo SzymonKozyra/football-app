@@ -38,24 +38,25 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handlePasswordReset}>
-                    <Form.Group controlId="formEmail">
+                    <Form.Group controlId="formEmail" className="mb-3">
                         <Form.Label>Email:</Form.Label>
                         <Form.Control
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your e-mail address"
                             required
                         />
                     </Form.Group>
-                    {message && (
-                        <p className={`text-${messageType} mt-3`}>{message}</p>
-                    )}
+
+                    {message && <p className={`text-${messageType} text-center`}>{message}</p>}
+
                     {/*{isEmailSent && (*/}
                     {/*    <p className="text-success mt-3">*/}
                     {/*        An email with the password reset link has been sent to your address.*/}
                     {/*    </p>*/}
                     {/*)}*/}
-                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                    <Button variant="primary" type="submit" className="w-100">
                         Send reset link
                     </Button>
                 </Form>

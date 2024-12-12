@@ -1,16 +1,18 @@
-czy wklejać screenshoty kodu testów
+opisac proces obstawiania?
 
-czy opisywac testy niepowodzenia operacji i testy wykonywania operacji bez uprawnien, czy tylko wspomnieć o nich w tekście dotyczącym testu o sukcesie
-
-czy dzial 4 "Widoki" i dzial 5 "Testy" muszą byc podzielone na podrozdzialy
-
-czy opisywac gdzies responsywnosc
-
-
-//
-czy robic rozdzial kontrola poprawności danych i czy wrzucic to w podrozdzial bezpieczenstwo
+czy robic rozdzial "Instalacja"
 - tak
 
-Czy opisywac wyszukiwanie trenera i pokazanie jego kontraktow
-(relacja jeden do wielu, team moze miec wiele kontraktow a trener jeden)
-- nie ewentualnie w tekscie wspomniec nie jako rozdzial
+czy opisywac gdzies responsywnosc
+- ewentualnie jako nowy podrozdzial w implementacji
+
+czy robic rozdzial kontrola poprawności danych o walidacji i czy wrzucic to w podrozdzial bezpieczenstwo
+- tak
+
+czy wklejać screenshoty kodu testów
+- jak mamy testy jednostkowe to mozna jako podrozdzial opisac (zrobic podrozdzialy 5.1 testy manualne, 5.2 jednostkowe), np. jak parametryzujemy, jak wykonujemy zaslepke, pokazac screen wyniku testow ze wszystkie przeszly
+
+czy opisywac testy niepowodzenia operacji i testy wykonywania operacji bez uprawnien, czy tylko wspomnieć o nich w tekście dotyczącym testu o sukcesie
+- nie trzeba ale można jak chcemy opisać (nie wspomnieć tylko oddzielna tabela)
+
+
