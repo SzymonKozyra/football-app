@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import TeamImageVerySmall from "./TeamImageVerySmall";
 import UsePagination from "./UsePagination";
 import PaginationComponent from "./PaginationComponent";
+import LeagueStandings from "./LeagueStandings";
 
 import MatchDetail from "./MatchDetail";
 import RegistrationModal from "./RegistrationModal"; // Import RegistrationModal
@@ -702,7 +703,9 @@ const LeaguePage = () => {
     const renderStandings = () => {
         return (
             <>
-                <p>Standings will be displayed here...</p>
+                <div className="mt-4">
+                    <LeagueStandings leagueId={league.id} />
+                </div>
             </>
         );
     };

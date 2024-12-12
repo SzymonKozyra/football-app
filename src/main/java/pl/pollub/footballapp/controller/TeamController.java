@@ -1,6 +1,8 @@
 package pl.pollub.footballapp.controller;
 
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
     private TeamService teamService;
+    private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     @Autowired
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
@@ -109,15 +113,21 @@ public class TeamController {
         return ResponseEntity.ok("Teams assigned to group successfully");
     }
 
+    @GetMapping("/group/{groupId}/statistics")
+    @PermitAll
+    public ResponseEntity<List<Map<String, Object>>> getGroupStatistics(@PathVariable Long groupId) {
+        List<Map<String, Object>> statistics = teamService.calculateGroupStatistics(groupId);
+        return ResponseEntity.ok(statistics);
+    }
     @GetMapping("/group/{groupId}/points")
     @PermitAll
-    public ResponseEntity<Map<String, Integer>> getGroupPoints(@PathVariable Long groupId) {
-        Map<Team, Integer> points = teamService.calculateGroupPoints(groupId);
-        Map<String, Integer> response = points.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey().getName(),
-                        Map.Entry::getValue
-                ));
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<Map<String, Object>>> getGroupPoints(@PathVariable Long groupId) {
+        logger.info("Received request for group points. GroupId: {}", groupId);
+        List<Map<String, Object>> points = teamService.calculateGroupStatistics(groupId);
+        if (points.isEmpty()) {
+            logger.info("No points calculated for groupId: {}", groupId);
+        }
+        return ResponseEntity.ok(points);
     }
+
 }

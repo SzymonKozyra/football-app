@@ -175,4 +175,12 @@ public class MatchController {
         return ResponseEntity.ok(matches);
     }
 
+    @GetMapping("/knockout/{leagueId}")
+    @PermitAll
+    public ResponseEntity<List<Match>> getKnockoutMatches(@PathVariable Long leagueId) {
+        List<Match> matches = matchService.findKnockoutMatches(leagueId);
+        return ResponseEntity.ok(matches);
+    }
+
+
 }

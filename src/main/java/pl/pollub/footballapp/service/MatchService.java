@@ -119,4 +119,9 @@ public class MatchService {
         return matchRepository.findByLeagueId(leagueId);
     }
 
+    public List<Match> findKnockoutMatches(Long leagueId) {
+        return matchRepository.findByLeagueIdAndStageNot(leagueId, "GROUP");
+    }
+
+
 }

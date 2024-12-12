@@ -1,25 +1,22 @@
 package pl.pollub.footballapp.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import pl.pollub.footballapp.model.LeagueGroup;
-import pl.pollub.footballapp.model.Match;
-import pl.pollub.footballapp.model.Team;
-import pl.pollub.footballapp.model.League;
-import pl.pollub.footballapp.repository.LeagueGroupRepository;
-import pl.pollub.footballapp.repository.MatchRepository;
-import pl.pollub.footballapp.repository.TeamRepository;
-import pl.pollub.footballapp.repository.LeagueRepository;
+import pl.pollub.footballapp.model.*;
+import pl.pollub.footballapp.repository.*;
 import pl.pollub.footballapp.requests.TeamRequest;
 import pl.pollub.footballapp.service.importer.DataImporter;
 import pl.pollub.footballapp.service.importer.ImporterFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -27,6 +24,9 @@ public class TeamService {
     private LeagueRepository leagueRepository;
     private ImporterFactory importerFactory;
     private FileStorageService fileStorageService;
+
+    private static final Logger logger = LoggerFactory.getLogger(TeamService.class);
+
     @Autowired
     public TeamService(TeamRepository teamRepository, LeagueRepository leagueRepository, ImporterFactory importerFactory, FileStorageService fileStorageService) {
         this.teamRepository = teamRepository;
@@ -43,6 +43,8 @@ public class TeamService {
 
     @Autowired
     private LeagueGroupRepository leagueGroupRepository;
+    @Autowired
+    private TeamGroupMembershipRepository teamGroupMembershipRepository;
 
     public String addTeam(TeamRequest teamRequest) {
         League league = leagueRepository.findById(teamRequest.getLeagueId())
@@ -222,4 +224,86 @@ public class TeamService {
 
         teamRepository.saveAll(teams);
     }
+
+    public List<Map<String, Object>> calculateGroupStatistics(Long groupId) {
+        logger.info("Starting statistics calculation for groupId: {}", groupId);
+
+        // Pobierz członkostwa drużyn w grupie
+        List<TeamGroupMembership> memberships = teamGroupMembershipRepository.findByGroupId(groupId);
+        logger.info("Found memberships for group {}: {}", groupId, memberships);
+
+        if (memberships.isEmpty()) {
+            logger.warn("No memberships found for groupId: {}", groupId);
+            return Collections.emptyList();
+        }
+
+        List<Map<String, Object>> statistics = new ArrayList<>();
+
+        for (TeamGroupMembership membership : memberships) {
+            Team team = membership.getTeam();
+            logger.info("Processing team: {} (ID: {})", team.getName(), team.getId());
+            LeagueGroup group = leagueGroupRepository.findById(groupId)
+                    .orElseThrow(() -> new RuntimeException("Group not found"));
+
+            Team teamEntity = teamRepository.findById(team.getId())
+                    .orElseThrow(() -> new RuntimeException("Team not found"));
+
+            List<Match> matches = matchRepository.findByGroupAndHomeTeamOrGroupAndAwayTeam(group, teamEntity);
+
+            // Pobierz mecze
+            logger.info("Matches for team {} in group {}: {}", team.getName(), groupId, matches);
+
+            int played = matches.size();
+            int won = 0, drawn = 0, lost = 0;
+            int goalsScored = 0, goalsConceded = 0;
+
+            for (Match match : matches) {
+                if (match.getHomeTeam().equals(team)) {
+                    goalsScored += match.getHomeGoals();
+                    goalsConceded += match.getAwayGoals();
+                    if (match.getHomeGoals() > match.getAwayGoals()) won++;
+                    else if (match.getHomeGoals() == match.getAwayGoals()) drawn++;
+                    else lost++;
+                } else if (match.getAwayTeam().equals(team)) {
+                    goalsScored += match.getAwayGoals();
+                    goalsConceded += match.getHomeGoals();
+                    if (match.getAwayGoals() > match.getHomeGoals()) won++;
+                    else if (match.getAwayGoals() == match.getHomeGoals()) drawn++;
+                    else lost++;
+                }
+            }
+
+            int points = won * 3 + drawn;
+
+            Map<String, Object> teamStats = new HashMap<>();
+            teamStats.put("team", team);
+            teamStats.put("played", played);
+            teamStats.put("won", won);
+            teamStats.put("drawn", drawn);
+            teamStats.put("lost", lost);
+            teamStats.put("goalsScored", goalsScored);
+            teamStats.put("goalsConceded", goalsConceded);
+            teamStats.put("goalDifference", goalsScored - goalsConceded);
+            teamStats.put("points", points);
+
+            logger.info("Calculated stats for team {}: {}", team.getName(), teamStats);
+
+            statistics.add(teamStats);
+        }
+
+        // Sortowanie statystyk
+        statistics.sort((a, b) -> {
+            int pointsDiff = (int) b.get("points") - (int) a.get("points");
+            if (pointsDiff != 0) return pointsDiff;
+            return (int) b.get("goalDifference") - (int) a.get("goalDifference");
+        });
+
+        logger.info("Final sorted statistics for group {}: {}", groupId, statistics);
+        return statistics;
+    }
+
+
+
+
+
 }
