@@ -32,10 +32,14 @@ const Navbar = ({
                     ☰ {/* Ikona hamburger */}
                 </button>
                 <div className={`navbar-menu ${isMenuActive ? 'active' : ''}`}>
+                    {isLoggedIn && (
+                        <Link to="/add-bet" className="btn btn-light navbar-btn">
+                            Add Bet
+                        </Link>
+                    )}
                     {isLoggedIn && (loginData.role === 'ROLE_ADMIN' || loginData.role === 'ROLE_MODERATOR') && (
                         <>
                             <span className="role">Role: {loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MODERATOR'}</span>
-
                             <button onClick={onModeSwitch} className="btn btn-outline-secondary btn-switchMode navbar-btn">
                                 {currentMode === 'user'
                                     ? `Switch to ${loginData.role === 'ROLE_ADMIN' ? 'ADMIN' : 'MOD'} View`
