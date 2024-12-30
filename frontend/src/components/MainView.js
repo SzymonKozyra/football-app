@@ -473,7 +473,7 @@ const MainView = () => {
         return (
             <Card className="matches-display mb-4 mt-4">
                 <Card.Header className="d-flex align-items-center justify-content-between">
-                    <h5 className="mb-0">Ulubione mecze</h5>
+                    <h5 className="mb-0">Favorite games</h5>
                 </Card.Header>
                 <ListGroup variant="flush">
                     {favoriteMatches.map((match) => (
