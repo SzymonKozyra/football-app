@@ -224,5 +224,9 @@ public class PlayerController {
         return playerService.deletePlayer(id);
     }
 
-
+    @GetMapping("/{id}")
+    @PermitAll
+    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
+        return ResponseEntity.ok(playerService.getPlayerById(id));
+    }
 }

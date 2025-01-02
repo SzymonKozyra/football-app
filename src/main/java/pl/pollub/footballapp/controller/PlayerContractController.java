@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,19 +30,19 @@ public class PlayerContractController {
     }
 
     @GetMapping("/player/{playerId}")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public List<PlayerContract> getContractsByPlayer(@PathVariable Long playerId) {
         return playerContractService.getContractsByPlayer(playerId);
     }
 
     @GetMapping("/team/{teamId}")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public List<PlayerContract> getContractsByTeam(@PathVariable Long teamId) {
         return playerContractService.getContractsByTeam(teamId);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public ResponseEntity<PlayerContract> getPlayerContractById(@PathVariable Long id) {
         return playerContractService.getPlayerContractById(id);
     }
@@ -61,7 +62,7 @@ public class PlayerContractController {
 
 
     @GetMapping("/active-players/{teamId}")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PermitAll
     public ResponseEntity<List<Player>> getActivePlayersByTeam(@PathVariable Long teamId) {
         List<Player> activePlayers = playerContractService.getActivePlayersByTeam(teamId);
         return ResponseEntity.ok(activePlayers);

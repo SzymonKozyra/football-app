@@ -23,6 +23,7 @@ import AddPlayersMatchSquadForm from './components/AddPlayersMatchSquadForm';
 import EventManagement from './components/EventManagement';
 import AddMatchSquadForm from "./components/AddMatchSquadForm";
 import AddBetForm from "./components/AddBetForm";
+import PlayerPage from "./components/PlayerPage";
 
 
 function App() {
@@ -252,6 +253,8 @@ function App() {
                 <Route path="/manage-events/:matchId" element={<EventManagement />} />
                 <Route path="/add-bet" element={<AddBetForm />} />
                 {/*<Route path="/" element={<MainView />} />*/}
+                <Route path="/player/:id" element={<PlayerPage />} />
+
             </Routes>
         </div>
     );

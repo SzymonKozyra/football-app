@@ -49,4 +49,6 @@ public class InjuryController {
     public ResponseEntity<?> deleteInjury(@PathVariable Long injuryId) {
         return injuryService.deleteInjury(injuryId);
     }
+
+
 }

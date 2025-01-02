@@ -212,4 +212,11 @@ public class PlayerService {
             throw new RuntimeException("Error importing players: " + e.getMessage());
         }
     }
+
+    public Player getPlayerById(Long id) {
+        // Wyszukiwanie zawodnika po ID, rzuć wyjątek jeśli nie znaleziono
+        return playerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Player with ID " + id + " not found"));
+    }
+
 }
