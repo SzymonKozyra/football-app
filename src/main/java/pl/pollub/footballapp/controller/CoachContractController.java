@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,16 +27,19 @@ public class CoachContractController {
     }
 
     @GetMapping("/coach/{coachId}")
+    @PermitAll
     public List<CoachContract> getContractsByCoach(@PathVariable Long coachId) {
         return coachContractService.getContractsByCoach(coachId);
     }
 
     @GetMapping("/team/{teamId}")
+    @PermitAll
     public List<CoachContract> getContractsByTeam(@PathVariable Long teamId) {
         return coachContractService.getContractsByTeam(teamId);
     }
 
     @GetMapping("/{id}")
+    @PermitAll
     public ResponseEntity<CoachContract> getCoachContractById(@PathVariable Long id) {
         return coachContractService.getCoachContractById(id);
     }

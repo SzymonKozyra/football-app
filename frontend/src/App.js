@@ -24,6 +24,7 @@ import EventManagement from './components/EventManagement';
 import AddMatchSquadForm from "./components/AddMatchSquadForm";
 import AddBetForm from "./components/AddBetForm";
 import PlayerPage from "./components/PlayerPage";
+import CoachPage from "./components/CoachPage";
 
 
 function App() {
@@ -254,6 +255,7 @@ function App() {
                 <Route path="/add-bet" element={<AddBetForm />} />
                 {/*<Route path="/" element={<MainView />} />*/}
                 <Route path="/player/:id" element={<PlayerPage />} />
+                <Route path="/coach/:id" element={<CoachPage />} />
 
             </Routes>
         </div>

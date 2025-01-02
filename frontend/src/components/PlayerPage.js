@@ -166,7 +166,6 @@ const PlayerPage = () => {
                         <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Z klubu</th>
                             <th>Do klubu</th>
                             <th>Kwota</th>
                             <th>Typ transferu</th>
@@ -177,7 +176,6 @@ const PlayerPage = () => {
                         {currentResults.map((contract) => (
                             <tr key={contract.id}>
                                 <td>{contract.startDate}</td>
-                                <td>{contract.previousTeam?.name || "N/A"}</td>
                                 <td>{contract.team?.name || "N/A"}</td>
                                 <td>${contract.transferFee?.toLocaleString() || "Free"}</td>
                                 <td>{transferTypeMap[contract.transferType] || "N/A"}</td>

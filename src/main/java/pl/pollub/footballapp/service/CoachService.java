@@ -167,4 +167,9 @@ public class CoachService {
                 .orElseThrow(() -> new RuntimeException("Coach not found"));
         coachRepository.delete(coach);
     }
+
+    public Coach getCoachById(Long id) {
+        return coachRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + id));
+    }
 }

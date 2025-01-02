@@ -1,5 +1,6 @@
 package pl.pollub.footballapp.controller;
 
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,7 @@ public class CoachController {
     }
 
     @GetMapping("/search")
+    @PermitAll
     public ResponseEntity<List<Coach>> searchCoaches(@RequestParam("query") String query) {
         return coachService.searchCoaches(query);
     }
@@ -57,5 +59,12 @@ public class CoachController {
             return ResponseEntity.status(500).body("Error deleting coach: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{id}")
+    @PermitAll
+    public ResponseEntity<Coach> getCoachById(@PathVariable Long id) {
+        return ResponseEntity.ok(coachService.getCoachById(id));
+    }
+
 
 }
