@@ -130,4 +130,11 @@ public class TeamController {
         return ResponseEntity.ok(points);
     }
 
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
+        return teamService.getTeamById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

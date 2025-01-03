@@ -50,4 +50,12 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     @Query("SELECT m FROM Match m WHERE m.league.id = :leagueId AND m.stage.name != :stageName")
     List<Match> findByLeagueIdAndStageNot(@Param("leagueId") Long leagueId, @Param("stageName") String stageName);
 
+
+
+    @Query("SELECT m FROM Match m WHERE (m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId) AND m.dateTime < :dateTime ORDER BY m.dateTime DESC")
+    List<Match> findByTeamAndDateTimeBefore(Long teamId, LocalDateTime dateTime);
+
+    @Query("SELECT m FROM Match m WHERE (m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId) AND m.dateTime > :dateTime ORDER BY m.dateTime ASC")
+    List<Match> findByTeamAndDateTimeAfter(Long teamId, LocalDateTime dateTime);
+
 }

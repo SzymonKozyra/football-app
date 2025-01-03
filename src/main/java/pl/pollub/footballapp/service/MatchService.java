@@ -124,4 +124,13 @@ public class MatchService {
     }
 
 
+    public List<Match> getRecentMatchesByTeam(Long teamId) {
+        LocalDateTime now = LocalDateTime.now();
+        return matchRepository.findByTeamAndDateTimeBefore(teamId, now);
+    }
+
+    public List<Match> getUpcomingMatchesByTeam(Long teamId) {
+        LocalDateTime now = LocalDateTime.now();
+        return matchRepository.findByTeamAndDateTimeAfter(teamId, now);
+    }
 }

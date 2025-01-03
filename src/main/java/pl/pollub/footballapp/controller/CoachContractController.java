@@ -55,4 +55,13 @@ public class CoachContractController {
     public ResponseEntity<?> deleteCoachContract(@PathVariable Long id) {
         return coachContractService.deleteCoachContract(id);
     }
+
+
+    @GetMapping("/team/{teamId}/current-coach")
+    @PermitAll
+    public ResponseEntity<CoachContract> getCurrentCoachByTeam(@PathVariable Long teamId) {
+        return coachContractService.getCurrentCoachByTeam(teamId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
 }

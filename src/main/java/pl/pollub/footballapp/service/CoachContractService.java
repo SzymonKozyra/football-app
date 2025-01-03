@@ -12,6 +12,7 @@ import pl.pollub.footballapp.repository.TeamRepository;
 import pl.pollub.footballapp.requests.CoachContractRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CoachContractService {
@@ -106,4 +107,8 @@ public class CoachContractService {
         return ResponseEntity.ok("Contract deleted successfully");
     }
 
+
+    public Optional<CoachContract> getCurrentCoachByTeam(Long teamId) {
+        return coachContractRepository.findByTeamIdAndIsActive(teamId);
+    }
 }

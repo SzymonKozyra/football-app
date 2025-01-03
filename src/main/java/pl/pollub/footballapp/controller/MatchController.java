@@ -183,4 +183,16 @@ public class MatchController {
     }
 
 
+    @GetMapping("/recent/{teamId}")
+    public ResponseEntity<List<Match>> getRecentMatches(@PathVariable Long teamId) {
+        List<Match> recentMatches = matchService.getRecentMatchesByTeam(teamId);
+        return ResponseEntity.ok(recentMatches);
+    }
+
+    @GetMapping("/upcoming/{teamId}")
+    public ResponseEntity<List<Match>> getUpcomingMatches(@PathVariable Long teamId) {
+        List<Match> upcomingMatches = matchService.getUpcomingMatchesByTeam(teamId);
+        return ResponseEntity.ok(upcomingMatches);
+    }
+
 }
