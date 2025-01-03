@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Modal, ButtonGroup, Button } from "react-bootstrap";
 import TeamImage from "./TeamImage";
 import MatchEvents from "./MatchEvents";
-import "./MatchDetail.css";
 import MatchStatistics from "./MatchStatistics";
 import MatchLineups from "./MatchLineups";
+import "./MatchDetail.css";
 
 const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRegistration }) => {
     const [activeTab, setActiveTab] = useState("EVENTS"); // Default to "EVENTS"
@@ -15,7 +15,7 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
 
     const handleFavoriteClick = (type, item) => {
         if (toggleFavorite) {
-            toggleFavorite(type, item); // Jeśli użytkownik jest zalogowany, wykonaj standardową akcję
+            toggleFavorite(type, item);
         } else if (onOpenRegistration) {
             onHide(); // Zamknij obecny modal
             onOpenRegistration(); // Otwórz modal rejestracji
@@ -28,7 +28,6 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
         } else if (activeTab === "STATISTICS") {
             return <MatchStatistics match={match} />;
         } else if (activeTab === "LINEUPS") {
-            console.log("LINEUPS MATCH ID: " + match.id);
             return <MatchLineups matchId={match.id} />;
         }
         return <div>Coming soon...</div>;
@@ -75,7 +74,7 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
 
                     <div className="match-info">
                         <div className="match-date">
-                            {new Date(match.dateTime).toLocaleDateString("pl-PL")}{" "}
+                            {new Date(match.dateTime).toLocaleDateString("pl-PL")} {" "}
                             {new Date(match.dateTime).toLocaleTimeString("pl-PL", {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -133,6 +132,17 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
 
                 {/* Tab Content */}
                 <div className="tab-content">{renderTabContent()}</div>
+
+                {/* Stadium and Referee Details */}
+                <div className="match-detail-additional mt-4">
+                    <h5>Additional Details</h5>
+                    <p>
+                        <strong>Stadium:</strong> {match.stadium.name} ({match.stadium.city.name}, {match.stadium.city.country.name})
+                    </p>
+                    <p>
+                        <strong>Referee:</strong> {match.referee.firstName} {match.referee.lastName}
+                    </p>
+                </div>
             </Modal.Body>
         </Modal>
     );
