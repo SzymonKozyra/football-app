@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AddAdminOrModerator from '../components/AddAdminOrModerator';
+import CreateNotificationForm from '../components/CreateNotificationForm';
 import AdminPanel from '../components/AdminPanel';
 import { Container, Row, Col, Accordion, ListGroup } from 'react-bootstrap';
 
@@ -10,6 +11,7 @@ const AdminView = ({ setIsLoggedIn, handleLogout }) => {
         switch (selectedComponent) {
             case 'AddUserRole': return <AddAdminOrModerator />;
             case 'AdminPanel': return <AdminPanel setIsLoggedIn={setIsLoggedIn} handleLogout={handleLogout}/>;
+            case 'CreateNotification': return <CreateNotificationForm />;
             default: return <p>Please select an option from the sidebar.</p>;
         }
     };
@@ -28,6 +30,9 @@ const AdminView = ({ setIsLoggedIn, handleLogout }) => {
                                     </ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AdminPanel')}>
                                         Administration Panel
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('CreateNotification')}>
+                                        Create Notification
                                     </ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>

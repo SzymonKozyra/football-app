@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.controller;
 
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.footballapp.model.Notification;
 import pl.pollub.footballapp.model.User;
@@ -37,5 +38,22 @@ public class NotificationController {
     @PostMapping("/markAsRead/{id}")
     public void markAsRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
+    }
+
+//    @PostMapping("/create")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public void createNotification(@RequestParam String title, @RequestParam String message) {
+//        notificationService.createNotificationForAll(title, message);
+//    }
+
+
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void createNotification(@RequestBody Notification notification) {
+        notificationService.createNotificationForRoles(
+                notification.getTitle(),
+                notification.getMessage(),
+                notification.getRoles()
+        );
     }
 }

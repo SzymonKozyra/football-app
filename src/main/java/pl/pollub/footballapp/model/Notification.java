@@ -2,6 +2,7 @@ package pl.pollub.footballapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Notification {
@@ -21,6 +22,9 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Transient
+    private List<String> roles;
 
     public Long getId() {
         return id;
@@ -68,5 +72,13 @@ public class Notification {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

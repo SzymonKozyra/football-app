@@ -27,6 +27,7 @@ import PlayerPage from "./components/PlayerPage";
 import CoachPage from "./components/CoachPage";
 import TeamPage from "./components/TeamPage";
 import TransfersPage from "./components/TransfersPage";
+import CreateNotificationForm from "./components/CreateNotificationForm";
 
 
 function App() {
