@@ -219,4 +219,8 @@ public class PlayerService {
                 .orElseThrow(() -> new RuntimeException("Player with ID " + id + " not found"));
     }
 
+    public List<Player> searchPlayersByName(String name) {
+        return playerRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    }
+
 }

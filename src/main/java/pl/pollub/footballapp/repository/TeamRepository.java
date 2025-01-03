@@ -17,4 +17,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     List<Team> findByNameContaining(@Param("query") String query, Sort sort);
 
     List<Team> findByGroup(LeagueGroup group);
+
+    List<Team> findByNameContainingIgnoreCase(String name);
 }

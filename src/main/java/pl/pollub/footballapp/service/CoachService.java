@@ -172,4 +172,8 @@ public class CoachService {
         return coachRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Coach not found with ID: " + id));
     }
+
+    public List<Coach> searchCoachesByName(String name) {
+        return coachRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    }
 }

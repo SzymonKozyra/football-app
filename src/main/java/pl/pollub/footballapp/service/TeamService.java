@@ -302,7 +302,9 @@ public class TeamService {
         return statistics;
     }
 
-
+    public List<Team> searchTeamsByName(String name) {
+        return teamRepository.findByNameContainingIgnoreCase(name);
+    }
 
 
 

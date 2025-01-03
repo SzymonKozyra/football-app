@@ -25,4 +25,5 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
     //boolean existsByFirstNameAndLastNameAndCountryAndDateOfBirth(String firstName, String lastName, Country country, LocalDate dateOfBirths);
     boolean existsByFirstNameAndLastNameAndCountryAndDateOfBirthIsNull(String firstName, String lastName, Country country);
 
+    List<Coach> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String name, String name1);
 }
