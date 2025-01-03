@@ -188,3 +188,12 @@ img {
 /*    transform: translateY(-50%); !* Wycentrowanie względem osi Y *!*/
 /*}*/
 
+a {
+    color: inherit; /* Kolor dziedziczony od elementu nadrzędnego */
+    text-decoration: none; /* Usunięcie podkreślenia */
+}
+
+a:hover {
+    color: #007bff; /* Możesz ustawić dowolny kolor dla hover */
+    text-decoration: underline; /* Opcjonalne podkreślenie przy najechaniu */
+}

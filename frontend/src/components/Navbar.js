@@ -25,7 +25,7 @@ const Navbar = ({
     const [searchResults, setSearchResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
 
-    const navigate = useNavigate(); // Hook do nawigacji
+    const navigate = useNavigate();
 
     const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
     const toggleMenu = () => setIsMenuActive((prevState) => !prevState);
@@ -55,8 +55,8 @@ const Navbar = ({
     };
 
     const handleResultClick = (path) => {
-        setShowResults(false); // Ukryj wyniki po kliknięciu
-        navigate(path); // Przejdź do strony
+        setShowResults(false);
+        navigate(path);
     };
 
     const renderSearchResults = () => (
@@ -119,11 +119,14 @@ const Navbar = ({
                         placeholder="Szukaj..."
                         value={searchQuery}
                         onChange={handleSearchInputChange}
-                        onBlur={() => setTimeout(() => setShowResults(false), 200)} // Opóźnienie przed ukryciem
+                        onBlur={() => setTimeout(() => setShowResults(false), 200)}
                         onFocus={() => searchQuery.length >= 3 && setShowResults(true)}
                     />
                     {showResults && renderSearchResults()}
                 </div>
+                <Link to="/transfers" className="btn btn-outline-primary navbar-btn">
+                    Transfery
+                </Link>
                 <button className="menu-toggle" onClick={toggleMenu}>
                     ☰
                 </button>

@@ -1,6 +1,7 @@
 package pl.pollub.footballapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.pollub.footballapp.TransferType;
@@ -30,6 +31,9 @@ public class PlayerContractService {
     }
 
 
+    public List<PlayerContract> getAllTransfers() {
+        return playerContractRepository.findAll(Sort.by(Sort.Direction.DESC, "startDate"));
+    }
 
 
 

@@ -67,4 +67,11 @@ public class PlayerContractController {
         List<Player> activePlayers = playerContractService.getActivePlayersByTeam(teamId);
         return ResponseEntity.ok(activePlayers);
     }
+
+    @GetMapping("/all")
+    @PermitAll
+    public List<PlayerContract> getAllTransfers() {
+        return playerContractService.getAllTransfers();
+    }
+
 }

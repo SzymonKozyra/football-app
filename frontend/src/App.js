@@ -25,6 +25,7 @@ import AddMatchSquadForm from "./components/AddMatchSquadForm";
 import AddBetForm from "./components/AddBetForm";
 import PlayerPage from "./components/PlayerPage";
 import CoachPage from "./components/CoachPage";
+import TransfersPage from "./components/TransfersPage";
 
 
 function App() {
@@ -256,6 +257,8 @@ function App() {
                 {/*<Route path="/" element={<MainView />} />*/}
                 <Route path="/player/:id" element={<PlayerPage />} />
                 <Route path="/coach/:id" element={<CoachPage />} />
+                <Route path="/transfers" element={<TransfersPage />} />
+
 
             </Routes>
         </div>
