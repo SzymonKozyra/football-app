@@ -167,6 +167,13 @@ const Navbar = ({
                                 <DropdownItem divider />
                                 <DeleteAccountButton setIsLoggedIn={setIsLoggedIn} />
                                 <DropdownItem divider />
+                                <DropdownItem
+                                    onClick={() => navigate('/notifications')}
+                                    className="notificationsButton"
+                                >
+                                    Notifications
+                                </DropdownItem>
+                                <DropdownItem divider />
                                 <DropdownItem onClick={onLogout} className="logoutButton">
                                     Logout
                                 </DropdownItem>

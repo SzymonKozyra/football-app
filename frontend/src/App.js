@@ -28,6 +28,7 @@ import CoachPage from "./components/CoachPage";
 import TeamPage from "./components/TeamPage";
 import TransfersPage from "./components/TransfersPage";
 import CreateNotificationForm from "./components/CreateNotificationForm";
+import NotificationsView from './components/NotificationsView';
 
 
 function App() {
@@ -261,6 +262,7 @@ function App() {
                 <Route path="/coach/:id" element={<CoachPage />} />
                 <Route path="/team/:id" element={<TeamPage />} />
                 <Route path="/transfers" element={<TransfersPage />} />
+                <Route path="/notifications" element={<NotificationsView />} />
 
 
             </Routes>
