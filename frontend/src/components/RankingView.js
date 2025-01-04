@@ -133,9 +133,9 @@ const RankingView = () => {
             <h2>Ranking</h2>
             <Form>
                 <Form.Group>
-                    <Form.Label>Wybierz ranking</Form.Label>
+                    <Form.Label>Select ranking</Form.Label>
                     <Form.Select value={selectedRanking} onChange={handleRankingChange}>
-                        <option value="">-- Wybierz --</option>
+                        <option value="">-- Select --</option>
                         {rankings.map((ranking) => (
                             <option key={ranking.id} value={ranking.id}>
                                 {ranking.name}
@@ -144,7 +144,7 @@ const RankingView = () => {
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mt-3">
-                    <Form.Label>Szukaj użytkownika</Form.Label>
+                    <Form.Label>Search for user</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Search username"

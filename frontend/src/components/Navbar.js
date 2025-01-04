@@ -63,7 +63,7 @@ const Navbar = ({
         <div className="search-results">
             {searchResults.teams && searchResults.teams.length > 0 && (
                 <div className="search-category">
-                    <h6 className="search-category-title">Drużyny</h6>
+                    <h6 className="search-category-title">Teams</h6>
                     {searchResults.teams.map((team) => (
                         <div
                             key={team.id}
@@ -77,7 +77,7 @@ const Navbar = ({
             )}
             {searchResults.players && searchResults.players.length > 0 && (
                 <div className="search-category">
-                    <h6 className="search-category-title">Zawodnicy</h6>
+                    <h6 className="search-category-title">Players</h6>
                     {searchResults.players.map((player) => (
                         <div
                             key={player.id}
@@ -91,7 +91,7 @@ const Navbar = ({
             )}
             {searchResults.coaches && searchResults.coaches.length > 0 && (
                 <div className="search-category">
-                    <h6 className="search-category-title">Trenerzy</h6>
+                    <h6 className="search-category-title">Coaches</h6>
                     {searchResults.coaches.map((coach) => (
                         <div
                             key={coach.id}
@@ -125,7 +125,7 @@ const Navbar = ({
                     {showResults && renderSearchResults()}
                 </div>
                 <Link to="/transfers" className="btn btn-outline-primary navbar-btn">
-                    Transfery
+                    Transfers
                 </Link>
                 <button className="menu-toggle" onClick={toggleMenu}>
                     ☰
@@ -133,7 +133,7 @@ const Navbar = ({
                 <div className={`navbar-menu ${isMenuActive ? 'active' : ''}`}>
                     {isLoggedIn && (
                         <Link to="/add-bet" className="btn btn-light navbar-btn">
-                            Add Bet
+                            Bets
                         </Link>
                     )}
                     {isLoggedIn &&

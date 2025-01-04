@@ -42,7 +42,6 @@ public class BetController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> addBet(@RequestBody BetRequest request) {
         return betService.addBet(request);
     }
