@@ -69,8 +69,6 @@ const ModeratorView = () => {
 
             case 'EditRankings': return <EditRankingForm/>;
 
-            case 'RankingView': return <RankingView/>;
-
 
             default: return <p>Please select an option from the sidebar.</p>;
         }
@@ -122,7 +120,6 @@ const ModeratorView = () => {
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditMatches')}>Edit Matches</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditBets')}>Edit Bets</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditRankings')}>Edit Rankings</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('RankingView')}>RankingView</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
                         </Accordion.Item>

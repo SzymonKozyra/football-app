@@ -59,7 +59,7 @@ const NotificationsView = () => {
 
     return (
         <Container className="mt-4">
-            <h2>Powiadomienia</h2>
+            <h2>Notifications</h2>
             <ListGroup>
                 {notifications.map((notification) => (
                     <ListGroup.Item
@@ -70,7 +70,16 @@ const NotificationsView = () => {
                             cursor: 'pointer',
                         }}
                     >
-                        {notification.title}
+                        <div style={{ flex: 1, textAlign: 'center' }}>{notification.title}</div>
+                        <span style={{ flexShrink: 0 }}>
+                            {new Date(notification.timestamp).toLocaleString('pl-PL', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </span>
                     </ListGroup.Item>
                 ))}
             </ListGroup>
@@ -84,7 +93,7 @@ const NotificationsView = () => {
                     <Modal.Body>{selectedNotification.message}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseModal}>
-                            Zamknij
+                            Close
                         </Button>
                     </Modal.Footer>
                 </Modal>

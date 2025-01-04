@@ -20,11 +20,13 @@ public class RankingPointsService {
     private final RankingPointsRepository rankingPointsRepository;
     private RankingRepository rankingRepository;
     private UserRepository userRepository;
+    private NotificationService notificationService;
     @Autowired
-    public RankingPointsService(RankingPointsRepository rankingPointsRepository, RankingRepository rankingRepository, UserRepository userRepository) {
+    public RankingPointsService(RankingPointsRepository rankingPointsRepository, RankingRepository rankingRepository, UserRepository userRepository, NotificationService notificationService) {
         this.rankingPointsRepository = rankingPointsRepository;
         this.rankingRepository = rankingRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
 

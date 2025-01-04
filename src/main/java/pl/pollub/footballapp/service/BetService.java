@@ -227,7 +227,7 @@ public class BetService {
             if (bet.getHomeScore() == match.getHomeGoals() && bet.getAwayScore() == match.getAwayGoals()) {
                 bet.setIsCorrect(true);
 
-//                User user = bet.getUser();
+                User user = bet.getUser();
 
 //                // Znajdź lub utwórz punkty w tabeli RankingPoints
 //                RankingPoints rankingPoints = rankingPointsRepository.findByUserIdAndRankingId(user.getId(), activeRanking)
@@ -244,6 +244,8 @@ public class BetService {
 //                rankingPoints.setLastUpdated(LocalDateTime.now());
 //                rankingPointsRepository.save(rankingPoints);
 
+                notificationService.createCorrectBetNotification(user, match);
+
                 rankingPointsService.updateRankingPoints(bet.getUser().getId(), 1);
 
 //                User user = bet.getUser();
@@ -251,6 +253,8 @@ public class BetService {
 //                userRepository.save(user);
             } else {
                 bet.setIsCorrect(false);
+                User user = bet.getUser();
+                notificationService.createIncorrectBetNotification(user, match);
             }
             betRepository.save(bet);
         }

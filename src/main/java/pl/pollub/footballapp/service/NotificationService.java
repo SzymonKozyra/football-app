@@ -46,8 +46,8 @@ public class NotificationService {
 
     public void createBetNotification(User user, Match match) {
         Notification notification = new Notification();
-        notification.setTitle("Zakład postawiony");
-        notification.setMessage("Twój zakład na mecz " + match.getHomeTeam().getName() + " vs " + match.getAwayTeam().getName() + " został zapisany.");
+        notification.setTitle("Bet placed");
+        notification.setMessage("Your bet for metch " + match.getHomeTeam().getName() + " vs " + match.getAwayTeam().getName() + " is placed.");
         notification.setRead(false);
         notification.setTimestamp(LocalDateTime.now());
         notification.setUser(user);
@@ -66,5 +66,26 @@ public class NotificationService {
         for (User user : users) {
             createNotification(title, message, user);
         }
+    }
+
+
+    public void createCorrectBetNotification(User user, Match match) {
+        Notification notification = new Notification();
+        notification.setTitle("Correct bet");
+        notification.setMessage("Congratulations. Your bet for metch " + match.getHomeTeam().getName() + " vs " + match.getAwayTeam().getName() + " was correct.\n You get 1 point");
+        notification.setRead(false);
+        notification.setTimestamp(LocalDateTime.now());
+        notification.setUser(user);
+        notificationRepository.save(notification);
+    }
+
+    public void createIncorrectBetNotification(User user, Match match) {
+        Notification notification = new Notification();
+        notification.setTitle("Incorrect bet");
+        notification.setMessage("Unfortunately. Your bet for metch " + match.getHomeTeam().getName() + " vs " + match.getAwayTeam().getName() + " was incorrect.\n You don't get any points");
+        notification.setRead(false);
+        notification.setTimestamp(LocalDateTime.now());
+        notification.setUser(user);
+        notificationRepository.save(notification);
     }
 }
