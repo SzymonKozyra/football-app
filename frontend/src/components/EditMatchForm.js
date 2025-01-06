@@ -27,6 +27,35 @@ const EditMatchForm = ({ matchId }) => {
     const [selectedEdition, setSelectedEdition] = useState(null);
 
 
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+
+        axios.get(`http://localhost:8080/api/matches/${matchId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => {
+                const match = response.data;
+                setDateTime(match.dateTime);
+                setMatchStatus(match.status);
+                setSelectedReferee(match.referee);
+                setSelectedStadium(match.stadium);
+                setSelectedLeague(match.league);
+
+                if (match.stage) {
+                    setSelectedStage(match.stage); // Ustaw `selectedStage` na podstawie danych meczu
+                }
+
+                if (match.stageType === 'GROUP_STAGE') {
+                    setStageType('GROUP_STAGE');
+                    setSelectedGroup(match.group);
+                } else if (match.stageType === 'KNOCKOUT_STAGE') {
+                    setStageType('KNOCKOUT_STAGE');
+                } else {
+                    setStageType('OTHER');
+                }
+            })
+            .catch((error) => console.error('Error fetching match data:', error));
+    }, [matchId]);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -162,6 +191,7 @@ const EditMatchForm = ({ matchId }) => {
             league: { id: selectedLeague?.id },
             ...(stageType === 'GROUP_STAGE' && { group: selectedGroup }),
             ...(stageType === 'KNOCKOUT_STAGE' && { stage: selectedStage }),
+            ...(stageType === 'OTHER' && { stage: { id: 11 } }), // Ustaw "OTHER" jako id 11
         };
 
         try {
@@ -211,13 +241,33 @@ const EditMatchForm = ({ matchId }) => {
                             : 'Select League'}
                     </Button>
                 </Form.Group>
-
                 <Form.Group controlId="formStageType" className="mb-3">
                     <Form.Label>Stage Type</Form.Label>
                     <Form.Control
                         as="select"
                         value={stageType}
-                        onChange={(e) => setStageType(e.target.value)}
+                        onChange={(e) => {
+                            const selectedType = e.target.value;
+                            setStageType(selectedType);
+
+                            if (selectedType === 'GROUP_STAGE') {
+                                const groupStage = stageOptions.find(stage => stage.id === 1);
+                                if (groupStage) {
+                                    setSelectedStage(groupStage); // Ustaw fazę grupową
+                                } else {
+                                    console.error('Group stage not found in stageOptions');
+                                }
+                            } else if (selectedType === 'OTHER') {
+                                const otherStage = stageOptions.find(stage => stage.id === 11);
+                                if (otherStage) {
+                                    setSelectedStage(otherStage); // Ustaw fazę "OTHER"
+                                } else {
+                                    setSelectedStage({ id: 11, name: 'OTHER' }); // Domyślne ustawienie
+                                }
+                            } else {
+                                setSelectedStage(null); // Resetuj, jeśli brak typu fazy
+                            }
+                        }}
                         required
                     >
                         <option value="OTHER">Other</option>
@@ -225,6 +275,8 @@ const EditMatchForm = ({ matchId }) => {
                         <option value="KNOCKOUT_STAGE">Knockout Stage</option>
                     </Form.Control>
                 </Form.Group>
+
+
 
                 {stageType === 'GROUP_STAGE' && (
                     <Form.Group controlId="formGroup" className="mb-3">
@@ -256,13 +308,11 @@ const EditMatchForm = ({ matchId }) => {
                             as="select"
                             value={selectedStage?.id || ''}
                             onChange={(e) => {
-                                const stage = stageOptions.find((s) => s.id.toString() === e.target.value);
+                                const stage = stageOptions.find(s => s.id.toString() === e.target.value);
                                 setSelectedStage(stage);
                             }}
                         >
-                            <option value="" disabled>
-                                Select a stage
-                            </option>
+                            <option value="" disabled>Select a stage</option>
                             {stageOptions.map((stage) => (
                                 <option key={stage.id} value={stage.id}>
                                     {stage.name}
@@ -271,6 +321,7 @@ const EditMatchForm = ({ matchId }) => {
                         </Form.Control>
                     </Form.Group>
                 )}
+
 
                 <Button variant="primary" type="submit" className="w-100 mt-3">
                     Update Match

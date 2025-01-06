@@ -234,7 +234,8 @@ const MatchSearchAndEditForm = () => {
             round: match.round,
             status: match.status,
             isBetable: match.isBetable,
-
+            stageType: match.stageType || 'OTHER',
+            selectedStage: match.stage || (match.stageType === 'OTHER' ? { id: 11, name: 'OTHER' } : null), // Domyślny stage dla OTHER
             homeGoals: match.homeGoals || 0,
             awayGoals: match.awayGoals || 0,
             homePossession: match.homePossession || 0,
@@ -284,8 +285,7 @@ const MatchSearchAndEditForm = () => {
             league: { id: editData.league },
             homeTeam: { id: editData.homeTeam },
             awayTeam: { id: editData.awayTeam },
-            isBetable: editData.isBetable,
-
+            stage: editData.selectedStage, // Dodaj wybrany stage
         };
 
         axios.put(`http://localhost:8080/api/matches/${selectedMatch}`, updatedMatch, {
@@ -300,6 +300,7 @@ const MatchSearchAndEditForm = () => {
                 alert('Failed to update match');
             });
     };
+
     //
     // const handleManageEventsClick = (match) => {
     //     setSelectedMatch(match);
@@ -637,16 +638,24 @@ const MatchSearchAndEditForm = () => {
                                                         setEditData((prev) => ({
                                                             ...prev,
                                                             stageType: selectedType,
+                                                            selectedStage: selectedType === 'OTHER'
+                                                                ? { id: 11, name: 'OTHER' } // Domyślny stage dla OTHER
+                                                                : null,
                                                         }));
 
                                                         if (selectedType === 'GROUP_STAGE') {
                                                             const groupStage = stageOptions.find((stage) => stage.id === 1);
+                                                            if (groupStage) {
+                                                                setEditData((prev) => ({
+                                                                    ...prev,
+                                                                    selectedStage: groupStage,
+                                                                }));
+                                                            }
+                                                        } else if (selectedType === 'KNOCKOUT_STAGE') {
                                                             setEditData((prev) => ({
                                                                 ...prev,
-                                                                selectedStage: groupStage || null,
+                                                                selectedStage: null, // Dla Knockout Stage, trzeba wybrać z opcji
                                                             }));
-                                                        } else {
-                                                            setEditData((prev) => ({ ...prev, selectedStage: null }));
                                                         }
                                                     }}
                                                     required
@@ -656,6 +665,7 @@ const MatchSearchAndEditForm = () => {
                                                     <option value="KNOCKOUT_STAGE">Knockout Stage</option>
                                                 </Form.Control>
                                             </Form.Group>
+
 
                                             {/* Group Selection for Group Stage */}
                                             {editData.stageType === 'GROUP_STAGE' && (

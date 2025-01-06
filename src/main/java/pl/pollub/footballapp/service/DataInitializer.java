@@ -279,4 +279,26 @@ public class DataInitializer {
             positionRepository.saveAll(positions);
         }
     }
+    @PostConstruct
+    public void initializeLeagueStages() {
+        if (leagueStageRepository.count() == 0) {
+            List<LeagueStage> stages = Arrays.asList(
+                    new LeagueStage("GROUP"),
+                    new LeagueStage("1/256"),
+                    new LeagueStage("1/128"),
+                    new LeagueStage("1/64"),
+                    new LeagueStage("1/32"),
+                    new LeagueStage("1/16"),
+                    new LeagueStage("1/8"),
+                    new LeagueStage("1/4"),
+                    new LeagueStage("1/2"),
+                    new LeagueStage("FINAL"),
+                    new LeagueStage("OTHER")
+            );
+            leagueStageRepository.saveAll(stages);
+            System.out.println("League stages initialized.");
+        } else {
+            System.out.println("League stages already populated.");
+        }
+    }
 }

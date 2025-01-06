@@ -395,6 +395,8 @@ const AddMatchForm = () => {
             ...(stageType === 'GROUP_STAGE' && { stage: selectedStage, group: { id: selectedGroup?.id } }),
             // Dane fazy pucharowej
             ...(stageType === 'KNOCKOUT_STAGE' && { stage: selectedStage }),
+            ...(stageType === 'OTHER' && { stage: { id: 11 } }), // Ustaw "OTHER" jako id 11
+
         };
 
         console.log("Wysyłane dane meczu:", JSON.stringify(matchData, null, 2));
@@ -608,6 +610,14 @@ const AddMatchForm = () => {
                                     setSelectedStage(groupStage); // Ustaw GROUP jako selectedStage
                                 } else {
                                     console.error('Group stage not found in stageOptions');
+                                }
+                            } else if (selectedType === 'OTHER') {
+                                // Znajdź obiekt OTHER w stageOptions
+                                const otherStage = stageOptions.find(stage => stage.id === 11);
+                                if (otherStage) {
+                                    setSelectedStage(otherStage); // Ustaw OTHER jako selectedStage
+                                } else {
+                                    console.error('Other stage not found in stageOptions');
                                 }
                             } else {
                                 setSelectedStage(null); // Resetuj stage, jeśli wybrano inny typ
