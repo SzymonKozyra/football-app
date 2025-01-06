@@ -31,7 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors().and()
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
 
                         .requestMatchers("/api/**").permitAll() // Pozwól na dostęp bez autoryzacji
@@ -66,6 +66,8 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/**").permitAll() // Pozwól na dostęp bez autoryzacji
 
 
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

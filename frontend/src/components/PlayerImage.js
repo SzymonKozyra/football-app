@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const PlayerImage = ({ player }) => {
-    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/player/player_${player.id}.jpg`);
+    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/images/player/player_${player.id}.jpg`);
 
     useEffect(() => {
         // Funkcja do sprawdzania, czy plik istnieje
@@ -16,8 +16,8 @@ const PlayerImage = ({ player }) => {
 
         // Sprawdź najpierw JPG, a jeśli nie ma, użyj PNG
         const verifyImage = async () => {
-            const jpgUrl = `http://localhost:8080/img/player/player_${player.id}.jpg`;
-            const pngUrl = `http://localhost:8080/img/player/player_${player.id}.png`;
+            const jpgUrl = `http://localhost:8080/images/player/player_${player.id}.jpg`;
+            const pngUrl = `http://localhost:8080/images/player/player_${player.id}.png`;
 
             const jpgExists = await checkImageExists(jpgUrl);
             if (jpgExists) {
@@ -28,7 +28,7 @@ const PlayerImage = ({ player }) => {
                     setImageUrl(pngUrl);
                 } else {
                     // Opcjonalnie: Ustaw domyślny obraz, jeśli żaden nie istnieje
-                    setImageUrl('http://localhost:8080/img/player/default-player.png');
+                    setImageUrl('http://localhost:8080/images/player/default-player.png');
                 }
             }
         };

@@ -10,6 +10,7 @@ import pl.pollub.footballapp.repository.CountryRepository;
 import pl.pollub.footballapp.repository.LeagueStageRepository;
 import pl.pollub.footballapp.repository.PositionRepository;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -301,4 +302,18 @@ public class DataInitializer {
             System.out.println("League stages already populated.");
         }
     }
+
+    @PostConstruct
+    public void checkFilesOnStartup() {
+        System.out.println("Sprawdzanie plików w katalogu przy starcie aplikacji:");
+        File folder = new File("D:/footballapp_files/images/player/");
+        if (folder.exists() && folder.isDirectory()) {
+            for (File file : folder.listFiles()) {
+                System.out.println(file.getName());
+            }
+        } else {
+            System.out.println("Katalog nie istnieje lub nie jest folderem.");
+        }
+    }
+
 }
