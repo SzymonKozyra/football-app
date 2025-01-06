@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {Card, ListGroup} from "react-bootstrap";
 import TeamImageVerySmall from "./TeamImageVerySmall";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://localhost:8080";
 
@@ -245,7 +245,6 @@ const Sidebar = ({ onOpenRegistration }) => {
                     </ListGroup.Item>
                 ))}
             </ListGroup>
-
             <h5 className="mt-4">Favorite Teams</h5>
             <ListGroup>
                 {!token && (
@@ -255,13 +254,18 @@ const Sidebar = ({ onOpenRegistration }) => {
                     <ListGroup.Item>You do not have any favorite teams.</ListGroup.Item>
                 )}
                 {favorites.teams.map((team) => (
-                    <ListGroup.Item key={team.team.id} className="d-flex align-items-center justify-content-between">
+                    <ListGroup.Item
+                        key={team.team.id}
+                        className="d-flex align-items-center justify-content-between"
+                        onClick={() => navigate(`/team/${team.team.id}`)} // Przejście do strony drużyny
+                        style={{ cursor: "pointer" }}
+                    >
                         <div className="d-flex align-items-center">
                             <TeamImageVerySmall
                                 team={team.team}
-                                style={{ marginLeft: '0px' }}
+                                style={{ marginLeft: "0px" }}
                             />
-                            <span style={{marginLeft: "10px"}}>{team.team.name}</span>
+                            <span style={{ marginLeft: "10px" }}>{team.team.name}</span>
                         </div>
                         <i
                             className={`bi ${
@@ -269,8 +273,45 @@ const Sidebar = ({ onOpenRegistration }) => {
                                     ? "bi-star-fill text-warning"
                                     : "bi-star"
                             }`}
-                            style={{cursor: "pointer"}}
-                            onClick={() => toggleFavorite("teams", team.team)}
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                                e.stopPropagation(); // Zapobiegaj propagacji kliknięcia, aby nie aktywować nawigacji
+                                toggleFavorite("teams", team.team);
+                            }}
+                        ></i>
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+
+
+
+            <h5 className="mt-4">All Teams</h5>
+            <ListGroup>
+                {allTeams.map((team) => (
+                    <ListGroup.Item
+                        key={team.id}
+                        className="d-flex align-items-center justify-content-between"
+                        onClick={() => navigate(`/team/${team.id}`)} // Przejście do strony drużyny
+                        style={{ cursor: "pointer" }}
+                    >
+                        <div className="d-flex align-items-center">
+                            <TeamImageVerySmall
+                                team={team}
+                                style={{ marginLeft: "0px" }}
+                            />
+                            <span style={{ marginLeft: "10px" }}>{team.name}</span>
+                        </div>
+                        <i
+                            className={`bi ${
+                                isFavorite("teams", team.id)
+                                    ? "bi-star-fill text-warning"
+                                    : "bi-star"
+                            }`}
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                                e.stopPropagation(); // Zapobiegaj propagacji kliknięcia, aby nie aktywować nawigacji
+                                toggleFavorite("teams", team);
+                            }}
                         ></i>
                     </ListGroup.Item>
                 ))}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PlayerImageSmall from './PlayerImageSmall';
+import { useNavigate } from 'react-router-dom';
 import './MatchLineups.css';
 
 const BASE_URL = 'http://localhost:8080'; // Stała dla adresu backendu
@@ -9,6 +10,7 @@ const MatchLineups = ({ matchId }) => {
     const [homeBench, setHomeBench] = useState([]);
     const [awayFirstSquad, setAwayFirstSquad] = useState([]);
     const [awayBench, setAwayBench] = useState([]);
+    const navigate = useNavigate(); // Dodaj useNavigate
 
     const token = localStorage.getItem('jwtToken'); // Pobieranie tokena JWT z localStorage
 
@@ -48,9 +50,11 @@ const MatchLineups = ({ matchId }) => {
         <div
             className={`player-row ${alignImageLeft ? 'left-align' : 'right-align'}`}
             key={player.id}
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate(`/player/${player.id}`)} // Przejście na stronę zawodnika
         >
             {alignImageLeft && <PlayerImageSmall player={player} />}
-            <span className="player-name">{`${player.firstName} ${player.lastName}`}</span>
+            <span>{`${player.firstName} ${player.lastName}`}</span>
             {!alignImageLeft && <PlayerImageSmall player={player} />}
         </div>
     );

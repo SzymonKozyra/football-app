@@ -1,4 +1,9 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 const MatchEvents = ({ match }) => {
+    const navigate = useNavigate(); // Dodaj useNavigate
+
+
     const getEventIcon = (type) => {
         switch (type) {
             case "GOAL":
@@ -184,17 +189,21 @@ const MatchEvents = ({ match }) => {
                                                 alt={event.type}
                                                 className="event-icon"
                                             />
-                                            <span>
+                                            <span
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => navigate(`/player/${event.player.id}`)} // Przejście na stronę zawodnika
+                                            >
                                                 {formatPlayerName(event.player)}
-                                                {additionalInfo && ` (${additionalInfo})`}
                                             </span>
                                         </>
                                     )}
                                     {!isHomeTeam && (
                                         <>
-                                            <span>
+                                            <span
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => navigate(`/player/${event.player.id}`)} // Przejście na stronę zawodnika
+                                            >
                                                 {formatPlayerName(event.player)}
-                                                {additionalInfo && ` (${additionalInfo})`}
                                             </span>
                                             <img
                                                 src={`/assets/icons/${getEventIcon(event.type)}`}

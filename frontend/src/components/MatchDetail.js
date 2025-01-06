@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, ButtonGroup, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import TeamImage from "./TeamImage";
 import MatchEvents from "./MatchEvents";
 import MatchStatistics from "./MatchStatistics";
@@ -8,6 +9,7 @@ import "./MatchDetail.css";
 
 const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRegistration }) => {
     const [activeTab, setActiveTab] = useState("EVENTS"); // Default to "EVENTS"
+    const navigate = useNavigate(); // Dodaj useNavigate
 
     if (!match) return null;
 
@@ -48,7 +50,10 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                             alt={match.league.country.name}
                             className="match-detail-flag"
                         />
-                        <span>
+                        <span
+                            style={{ cursor: "pointer" }}
+                            onClick={() => navigate(`/league/${match.league.id}`)} // Przejście do strony ligi
+                        >
                             {match.league.name} &gt; Round {match.round}
                         </span>
                     </div>
@@ -63,10 +68,17 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                                     ? "bi-star-fill text-warning"
                                     : "bi-star"
                             }`}
-                            onClick={() => handleFavoriteClick("teams", match.homeTeam)}
+                            onClick={(e) => {
+                                e.stopPropagation(); // Zapobiegaj propagacji kliknięcia
+                                handleFavoriteClick("teams", match.homeTeam);
+                            }}
                             style={{ cursor: "pointer", marginRight: "10px" }}
                         ></i>
-                        <div className="team-info">
+                        <div
+                            className="team-info"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => navigate(`/team/${match.homeTeam.id}`)} // Przejście do strony drużyny
+                        >
                             <TeamImage team={match.homeTeam} />
                             <div className="team-name">{match.homeTeam.name}</div>
                         </div>
@@ -74,7 +86,7 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
 
                     <div className="match-info">
                         <div className="match-date">
-                            {new Date(match.dateTime).toLocaleDateString("pl-PL")} {" "}
+                            {new Date(match.dateTime).toLocaleDateString("pl-PL")}{" "}
                             {new Date(match.dateTime).toLocaleTimeString("pl-PL", {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -92,7 +104,11 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                     </div>
 
                     <div className="team-section">
-                        <div className="team-info">
+                        <div
+                            className="team-info"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => navigate(`/team/${match.awayTeam.id}`)} // Przejście do strony drużyny
+                        >
                             <TeamImage team={match.awayTeam} />
                             <div className="team-name">{match.awayTeam.name}</div>
                         </div>
@@ -102,7 +118,10 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                                     ? "bi-star-fill text-warning"
                                     : "bi-star"
                             }`}
-                            onClick={() => handleFavoriteClick("teams", match.awayTeam)}
+                            onClick={(e) => {
+                                e.stopPropagation(); // Zapobiegaj propagacji kliknięcia
+                                handleFavoriteClick("teams", match.awayTeam);
+                            }}
                             style={{ cursor: "pointer", marginLeft: "10px" }}
                         ></i>
                     </div>
@@ -137,7 +156,8 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                 <div className="match-detail-additional mt-4">
                     <h5>Additional Details</h5>
                     <p>
-                        <strong>Stadium:</strong> {match.stadium.name} ({match.stadium.city.name}, {match.stadium.city.country.name})
+                        <strong>Stadium:</strong> {match.stadium.name} ({match.stadium.city.name},{" "}
+                        {match.stadium.city.country.name})
                     </p>
                     <p>
                         <strong>Referee:</strong> {match.referee.firstName} {match.referee.lastName}

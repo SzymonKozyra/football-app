@@ -769,10 +769,14 @@ const LeaguePage = () => {
             {showMatchDetail && selectedMatch && (
                 <MatchDetail
                     show={showMatchDetail}
-                    onHide={() => setShowMatchDetail(false)} // Obsługa zamknięcia modala
+                    onHide={() => setShowMatchDetail(false)}
                     match={selectedMatch}
+                    toggleFavorite={toggleFavorite}
+                    isFavorite={isFavorite}
+                    onOpenRegistration={() => setShowRegistrationModal(true)} // Funkcja otwierająca modal rejestracji
                 />
             )}
+
 
             {/* Modal Registration */}
             <RegistrationModal
