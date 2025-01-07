@@ -283,6 +283,39 @@ const Sidebar = ({ onOpenRegistration }) => {
                 ))}
             </ListGroup>
 
+            <h5 className="mt-4">All Leagues</h5>
+            <ListGroup>
+                {allLeagues.map((league) => (
+                    <ListGroup.Item key={league.id} className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center">
+                            <img
+                                src={`/assets/flags/${league.country.code}.svg`}
+                                alt={league.country.name}
+                                style={{
+                                    width: "20px",
+                                    height: "15px",
+                                    marginRight: "10px",
+                                    borderRadius: "2px",
+                                    boxShadow: "0 0 2px rgba(0, 0, 0, 0.2)",
+                                }}
+                            />
+                            <span onClick={() => handleLeagueClick(league.id)} style={{cursor: "pointer"}}>
+                                {league.name || "Unknown name"}
+                            </span>
+                        </div>
+                        <i
+                            className={`bi ${
+                                isFavorite("leagues", league.id)
+                                    ? "bi-star-fill text-warning"
+                                    : "bi-star"
+                            }`}
+                            style={{cursor: "pointer"}}
+                            onClick={() => toggleFavorite("leagues", league)}
+                        ></i>
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+
 
 
             <h5 className="mt-4">All Teams</h5>
@@ -317,62 +350,6 @@ const Sidebar = ({ onOpenRegistration }) => {
                 ))}
             </ListGroup>
 
-            <h5 className="mt-4">All Leagues</h5>
-            <ListGroup>
-                {allLeagues.map((league) => (
-                    <ListGroup.Item key={league.id} className="d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center">
-                            <img
-                                src={`/assets/flags/${league.country.code}.svg`}
-                                alt={league.country.name}
-                                style={{
-                                    width: "20px",
-                                    height: "15px",
-                                    marginRight: "10px",
-                                    borderRadius: "2px",
-                                    boxShadow: "0 0 2px rgba(0, 0, 0, 0.2)",
-                                }}
-                            />
-                            <span onClick={() => handleLeagueClick(league.id)} style={{cursor: "pointer"}}>
-                                {league.name || "Unknown name"}
-                            </span>
-                        </div>
-                        <i
-                            className={`bi ${
-                                isFavorite("leagues", league.id)
-                                    ? "bi-star-fill text-warning"
-                                    : "bi-star"
-                            }`}
-                            style={{cursor: "pointer"}}
-                            onClick={() => toggleFavorite("leagues", league)}
-                        ></i>
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
-
-            <h5 className="mt-4">All Teams</h5>
-            <ListGroup>
-                {allTeams.map((team) => (
-                    <ListGroup.Item key={team.id} className="d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center">
-                            <TeamImageVerySmall
-                                team={team}
-                                style={{ marginLeft: '0px' }}
-                            />
-                            <span style={{marginLeft: "10px"}}>{team.name}</span>
-                        </div>
-                        <i
-                            className={`bi ${
-                                isFavorite("teams", team.id)
-                                    ? "bi-star-fill text-warning"
-                                    : "bi-star"
-                            }`}
-                            style={{cursor: "pointer"}}
-                            onClick={() => toggleFavorite("teams", team)}
-                        ></i>
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
         </>
     );
 };

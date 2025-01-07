@@ -28,7 +28,7 @@ const PlayerImage = ({ player }) => {
                     setImageUrl(pngUrl);
                 } else {
                     // Optionally set a default image if none exist
-                    setImageUrl('http://localhost:8080/img/player/default-player.png');
+                    setImageUrl('http://localhost:8080/images/player/default-player.png');
                 }
             }
         };
