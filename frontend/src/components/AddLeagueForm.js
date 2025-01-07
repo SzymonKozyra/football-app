@@ -162,7 +162,7 @@ const AddLeagueForm = () => {
                         </Form.Group>
 
                         <Form.Group controlId="formEdition" className="mb-3">
-                            <Form.Label>Edition (e.g., 23/24)</Form.Label>
+                            <Form.Label>Edition (e.g., 2023/2024 or 2024)</Form.Label>
                             <Form.Control
                                 type="text"
                                 value={edition}
@@ -172,7 +172,7 @@ const AddLeagueForm = () => {
                                 required
                             />
                             <Form.Control.Feedback type="invalid">
-                                Edycja ligi musi być w formacie [rok/rok+1] lub [rok], np. 2023/2024 lub 2024
+                                League edidion must be in format [year/year+1] or [year], e.g., 2023/2024 or 2024
                             </Form.Control.Feedback>
                         </Form.Group>
                     </>
@@ -215,20 +215,20 @@ const AddLeagueForm = () => {
     {
         "countryName": "England",
         "name": "Premier League",
-        "edition": "23/24"
+        "edition": "2023/2024"
     },
     {
         "countryName": "Spain",
         "name": "La Liga",
-        "edition": "21/22"
+        "edition": "2021/2022"
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`countryName, name, edition
-England, Premier League, 23/24
-Spain, La Liga, 21/22`}
+                            {`countryName,name,edition
+England,Premier League,2023/2024
+Spain,La Liga,2021/2022`}
                         </pre>
                     </Accordion.Body>
                 </Accordion.Item>
