@@ -1,36 +1,27 @@
-// TeamImage.js
 import React, { useState, useEffect } from 'react';
 
 const TeamImageSmall = ({ team }) => {
-    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/team/team_${team.id}.jpg`);
+    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/images/team/team_${team.id}.jpg`);
 
     useEffect(() => {
-        // Function to check if an image exists
-        const checkImageExists = async (url) => {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                return response.ok;
-            } catch (error) {
-                return false;
-            }
-        };
-
-        // Verify if JPG or PNG image exists
         const verifyImage = async () => {
-            const jpgUrl = `http://localhost:8080/img/team/team_${team.id}.jpg`;
-            const pngUrl = `http://localhost:8080/img/team/team_${team.id}.png`;
+            const jpgUrl = `http://localhost:8080/images/team/team_${team.id}.jpg`;
+            const pngUrl = `http://localhost:8080/images/team/team_${team.id}.png`;
 
-            const jpgExists = await checkImageExists(jpgUrl);
-            if (jpgExists) {
-                setImageUrl(jpgUrl);
-            } else {
-                const pngExists = await checkImageExists(pngUrl);
-                if (pngExists) {
-                    setImageUrl(pngUrl);
+            try {
+                const response = await fetch(jpgUrl, { method: 'HEAD' });
+                if (response.ok) {
+                    setImageUrl(jpgUrl);
                 } else {
-                    // Optionally set a default image if none exist
-                    setImageUrl('http://localhost:8080/img/team/default-team.png');
+                    const responsePng = await fetch(pngUrl, { method: 'HEAD' });
+                    if (responsePng.ok) {
+                        setImageUrl(pngUrl);
+                    } else {
+                        setImageUrl('http://localhost:8080/images/team/default-team.png');
+                    }
                 }
+            } catch (error) {
+                setImageUrl('http://localhost:8080/images/team/default-team.png');
             }
         };
 

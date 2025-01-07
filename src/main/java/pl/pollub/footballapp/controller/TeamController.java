@@ -132,6 +132,7 @@ public class TeamController {
 
 
     @GetMapping("/{id}")
+    @PermitAll
     public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
         return teamService.getTeamById(id)
                 .map(ResponseEntity::ok)

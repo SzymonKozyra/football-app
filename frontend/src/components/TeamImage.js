@@ -1,12 +1,9 @@
-// TeamImage.js
 import React, { useState, useEffect } from 'react';
-import '../App.css';
 
 const TeamImage = ({ team }) => {
-    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/team/team_${team.id}.jpg`);
+    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/images/team/team_${team.id}.jpg`);
 
     useEffect(() => {
-        // Function to check if an image exists
         const checkImageExists = async (url) => {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -16,10 +13,9 @@ const TeamImage = ({ team }) => {
             }
         };
 
-        // Verify if JPG or PNG image exists
         const verifyImage = async () => {
-            const jpgUrl = `http://localhost:8080/img/team/team_${team.id}.jpg`;
-            const pngUrl = `http://localhost:8080/img/team/team_${team.id}.png`;
+            const jpgUrl = `http://localhost:8080/images/team/team_${team.id}.jpg`;
+            const pngUrl = `http://localhost:8080/images/team/team_${team.id}.png`;
 
             const jpgExists = await checkImageExists(jpgUrl);
             if (jpgExists) {
@@ -29,8 +25,7 @@ const TeamImage = ({ team }) => {
                 if (pngExists) {
                     setImageUrl(pngUrl);
                 } else {
-                    // Optionally set a default image if none exist
-                    setImageUrl('http://localhost:8080/img/team/default-team.png');
+                    setImageUrl('http://localhost:8080/images/team/default-team.png');
                 }
             }
         };
@@ -41,9 +36,9 @@ const TeamImage = ({ team }) => {
     return (
         <img
             src={imageUrl}
-            alt={team.name}
+            alt={`${team.name}`}
             className="team-picture"
-            style={{ width: '100px', height: '100px', objectFit: 'contain', borderRadius: '4px' }}
+            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
         />
     );
 };

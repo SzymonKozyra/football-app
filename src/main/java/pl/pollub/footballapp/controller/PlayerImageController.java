@@ -26,9 +26,10 @@ public class PlayerImageController {
             Path path = Paths.get(uploadDir).resolve(filename).normalize();
             System.out.println("Próba dostępu do pliku: " + path.toString());
 
+            // Jeśli plik nie istnieje, zwracamy domyślny obraz
             if (!Files.exists(path)) {
-                System.out.println("Plik nie istnieje!");
-                return ResponseEntity.status(404).body("Plik nie istnieje!");
+                System.out.println("Plik nie istnieje, używam domyślnego obrazu.");
+                path = Paths.get(uploadDir, "player", "default-player.png");
             }
 
             Resource resource = new UrlResource(path.toUri());
@@ -40,4 +41,5 @@ public class PlayerImageController {
             return ResponseEntity.status(500).body("Błąd serwera");
         }
     }
+
 }
