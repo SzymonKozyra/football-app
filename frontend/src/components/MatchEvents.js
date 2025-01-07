@@ -167,6 +167,11 @@ const MatchEvents = ({ match }) => {
                     {groupedEvents[part]
                         .sort((a, b) => a.minute - b.minute)
                         .map((event) => {
+                            // Zabezpieczenie przed null
+                            if (!event.player || !event.player.team) {
+                                return null;
+                            }
+
                             const isHomeTeam = event.player.team.id === match.homeTeam.id;
                             let additionalInfo = null;
 
@@ -190,21 +195,21 @@ const MatchEvents = ({ match }) => {
                                                 className="event-icon"
                                             />
                                             <span
-                                                style={{ cursor: 'pointer' }}
-                                                onClick={() => navigate(`/player/${event.player.id}`)} // Przejście na stronę zawodnika
+                                                style={{ cursor: "pointer" }}
+                                                onClick={() => navigate(`/player/${event.player.id}`)}
                                             >
-                                                {formatPlayerName(event.player)}
-                                            </span>
+                                            {formatPlayerName(event.player)}
+                                        </span>
                                         </>
                                     )}
                                     {!isHomeTeam && (
                                         <>
-                                            <span
-                                                style={{ cursor: 'pointer' }}
-                                                onClick={() => navigate(`/player/${event.player.id}`)} // Przejście na stronę zawodnika
-                                            >
-                                                {formatPlayerName(event.player)}
-                                            </span>
+                                        <span
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => navigate(`/player/${event.player.id}`)}
+                                        >
+                                            {formatPlayerName(event.player)}
+                                        </span>
                                             <img
                                                 src={`/assets/icons/${getEventIcon(event.type)}`}
                                                 alt={event.type}
@@ -220,7 +225,6 @@ const MatchEvents = ({ match }) => {
             </div>
         ));
     };
-
     return <div>{renderEvents()}</div>;
 };
 
