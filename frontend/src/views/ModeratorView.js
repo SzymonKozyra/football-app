@@ -21,8 +21,6 @@ import AddInjuryForm from '../components/AddInjuryForm';
 import EditInjuryForm from '../components/EditInjuryForm';
 import AddMatchForm from '../components/AddMatchForm';
 import EditMatchForm from '../components/EditMatchForm';
-import AddBetForm from '../components/AddBetForm';
-import EditBetForm from '../components/EditBetForm';
 import AddRankingForm from '../components/AddRankingForm';
 import RankingView from '../components/RankingView';
 import EditRankingForm from '../components/EditRankingForm';
@@ -61,8 +59,6 @@ const ModeratorView = () => {
             case 'AddMatch': return <AddMatchForm />;
             //case 'EditMatches': return <EditMatchForm />;
             case 'EditMatches': return <MatchSearchAndEditForm/>;
-            case 'AddBet': return <AddBetForm/>;
-            case 'EditBets': return <EditBetForm/>;
             case 'AddRanking': return <AddRankingForm/>;
             case 'AddGroup': return <AddGroupForm/>;
             case 'EditGroup': return <EditGroupForm/>;
@@ -85,19 +81,18 @@ const ModeratorView = () => {
                             <Accordion.Header>Add Data</Accordion.Header>
                             <Accordion.Body>
                                 <ListGroup>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCity')}>Add City</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddLeague')}>Add League</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddGroup')}>Add Group</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCoach')}>Add Coach</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddTeam')}>Add Team</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddStadium')}>Add Stadium</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCity')}>Add City</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayer')}>Add Player</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddReferee')}>Add Referee</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddCoach')}>Add Coach</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddCoachContract')}>Add Coach Contract</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayer')}>Add Player</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddInjury')}>Add Injury</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddPlayerContract')}>Add Player Contract</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddStadium')}>Add Stadium</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddReferee')}>Add Referee</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddMatch')}>Add Match</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('AddBet')}>Add Bet</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('AddRanking')}>Add Ranking</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>
@@ -108,17 +103,15 @@ const ModeratorView = () => {
                                 <ListGroup>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditLeagues')}>Edit Leagues</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditGroup')}>Edit Groups</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditCoaches')}>Edit Coaches</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditTeams')}>Edit Teams</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditStadiums')}>Edit Stadiums</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayers')}>Edit Players</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('ImportPlayers')}>Import Players</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditReferees')}>Edit Referees</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditInjuries')}>Edit Injuries</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditCoaches')}>Edit Coaches</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditCoachContracts')}>Edit Coach Contracts</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayers')}>Edit Players</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditInjuries')}>Edit Injuries</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditPlayerContracts')}>Edit Player Contracts</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditStadiums')}>Edit Stadiums</ListGroup.Item>
+                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditReferees')}>Edit Referees</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditMatches')}>Edit Matches</ListGroup.Item>
-                                    <ListGroup.Item action onClick={() => setSelectedComponent('EditBets')}>Edit Bets</ListGroup.Item>
                                     <ListGroup.Item action onClick={() => setSelectedComponent('EditRankings')}>Edit Rankings</ListGroup.Item>
                                 </ListGroup>
                             </Accordion.Body>

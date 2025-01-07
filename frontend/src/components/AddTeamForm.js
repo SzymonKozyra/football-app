@@ -211,21 +211,21 @@ const AddTeamForm = () => {
                             {`[
     {
         "name": "TeamName",
-        "is_club": true,
+        "isClub": true,
         "picture": "pictureFileName",
-        "league_id": 1
+        "leagueId": 1
     },
     {
         "name": "AnotherTeam",
-        "is_club": false,
+        "isClub": false,
         "picture": "anotherPictureFileName",
-        "league_id": 2
+        "leagueId": 2
     }
 ]`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`name,is_club,picture,league_id
+                            {`name,isClub,picture,leagueId
 TeamName1,true,pictureFileName,1
 AnotherTeam,false,anotherPictureFileName,2`}
                         </pre>
