@@ -269,7 +269,7 @@ const AddInjuryForm = () => {
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`type,start_date,end_date,player_id
+                            {`type,startDate,endDate,playerId
 InjuryType1,2024-10-15,2024-11-15,5
 InjuryType2,2023-05-13,2023-08-13,6`}
                         </pre>

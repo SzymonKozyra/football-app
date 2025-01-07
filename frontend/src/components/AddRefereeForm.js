@@ -212,7 +212,7 @@ const AddRefereeForm = () => {
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`first_name,last_name,date_of_birth,country_name
+                            {`firstName,lastName,dateOfBirth,countryName
 John,Doe,1980-05-15,United States
 Ricardo,da Silva,1950-12-14,Brazil`}
                         </pre>

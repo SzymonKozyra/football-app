@@ -54,7 +54,6 @@ public class CsvPlayerImporter implements DataImporter {
                     csvRecord.get("lastName"),
                     parsedDate,
                     csvRecord.get("nickname"),
-                    csvRecord.get("picture"),
                     parseLong(csvRecord.get("positionId")),
                     parseLong(csvRecord.get("countryId")),
                     value

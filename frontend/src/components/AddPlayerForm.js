@@ -251,32 +251,29 @@ const AddPlayerForm = () => {
                         <pre>
                             {`[
     {
-        "first_name": "John",
-        "last_name": "Doe",
-        "date_of_birth": "2000-01-01",
+        "firstName": "John",
+        "lastName": "Doe",
+        "dateOfBirth": "2000-01-01",
         "nickname": "JD",
-        "position_id": 1,
-        "country_id": 1,
-        "club_id": 1,
-        "national_team_id": 2,
+        "positionId": 1,
+        "countryId": 1,
         "value": 1000000.00
     },
     {
-        "first_name": "Jane",
-        "last_name": "Smith",
-        "date_of_birth": "1999-05-15",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "dateOfBirth": "1999-05-15",
         "nickname": "Smitty",
-        "position_id": 2,
-        "country_id": 2,
-        "club_id": 2,
-        "national_team_id": 1,
+        "positionId": 2,
+        "countryId": 2,
         "value": 850000.00
     }
-]`}
+]
+`}
                         </pre>
                         <h5>CSV Template</h5>
                         <pre>
-                            {`first_name,last_name,date_of_birth,nickname,position_id,country_id,club_id,national_team_id,value
+                            {`firstName,lastName,dateOfBirth,nickname,positionId,countryId,clubId,nationalTeamId,value
 John,Doe,2000-01-01,JD,1,1,1,2,1000000.00
 Jane,Smith,1999-05-15,Smitty,2,2,2,1,850000.00`}
                         </pre>

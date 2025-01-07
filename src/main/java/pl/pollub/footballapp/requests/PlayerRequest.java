@@ -54,6 +54,16 @@ public class PlayerRequest {
 //        this.clubId = clubId;
 //        this.nationalTeamId = nationalTeamId;
     }
+
+    public PlayerRequest(String firstName, String lastName, LocalDate dateOfBirth, String nickname, Long positionId, Long countryId, BigDecimal value) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.nickname = nickname;
+        this.positionId = positionId;
+        this.countryId = countryId;
+        this.value = value;
+    }
     public PlayerRequest(String firstName, String lastName, LocalDate dateOfBirth, String nickname, String picture,
                          Long positionId, Long countryId, BigDecimal value) {
         this.firstName = firstName;

@@ -56,12 +56,13 @@ const AddStadiumForm = () => {
                     setStadiumCapacity('');
                     setSelectedCountry('');
                     setSelectedCity('');
+                    setAlertMessage(''); // Czyszczenie komunikatu błędu
                 })
                 .catch(error => {
                     if (error.response && error.response.data) {
-                        setAlertMessage(error.response.data);
+                        setAlertMessage(error.response.data); // Wyświetl komunikat błędu z backendu
                     } else {
-                        setAlertMessage('An error occurred while adding bet');
+                        setAlertMessage('An error occurred while adding the stadium. You have to add city before adding stadium.'); // Poprawiony komunikat
                     }
                 });
         } else {
@@ -80,10 +81,11 @@ const AddStadiumForm = () => {
                     }
                     setFile(null);
                     setFileType('');
+                    setAlertMessage(''); // Czyszczenie komunikatu błędu
                 })
                 .catch(error => {
                     console.error('Error importing stadiums:', error);
-                    alert(error.response?.data || 'Failed to import stadiums');
+                    setAlertMessage(error.response?.data || 'Failed to import stadiums');
                 });
         }
     };
