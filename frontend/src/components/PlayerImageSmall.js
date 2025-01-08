@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const PlayerImage = ({ player }) => {
-    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/player/player_${player.id}.jpg`);
+    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/images/player/player_${player.id}.jpg`);
 
     useEffect(() => {
         // Function to check if an image exists
@@ -16,8 +16,8 @@ const PlayerImage = ({ player }) => {
 
         // Verify if JPG or PNG image exists
         const verifyImage = async () => {
-            const jpgUrl = `http://localhost:8080/img/player/player_${player.id}.jpg`;
-            const pngUrl = `http://localhost:8080/img/player/player_${player.id}.png`;
+            const jpgUrl = `http://localhost:8080/images/player/player_${player.id}.jpg`;
+            const pngUrl = `http://localhost:8080/images/player/player_${player.id}.png`;
 
             const jpgExists = await checkImageExists(jpgUrl);
             if (jpgExists) {

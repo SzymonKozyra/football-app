@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const PlayerImageVerySmall = ({ player, style = {} }) => {
-    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/img/player/player_${player.id}.jpg`);
+const PlayerImageVerySmall = ({ player }) => {
+    const [imageUrl, setImageUrl] = useState(`http://localhost:8080/images/player/player_${player.id}.jpg`);
 
     useEffect(() => {
-        // Function to check if an image exists
+        // Funkcja do sprawdzania, czy plik istnieje
         const checkImageExists = async (url) => {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -14,10 +14,10 @@ const PlayerImageVerySmall = ({ player, style = {} }) => {
             }
         };
 
-        // Verify if JPG or PNG image exists
+        // Sprawdź najpierw JPG, a jeśli nie ma, użyj PNG
         const verifyImage = async () => {
-            const jpgUrl = `http://localhost:8080/img/player/player_${player.id}.jpg`;
-            const pngUrl = `http://localhost:8080/img/player/player_${player.id}.png`;
+            const jpgUrl = `http://localhost:8080/images/player/player_${player.id}.jpg`;
+            const pngUrl = `http://localhost:8080/images/player/player_${player.id}.png`;
 
             const jpgExists = await checkImageExists(jpgUrl);
             if (jpgExists) {
@@ -27,7 +27,7 @@ const PlayerImageVerySmall = ({ player, style = {} }) => {
                 if (pngExists) {
                     setImageUrl(pngUrl);
                 } else {
-                    // Optionally set a default image if none exist
+                    // Opcjonalnie: Ustaw domyślny obraz, jeśli żaden nie istnieje
                     setImageUrl('http://localhost:8080/images/player/default-player.png');
                 }
             }
@@ -39,9 +39,9 @@ const PlayerImageVerySmall = ({ player, style = {} }) => {
     return (
         <img
             src={imageUrl}
-            alt={player.name}
+            alt={`${player.firstName} ${player.lastName}`}
             className="player-picture"
-            style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px', ...style }}
+            style={{ width: '20px', height: '20px', objectFit: 'cover', borderRadius: '4px' }}
         />
     );
 };

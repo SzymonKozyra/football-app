@@ -14,7 +14,7 @@ const RegisterAdminForm = () => {
             .then(() => {
                 alert('Admin account created successfully.');
                 setTimeout(() => {
-                    window.location.reload(); // Odswież stronę po 2 sekundach
+                    window.location.reload();
                 }, 1500);
             })
             .catch(error => {
