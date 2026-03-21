@@ -124,13 +124,13 @@ const Navbar = ({
                     />
                     {showResults && renderSearchResults()}
                 </div>
-                <Link to="/transfers" className="btn btn-outline-primary navbar-btn">
-                    Transfers
-                </Link>
                 <button className="menu-toggle" onClick={toggleMenu}>
                     ☰
                 </button>
                 <div className={`navbar-menu ${isMenuActive ? 'active' : ''}`}>
+                    <Link to="/transfers" className="btn btn-outline-primary navbar-btn me-1">
+                        Transfers
+                    </Link>
                     {isLoggedIn && (
                         <Link to="/add-bet" className="btn btn-light navbar-btn">
                             Bets

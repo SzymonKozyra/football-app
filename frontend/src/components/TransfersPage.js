@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import PlayerImageSmall from "./PlayerImageSmall"; // Ensure this component is properly implemented
+import UsePagination from "./UsePagination";
+import PaginationComponent from "./PaginationComponent";
 
 const BASE_URL = "http://localhost:8080";
 
@@ -15,6 +17,8 @@ const transferTypeMap = {
 
 const TransfersPage = () => {
     const [transfers, setTransfers] = useState([]);
+
+    const { currentPage, setCurrentPage, totalPages, currentResults, handlePageChange } = UsePagination(transfers, 10);
 
     useEffect(() => {
         axios
@@ -60,7 +64,7 @@ const TransfersPage = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {transfers.map((transfer) => {
+                        {currentResults.map((transfer) => {
                             const previousTeam = getPreviousTeam(
                                 transfer.player.id,
                                 transfer.startDate
@@ -117,6 +121,13 @@ const TransfersPage = () => {
                         })}
                         </tbody>
                     </Table>
+
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+
                 </Col>
             </Row>
         </Container>

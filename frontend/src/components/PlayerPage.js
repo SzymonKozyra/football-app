@@ -58,7 +58,7 @@ const PlayerPage = () => {
         };
         const formatDate = (dateString) => {
             const date = new Date(dateString);
-            return date.toLocaleDateString("pl-PL", {
+            return date.toLocaleDateString("en-US", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
@@ -68,34 +68,31 @@ const PlayerPage = () => {
         return (
             <Card className="mb-4">
                 <Card.Body>
-                    <h5>Informacje ogólne</h5>
+                    <h5>General Information</h5>
                     <table className="table table-bordered">
                         <tbody>
-                        {/* Drużyna */}
+                        {/* Team */}
                         <tr>
-                            <td className="bg-light"><strong>Drużyna:</strong></td>
+                            <td className="bg-light"><strong>Team:</strong></td>
                             <td className="text-center">
                                 {player.team ? (
                                     <div className="d-flex justify-content-center align-items-center">
                                         <TeamImageVerySmall team={player.team} />
-
                                         <span>{player.team.name}</span>
                                     </div>
                                 ) : (
-                                    "Brak drużyny"
+                                    "No team"
                                 )}
                             </td>
                         </tr>
-
-                        {/* Pozycja */}
+                        {/* Position */}
                         <tr>
-                            <td className="bg-light"><strong>Pozycja:</strong></td>
-                            <td className="text-center">{player.position?.name || "Nieznana"}</td>
+                            <td className="bg-light"><strong>Position:</strong></td>
+                            <td className="text-center">{player.position?.name || "Unknown"}</td>
                         </tr>
-
-                        {/* Kraj */}
+                        {/* Country */}
                         <tr>
-                            <td className="bg-light"><strong>Kraj:</strong></td>
+                            <td className="bg-light"><strong>Country:</strong></td>
                             <td className="text-center">
                                 {player.country ? (
                                     <div className="d-flex justify-content-center align-items-center">
@@ -113,31 +110,28 @@ const PlayerPage = () => {
                                         <span>{player.country.name}</span>
                                     </div>
                                 ) : (
-                                    "Nieznany kraj"
+                                    "Unknown country"
                                 )}
                             </td>
                         </tr>
-
-                        {/* Pseudonim */}
+                        {/* Nickname */}
                         <tr>
-                            <td className="bg-light"><strong>Pseudonim:</strong></td>
-                            <td className="text-center">{player.nickname || "Brak pseudonimu"}</td>
+                            <td className="bg-light"><strong>Nickname:</strong></td>
+                            <td className="text-center">{player.nickname || "No nickname"}</td>
                         </tr>
-
-                        {/* Wiek */}
+                        {/* Age */}
                         <tr>
-                            <td className="bg-light"><strong>Wiek:</strong></td>
+                            <td className="bg-light"><strong>Age:</strong></td>
                             <td className="text-center">
                                 {player.dateOfBirth
                                     ? `${formatDate(player.dateOfBirth)} (${calculateAge(player.dateOfBirth)})`
-                                    : "Nieznana"}
+                                    : "Unknown"}
                             </td>
                         </tr>
-
-                        {/* Wartość rynkowa */}
+                        {/* Market Value */}
                         <tr>
-                            <td className="bg-light"><strong>Wartość rynkowa:</strong></td>
-                            <td className="text-center">${player.value?.toLocaleString() || "Nieznana"}</td>
+                            <td className="bg-light"><strong>Market Value:</strong></td>
+                            <td className="text-center">${player.value?.toLocaleString() || "Unknown"}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -146,30 +140,27 @@ const PlayerPage = () => {
         );
     };
 
-
-
-
     const renderTransfers = () => {
         const { currentResults, totalPages, currentPage, handlePageChange } = contractsPagination;
 
         const transferTypeMap = {
             TRANSFER: "Transfer",
             LOAN: "Loan",
-            END_LOAN: "End of loan",
+            END_LOAN: "End of Loan",
         };
 
         return (
             <Card className="mb-4">
                 <Card.Body>
-                    <h5>Historia transferów</h5>
+                    <h5>Transfer History</h5>
                     <table className="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>Data</th>
-                            <th>Do klubu</th>
-                            <th>Kwota</th>
-                            <th>Typ transferu</th>
-                            <th>Wynagrodzenie</th>
+                            <th>Date</th>
+                            <th>To Club</th>
+                            <th>Fee</th>
+                            <th>Transfer Type</th>
+                            <th>Salary</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -196,27 +187,27 @@ const PlayerPage = () => {
 
     const renderInjuries = () => {
         if (injuries.length === 0) {
-            return <p>Brak kontuzji dla tego zawodnika.</p>;
+            return <p>No injuries for this player.</p>;
         }
 
         return (
             <Card className="mb-4">
                 <Card.Body>
-                    <h5>Historia kontuzji</h5>
+                    <h5>Injury History</h5>
                     <table className="table table-bordered">
                         <thead>
                         <tr>
-                            <th>Typ kontuzji</th>
-                            <th>Data rozpoczęcia</th>
-                            <th>Data zakończenia</th>
+                            <th>Type of Injury</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
                         </tr>
                         </thead>
                         <tbody>
                         {injuries.map((injury) => (
                             <tr key={injury.id}>
-                                <td>{injury.type || "Nieznany"}</td>
-                                <td>{injury.startDate || "Nieznana"}</td>
-                                <td>{injury.endDate || "Otwarta"}</td>
+                                <td>{injury.type || "Unknown"}</td>
+                                <td>{injury.startDate || "Unknown"}</td>
+                                <td>{injury.endDate || "Ongoing"}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -225,8 +216,6 @@ const PlayerPage = () => {
             </Card>
         );
     };
-
-    if (!player) return <p>Sorry, we can't find that player :(</p>;
 
     return (
         <Container fluid>

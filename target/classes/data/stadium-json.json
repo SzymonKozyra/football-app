@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Izak Cry",
+    "cityName": "Berlin",
+    "countryName": "Germany",
+    "capacity": 96000
+  },
+  {
+    "name": "PACO",
+    "cityName": "Lublin",
+    "countryName": "Poland",
+    "capacity": 72000
+  },
+  {
+    "name": "Ronaldo",
+    "cityName": "Madrid",
+    "countryName": "Spain",
+    "capacity": 76000
+  }
+]

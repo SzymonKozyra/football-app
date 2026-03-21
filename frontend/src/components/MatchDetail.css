@@ -203,6 +203,11 @@ hr {
     color: #fff; /* Kolor tekstu aktywnego przycisku */
 }
 
+.match-detail-additional{
+    font-size: 15px;
+
+}
+
 /* Stylizacja dla małych ekranów */
 @media (max-width: 768px) {
     .team-info img {

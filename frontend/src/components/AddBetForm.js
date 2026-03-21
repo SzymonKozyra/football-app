@@ -96,7 +96,7 @@ const AddBetForm = () => {
 
     return (
         <Container>
-            <h1>Place Bet</h1>
+            <h1 className="mt-3">Place Bet</h1>
             {alertMessage && <Alert variant="danger" onClose={() => setAlertMessage(null)} dismissible>{alertMessage}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
@@ -167,7 +167,7 @@ const AddBetForm = () => {
 
                     </>
                 )}
-                <Button type="submit" disabled={!selectedMatch}>Place Bet</Button>
+                <Button type="submit" disabled={!selectedMatch} className="mt-3">Place Bet</Button>
             </Form>
             <p></p>
             <Link to="/ranking" className="btn btn-success btn-lg w-100 mt-3">

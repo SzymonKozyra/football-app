@@ -127,6 +127,17 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                     </div>
                 </div>
 
+                {/* Stadium and Referee Details */}
+                <div className="match-detail-additional text-center">
+                    <p>
+                        <strong>Referee:</strong> {match.referee.firstName} {match.referee.lastName}
+                    </p>
+                    <p>
+                        <strong>Stadium:</strong> {match.stadium.name} ({match.stadium.city.name},{" "}
+                        {match.stadium.city.country.name})
+                    </p>
+                </div>
+
                 {/* Tab Buttons */}
                 <ButtonGroup className="tab-buttons">
                     <Button
@@ -152,17 +163,6 @@ const MatchDetail = ({ show, onHide, match, toggleFavorite, isFavorite, onOpenRe
                 {/* Tab Content */}
                 <div className="tab-content">{renderTabContent()}</div>
 
-                {/* Stadium and Referee Details */}
-                <div className="match-detail-additional mt-4">
-                    <h5>Additional Details</h5>
-                    <p>
-                        <strong>Stadium:</strong> {match.stadium.name} ({match.stadium.city.name},{" "}
-                        {match.stadium.city.country.name})
-                    </p>
-                    <p>
-                        <strong>Referee:</strong> {match.referee.firstName} {match.referee.lastName}
-                    </p>
-                </div>
             </Modal.Body>
         </Modal>
     );
