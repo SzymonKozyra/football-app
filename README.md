@@ -31,11 +31,13 @@ MODERATOR:
 - Add, search, edit and delete data, including: Teams, Leagues, Matches, Players, Contracts
 - Import data from JSON/CSV files
 - Manage match statistics, lineups, events (goals, cards, substitutions)
-ADMIN:
+  ADMIN:
 - Create moderator and admin accounts
 - Delete user accounts
 - Reset user passwords
 - Send targeted notifications
+- ADMIN2
+- test
 
 Screenshots
 ![User main page](screenshots/user-homepage.png)
